@@ -29,9 +29,11 @@ def is_sponsored_article(html: str) -> bool:
     html_lower = html.lower()
 
     markers = [
+        "advertorial",
         "articol susținut",
         "articol sponsorizat",
-        "advertorial"
+        "conținut sponsorizat",
+        "continut sponsorizat",
     ]
 
     return any(marker in html_lower for marker in markers)
@@ -69,7 +71,7 @@ def extract_article_details(article_url: str) -> dict:
 
         paragraphs.append(text)
 
-    article_text = "\n".join(paragraphs)
+    article_text = clean_text(" ".join(paragraphs))
 
     return {
         "title": title,
