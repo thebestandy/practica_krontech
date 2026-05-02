@@ -1,4 +1,7 @@
 import re
+import time
+from concurrent.futures import ThreadPoolExecutor
+from email.utils import parsedate_to_datetime
 from urllib.parse import quote_plus, urljoin, urlparse
 
 import httpx
@@ -8,64 +11,49 @@ from bs4 import BeautifulSoup
 BASE_URL = "https://www.zf.ro"
 SOURCE_NAME = "ZF"
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0"
-}
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+TIMEOUT = 10
+RETRIES = 3
+REQUEST_DELAY = 0.25
+MAX_WORKERS = 5
+
+
+def request_get(url: str, **kwargs) -> httpx.Response | None:
+    for attempt in range(RETRIES):
+        try:
+            time.sleep(REQUEST_DELAY)
+            response = httpx.get(
+                url,
+                headers=HEADERS,
+                timeout=TIMEOUT,
+                follow_redirects=True,
+                **kwargs,
+            )
+            response.raise_for_status()
+            return response
+        except httpx.HTTPError:
+            if attempt == RETRIES - 1:
+                return None
+    return None
 
 
 def fetch_html(url: str) -> str | None:
-    try:
-        response = httpx.get(url, headers=HEADERS, timeout=10)
-        response.raise_for_status()
-        return response.text
-    except httpx.HTTPError:
-        return None
+    response = request_get(url)
+    return response.text if response else None
 
 
 def clean_text(text: str) -> str:
-    return " ".join(text.split())
+    text = " ".join((text or "").split())
+    return re.sub(r"\s+([.,!?;:])", r"\1", text).strip()
 
 
-def is_sponsored_article(html: str) -> bool:
-    html_lower = html.lower()
+def clean_html_content(html: str) -> str:
+    soup = BeautifulSoup(html or "", "lxml")
 
-    sponsored_markers = [
-        "advertorial",
-        "articol sponsorizat",
-        "conținut sponsorizat",
-        "continut sponsorizat",
-    ]
+    for tag in soup(["script", "style", "noscript", "iframe", "form", "svg"]):
+        tag.decompose()
 
-    return any(marker in html_lower for marker in sponsored_markers)
-
-
-def extract_article_details(article_url: str) -> dict:
-    html = fetch_html(article_url)
-
-    if html is None:
-        return {
-            "title": None,
-            "date": None,
-            "text": None,
-            "is_sponsored": False
-        }
-
-    soup = BeautifulSoup(html, "lxml")
-
-    title_tag = soup.find("h1")
-    title = clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None
-
-    date = None
-
-    time_tag = soup.find("time")
-    if time_tag:
-        date = clean_text(time_tag.get_text(" ", strip=True))
-
-    meta_date = soup.find("meta", {"property": "article:published_time"})
-    if date is None and meta_date and meta_date.get("content"):
-        date = clean_text(meta_date["content"])
-
-    article_container = (
+    container = (
         soup.find("div", class_="text")
         or soup.find("div", class_="article_content")
         or soup.find("div", class_="articleContent")
@@ -91,23 +79,23 @@ def extract_article_details(article_url: str) -> dict:
 
     paragraphs = []
 
-    for paragraph in article_container.find_all("p"):
-        paragraph_text = clean_text(paragraph.get_text(" ", strip=True))
+    for paragraph in container.find_all("p"):
+        text = clean_text(paragraph.get_text(" ", strip=True))
 
-        if len(paragraph_text) < 40:
+        if len(text) < 40:
             continue
 
-        if any(fragment in paragraph_text for fragment in unwanted_fragments):
+        if any(fragment.lower() in text.lower() for fragment in unwanted_fragments):
             continue
 
-        paragraphs.append(paragraph_text)
+        paragraphs.append(text)
 
     article_text = clean_text(" ".join(paragraphs))
 
     cutoff_markers = [
-    "Ce arată primele date pe 2025:",
-    "Bursă. OMV Petrom",
-    "CEC Bank pentru afaceri româneşti:",
+        "Ce arată primele date pe 2025:",
+        "Bursă. OMV Petrom",
+        "CEC Bank pentru afaceri româneşti:",
     ]
 
     for marker in cutoff_markers:
@@ -115,27 +103,85 @@ def extract_article_details(article_url: str) -> dict:
             article_text = article_text.split(marker)[0].strip()
             break
 
-    return {
-        "title": title,
-        "date": date,
-        "text": article_text,
-        "is_sponsored": is_sponsored_article(html)
+    return article_text
+
+
+def normalize_date(value: str | None) -> str | None:
+    value = clean_text(value or "")
+    value = value.replace("Publicat:", "").replace("Actualizat:", "").strip()
+
+    if not value:
+        return None
+
+    months = {
+        "ianuarie": "01", "ian": "01", "january": "01", "jan": "01",
+        "februarie": "02", "feb": "02", "february": "02",
+        "martie": "03", "mar": "03", "march": "03",
+        "aprilie": "04", "apr": "04", "april": "04",
+        "mai": "05", "may": "05",
+        "iunie": "06", "iun": "06", "june": "06", "jun": "06",
+        "iulie": "07", "iul": "07", "july": "07", "jul": "07",
+        "august": "08", "aug": "08",
+        "septembrie": "09", "sep": "09", "sept": "09", "september": "09",
+        "octombrie": "10", "oct": "10", "october": "10",
+        "noiembrie": "11", "nov": "11", "november": "11",
+        "decembrie": "12", "dec": "12", "december": "12",
     }
 
+    iso_match = re.search(r"\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2})?", value)
+    if iso_match:
+        raw = iso_match.group(0).replace("T", " ")
+        return raw[:16] if len(raw) >= 16 else raw
 
-def build_search_url(query: str) -> str:
-    return f"{BASE_URL}/search?q={quote_plus(query)}"
+    numeric_match = re.search(
+        r"(\d{1,2})[./-](\d{1,2})[./-](\d{4})(?:\D+(\d{1,2}):(\d{2}))?",
+        value,
+    )
+    if numeric_match:
+        day, month, year, hour, minute = numeric_match.groups()
+        if hour and minute:
+            return f"{year}-{int(month):02d}-{int(day):02d} {int(hour):02d}:{minute}"
+        return f"{year}-{int(month):02d}-{int(day):02d}"
+
+    named_month_match = re.search(
+        r"(\d{1,2})\s+([A-Za-zĂÂÎȘȚăâîșț]+)\s+(\d{4})(?:\D+(\d{1,2}):(\d{2}))?",
+        value,
+        flags=re.IGNORECASE,
+    )
+    if named_month_match:
+        day, month_name, year, hour, minute = named_month_match.groups()
+        month = months.get(month_name.lower())
+
+        if month:
+            if hour and minute:
+                return f"{year}-{month}-{int(day):02d} {int(hour):02d}:{minute}"
+            return f"{year}-{month}-{int(day):02d}"
+
+    try:
+        parsed = parsedate_to_datetime(value)
+        return parsed.strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return value
 
 
-def is_valid_article_url(article_url: str) -> bool:
-    parsed_url = urlparse(article_url)
+def is_sponsored_article(html: str) -> bool:
+    markers = [
+        "advertorial",
+        "articol sponsorizat",
+        "conținut sponsorizat",
+        "continut sponsorizat",
+    ]
+    html_lower = html.lower()
+    return any(marker in html_lower for marker in markers)
 
-    if parsed_url.netloc not in ["www.zf.ro", "zf.ro"]:
+
+def is_valid_article_url(url: str) -> bool:
+    parsed = urlparse(url)
+
+    if parsed.netloc not in ["www.zf.ro", "zf.ro"]:
         return False
 
-    path = parsed_url.path
-
-    invalid_url_parts = [
+    invalid_parts = [
         "/search",
         "/contact",
         "/termeni",
@@ -147,98 +193,112 @@ def is_valid_article_url(article_url: str) -> bool:
         "#",
     ]
 
-    if any(part in path for part in invalid_url_parts):
+    if any(part in parsed.path for part in invalid_parts):
         return False
 
-    return bool(re.search(r"-\d+$", path))
+    return bool(re.search(r"-\d+$", parsed.path))
 
 
-def extract_article_links_from_page(soup: BeautifulSoup) -> list[dict]:
+def build_search_url(query: str) -> str:
+    return f"{BASE_URL}/search?q={quote_plus(query)}"
+
+
+def extract_article_links(soup: BeautifulSoup) -> list[dict]:
     articles = []
     seen_urls = set()
 
     for link in soup.find_all("a", href=True):
-        raw_href = link["href"]
-        article_url = urljoin(BASE_URL, raw_href)
+        url = urljoin(BASE_URL, link["href"])
 
-        if not is_valid_article_url(article_url):
+        if not is_valid_article_url(url):
             continue
 
-        if article_url in seen_urls:
+        if url in seen_urls:
             continue
 
-        raw_title = clean_text(link.get_text(" ", strip=True))
+        title = clean_text(link.get_text(" ", strip=True))
 
-        if len(raw_title) < 20:
+        if len(title) < 20:
             parent = link.find_parent()
-            raw_title = clean_text(parent.get_text(" ", strip=True)) if parent else raw_title
+            title = clean_text(parent.get_text(" ", strip=True)) if parent else title
 
-        if len(raw_title) < 20:
+        if len(title) < 20:
             continue
 
-        seen_urls.add(article_url)
-
-        articles.append({
-            "title": raw_title,
-            "url": article_url
-        })
+        seen_urls.add(url)
+        articles.append({"title": title, "url": url})
 
     return articles
 
 
-def search(query: str, limit: int = 5) -> dict:
-    search_url = build_search_url(query)
-    html = fetch_html(search_url)
+def extract_article_details(url: str) -> dict:
+    html = fetch_html(url)
 
-    if html is None:
+    if not html:
+        return {"title": None, "date": None, "text": None, "is_sponsored": False}
+
+    soup = BeautifulSoup(html, "lxml")
+
+    title_tag = soup.find("h1")
+    time_tag = soup.find("time")
+
+    date = time_tag.get_text(" ", strip=True) if time_tag else None
+
+    if not date:
+        meta_date = soup.find("meta", {"property": "article:published_time"})
+        if meta_date and meta_date.get("content"):
+            date = meta_date["content"]
+
+    return {
+        "title": clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None,
+        "date": normalize_date(date),
+        "text": clean_html_content(html),
+        "is_sponsored": is_sponsored_article(html),
+    }
+
+
+def search(query: str, limit: int = 5) -> dict:
+    html = fetch_html(build_search_url(query))
+
+    if not html:
         return {
             "source": SOURCE_NAME,
             "found": False,
             "results": [],
-            "error": "Could not fetch ZF search page"
+            "error": "Could not fetch search page",
         }
 
     soup = BeautifulSoup(html, "lxml")
-    article_links = extract_article_links_from_page(soup)
+    article_links = extract_article_links(soup)
 
     results = []
-    seen_urls = set()
 
-    for article_link in article_links:
-        article_url = article_link["url"]
+    with ThreadPoolExecutor(max_workers=min(MAX_WORKERS, max(1, len(article_links)))) as executor:
+        for article_link, details in zip(article_links, executor.map(lambda item: extract_article_details(item["url"]), article_links)):
+            if not details["text"]:
+                continue
 
-        if article_url in seen_urls:
-            continue
+            results.append({
+                "source": SOURCE_NAME,
+                "title": details["title"] or article_link["title"],
+                "url": article_link["url"],
+                "date": details["date"],
+                "text": details["text"],
+                "is_sponsored": details["is_sponsored"],
+            })
 
-        seen_urls.add(article_url)
-
-        article_details = extract_article_details(article_url)
-
-        if not article_details["text"]:
-            continue
-
-        results.append({
-            "source": SOURCE_NAME,
-            "title": article_details["title"] or article_link["title"],
-            "url": article_url,
-            "date": article_details["date"],
-            "text": article_details["text"],
-            "is_sponsored": article_details["is_sponsored"]
-        })
-
-        if len(results) >= limit:
-            break
+            if len(results) >= limit:
+                break
 
     return {
         "source": SOURCE_NAME,
-        "found": len(results) > 0,
+        "found": bool(results),
         "results": results,
-        "error": None
+        "error": None,
     }
 
 
 if __name__ == "__main__":
     import json
 
-    data = search("frauda", limit=5)
-    print(json.dumps(data, ensure_ascii=False, indent=2))
+    print(json.dumps(search("frauda", limit=5), ensure_ascii=False, indent=2))
