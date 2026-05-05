@@ -85,15 +85,8 @@ export default function Dashboard() {
     const activeMessages = activeTab ? scans[activeTab] || [] : [];
 
     return (
-        <div
-            style={{
-                padding: "20px",
-                fontFamily: "sans-serif",
-                maxWidth: "900px",
-                margin: "0 auto",
-            }}
-        >
-            <div style={{ marginBottom: "20px" }}>
+        <div className="p-20 m-auto max-w-300">
+            <div className="mb-10">
                 Status: <span>{connectionStatus}</span>
             </div>
 
@@ -117,14 +110,7 @@ export default function Dashboard() {
             </form>
 
             {Object.keys(scans).length > 0 && (
-                <div
-                    style={{
-                        display: "flex",
-                        gap: "8px",
-                        marginBottom: "10px",
-                        overflowX: "auto",
-                    }}
-                >
+                <div className="flex gap-8 mb-10 overflow-x-auto">
                     {Object.entries(scans).map(([scanId, msgs]) => {
                         const tabLabel =
                             msgs.length > 0
@@ -136,17 +122,12 @@ export default function Dashboard() {
                             <button
                                 key={scanId}
                                 onClick={() => setActiveTab(scanId)}
+                                className="p-2 hover:cursor-pointer"
                                 style={{
-                                    padding: "10px 15px",
                                     backgroundColor: isActive
                                         ? "#00ff00"
                                         : "#333",
                                     color: isActive ? "#000" : "#fff",
-                                    border: "none",
-                                    borderRadius: "4px 4px 0 0",
-                                    fontWeight: "bold",
-                                    cursor: "pointer",
-                                    whiteSpace: "nowrap",
                                 }}
                             >
                                 {tabLabel}
