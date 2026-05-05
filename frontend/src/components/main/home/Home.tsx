@@ -1,8 +1,11 @@
+import FinalNavbar from "../utils/FinalNavbar";
+import HomeContent from "./HomeContent";
+
 export default function Home() {
     return (
         <>
-            hello
-            <div>wasup</div>
+            <FinalNavbar />
+            <HomeContent />
         </>
     );
 }

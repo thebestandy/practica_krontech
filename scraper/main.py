@@ -1,14 +1,18 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+
+from api.websockets import router as websocket_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("mongo")
-    # await connect_to_mongo()
+    print("setting up mongo")
+    # aici pornim mongo
     yield
-    print("inchizi mongo")
+    print("inchid mongo")
+    # aici trb oprit
 
 
 origins = [
@@ -18,7 +22,6 @@ origins = [
 
 app = FastAPI(lifespan=lifespan)
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,8 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-app.include_router()
+app.include_router(websocket_router)
 
 
 @app.get("/")
