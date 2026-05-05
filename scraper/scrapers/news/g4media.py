@@ -8,8 +8,8 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://hotnews.ro"
-SOURCE_NAME = "HotNews"
+BASE_URL = "https://www.g4media.ro"
+SOURCE_NAME = "G4Media"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 TIMEOUT = 10
@@ -54,12 +54,15 @@ def clean_html_content(html: str) -> str:
         tag.decompose()
 
     unwanted_fragments = [
-        "HotNews.ro utilizează cookie-uri",
-        "Continuarea navigării implică acceptarea",
-        "Urmărește HotNews.ro",
+        "Funcționăm ca organizație non-profit",
         "Citește și:",
-        "Accesați Modifică Setările",
-        "Politica de confidențialitate",
+        "Vezi și:",
+        "Abonează-te",
+        "Newsletter",
+        "Distribuie",
+        "Facebook",
+        "Twitter",
+        "WhatsApp",
         "Cookie",
     ]
 
@@ -140,6 +143,7 @@ def normalize_date(value: str | None) -> str | None:
 def is_sponsored_article(html: str) -> bool:
     markers = [
         "advertorial",
+        "articol susținut",
         "articol sponsorizat",
         "conținut sponsorizat",
         "continut sponsorizat",
@@ -151,10 +155,13 @@ def is_sponsored_article(html: str) -> bool:
 def is_valid_article_url(url: str) -> bool:
     parsed = urlparse(url)
 
-    if parsed.netloc not in ["hotnews.ro", "www.hotnews.ro"]:
+    if parsed.netloc not in ["www.g4media.ro", "g4media.ro"]:
         return False
 
-    invalid_parts = ["/c/", "/tag/", "/video/", "#"]
+    if not parsed.path.endswith(".html"):
+        return False
+
+    invalid_parts = ["/tag/", "/category/", "/video/", "#"]
 
     return not any(part in parsed.path for part in invalid_parts)
 
@@ -200,11 +207,9 @@ def extract_article_details(url: str) -> dict:
     date = time_tag.get_text(" ", strip=True) if time_tag else None
 
     if not date:
-        for page_text in soup.stripped_strings:
-            text = clean_text(page_text)
-            if text.startswith("Publicat:"):
-                date = text
-                break
+        meta_date = soup.find("meta", {"property": "article:published_time"})
+        if meta_date and meta_date.get("content"):
+            date = meta_date["content"]
 
     return {
         "title": clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None,

@@ -2,14 +2,14 @@ import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from email.utils import parsedate_to_datetime
-from urllib.parse import quote_plus, urljoin, urlparse
+from urllib.parse import quote, quote_plus, urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://hotnews.ro"
-SOURCE_NAME = "HotNews"
+BASE_URL = "https://adevarul.ro"
+SOURCE_NAME = "Adevarul"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 TIMEOUT = 10
@@ -54,11 +54,16 @@ def clean_html_content(html: str) -> str:
         tag.decompose()
 
     unwanted_fragments = [
-        "HotNews.ro utilizează cookie-uri",
-        "Continuarea navigării implică acceptarea",
-        "Urmărește HotNews.ro",
-        "Citește și:",
-        "Accesați Modifică Setările",
+        "Citește și",
+        "Urmărește-ne pe",
+        "Abonează-te",
+        "Newsletter",
+        "Facebook",
+        "Twitter",
+        "WhatsApp",
+        "Publicitate",
+        "Comentarii",
+        "Politică de confidențialitate",
         "Politica de confidențialitate",
         "Cookie",
     ]
@@ -151,16 +156,35 @@ def is_sponsored_article(html: str) -> bool:
 def is_valid_article_url(url: str) -> bool:
     parsed = urlparse(url)
 
-    if parsed.netloc not in ["hotnews.ro", "www.hotnews.ro"]:
+    if parsed.netloc != "adevarul.ro":
         return False
 
-    invalid_parts = ["/c/", "/tag/", "/video/", "#"]
+    invalid_parts = [
+        "/search",
+        "/tag/",
+        "/autori/",
+        "/video/",
+        "/foto/",
+        "/politica-confidentialitate",
+        "/politica-cookie",
+        "/politica-cookies",
+        "/termeni-si-conditii",
+        "/contact",
+        "/redactie",
+    ]
 
-    return not any(part in parsed.path for part in invalid_parts)
+    if any(part in parsed.path for part in invalid_parts):
+        return False
+
+    return bool(re.search(r"-\d+\.html$", parsed.path))
+
+
+def build_tag_url(query: str) -> str:
+    return f"{BASE_URL}/tag/{quote(query.lower())}"
 
 
 def build_search_url(query: str) -> str:
-    return f"{BASE_URL}/?s={quote_plus(query)}"
+    return f"{BASE_URL}/search?q={quote_plus(query)}"
 
 
 def extract_article_links(soup: BeautifulSoup) -> list[dict]:
@@ -169,15 +193,20 @@ def extract_article_links(soup: BeautifulSoup) -> list[dict]:
 
     for link in soup.find_all("a", href=True):
         url = urljoin(BASE_URL, link["href"])
-        title = clean_text(link.get_text(" ", strip=True))
-
-        if not title or len(title) < 20:
-            continue
 
         if not is_valid_article_url(url):
             continue
 
         if url in seen_urls:
+            continue
+
+        title = clean_text(link.get_text(" ", strip=True))
+
+        if len(title) < 20:
+            parent = link.find_parent()
+            title = clean_text(parent.get_text(" ", strip=True)) if parent else title
+
+        if len(title) < 20:
             continue
 
         seen_urls.add(url)
@@ -206,6 +235,11 @@ def extract_article_details(url: str) -> dict:
                 date = text
                 break
 
+    if not date:
+        meta_date = soup.find("meta", {"property": "article:published_time"})
+        if meta_date and meta_date.get("content"):
+            date = meta_date["content"]
+
     return {
         "title": clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None,
         "date": normalize_date(date),
@@ -215,18 +249,21 @@ def extract_article_details(url: str) -> dict:
 
 
 def search(query: str, limit: int = 5) -> dict:
-    html = fetch_html(build_search_url(query))
+    article_links = []
+    last_error = None
 
-    if not html:
-        return {
-            "source": SOURCE_NAME,
-            "found": False,
-            "results": [],
-            "error": "Could not fetch search page",
-        }
+    for page_url in [build_tag_url(query), build_search_url(query)]:
+        html = fetch_html(page_url)
 
-    soup = BeautifulSoup(html, "lxml")
-    article_links = extract_article_links(soup)
+        if not html:
+            last_error = f"Could not fetch page: {page_url}"
+            continue
+
+        soup = BeautifulSoup(html, "lxml")
+        article_links = extract_article_links(soup)
+
+        if article_links:
+            break
 
     results = []
 
@@ -251,7 +288,7 @@ def search(query: str, limit: int = 5) -> dict:
         "source": SOURCE_NAME,
         "found": bool(results),
         "results": results,
-        "error": None,
+        "error": None if results or not last_error else last_error,
     }
 
 

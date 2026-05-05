@@ -1,6 +1,7 @@
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from email.utils import parsedate_to_datetime
 from urllib.parse import quote_plus, urljoin, urlparse
 
@@ -8,8 +9,8 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://hotnews.ro"
-SOURCE_NAME = "HotNews"
+BASE_URL = "https://www.digi24.ro"
+SOURCE_NAME = "Digi24"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 TIMEOUT = 10
@@ -54,12 +55,12 @@ def clean_html_content(html: str) -> str:
         tag.decompose()
 
     unwanted_fragments = [
-        "HotNews.ro utilizează cookie-uri",
-        "Continuarea navigării implică acceptarea",
-        "Urmărește HotNews.ro",
-        "Citește și:",
-        "Accesați Modifică Setările",
-        "Politica de confidențialitate",
+        "Urmărește știrile Digi24.ro",
+        "Abonează-te",
+        "Newsletter",
+        "Facebook",
+        "Twitter",
+        "WhatsApp",
         "Cookie",
     ]
 
@@ -140,6 +141,7 @@ def normalize_date(value: str | None) -> str | None:
 def is_sponsored_article(html: str) -> bool:
     markers = [
         "advertorial",
+        "articol susținut",
         "articol sponsorizat",
         "conținut sponsorizat",
         "continut sponsorizat",
@@ -150,17 +152,11 @@ def is_sponsored_article(html: str) -> bool:
 
 def is_valid_article_url(url: str) -> bool:
     parsed = urlparse(url)
-
-    if parsed.netloc not in ["hotnews.ro", "www.hotnews.ro"]:
-        return False
-
-    invalid_parts = ["/c/", "/tag/", "/video/", "#"]
-
-    return not any(part in parsed.path for part in invalid_parts)
+    return parsed.netloc in ["www.digi24.ro", "digi24.ro"] and "/stiri/" in parsed.path
 
 
 def build_search_url(query: str) -> str:
-    return f"{BASE_URL}/?s={quote_plus(query)}"
+    return f"{BASE_URL}/cautare?q={quote_plus(query)}"
 
 
 def extract_article_links(soup: BeautifulSoup) -> list[dict]:
@@ -195,20 +191,11 @@ def extract_article_details(url: str) -> dict:
     soup = BeautifulSoup(html, "lxml")
 
     title_tag = soup.find("h1")
-    time_tag = soup.find("time")
-
-    date = time_tag.get_text(" ", strip=True) if time_tag else None
-
-    if not date:
-        for page_text in soup.stripped_strings:
-            text = clean_text(page_text)
-            if text.startswith("Publicat:"):
-                date = text
-                break
+    date_tag = soup.find("time")
 
     return {
         "title": clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None,
-        "date": normalize_date(date),
+        "date": normalize_date(date_tag.get_text(" ", strip=True) if date_tag else None),
         "text": clean_html_content(html),
         "is_sponsored": is_sponsored_article(html),
     }

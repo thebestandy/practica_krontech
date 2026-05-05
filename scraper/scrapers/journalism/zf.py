@@ -8,8 +8,8 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://hotnews.ro"
-SOURCE_NAME = "HotNews"
+BASE_URL = "https://www.zf.ro"
+SOURCE_NAME = "ZF"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 TIMEOUT = 10
@@ -53,19 +53,33 @@ def clean_html_content(html: str) -> str:
     for tag in soup(["script", "style", "noscript", "iframe", "form", "svg"]):
         tag.decompose()
 
+    container = (
+        soup.find("div", class_="text")
+        or soup.find("div", class_="article_content")
+        or soup.find("div", class_="articleContent")
+        or soup.find("article")
+        or soup
+    )
+
     unwanted_fragments = [
-        "HotNews.ro utilizează cookie-uri",
-        "Continuarea navigării implică acceptarea",
-        "Urmărește HotNews.ro",
-        "Citește și:",
-        "Accesați Modifică Setările",
+        "Tweet",
+        "Urmărește",
+        "Print",
+        "Mail",
+        "Setări cookies",
         "Politica de confidențialitate",
-        "Cookie",
+        "Politica de cookies",
+        "Termeni și condiții",
+        "ABONEAZĂ-TE",
+        "Abonează-te",
+        "Preluarea fără cost a materialelor",
+        "ZF Corporate",
+        "Ziarul Financiar",
     ]
 
     paragraphs = []
 
-    for paragraph in soup.find_all("p"):
+    for paragraph in container.find_all("p"):
         text = clean_text(paragraph.get_text(" ", strip=True))
 
         if len(text) < 40:
@@ -76,7 +90,20 @@ def clean_html_content(html: str) -> str:
 
         paragraphs.append(text)
 
-    return clean_text(" ".join(paragraphs))
+    article_text = clean_text(" ".join(paragraphs))
+
+    cutoff_markers = [
+        "Ce arată primele date pe 2025:",
+        "Bursă. OMV Petrom",
+        "CEC Bank pentru afaceri româneşti:",
+    ]
+
+    for marker in cutoff_markers:
+        if marker in article_text:
+            article_text = article_text.split(marker)[0].strip()
+            break
+
+    return article_text
 
 
 def normalize_date(value: str | None) -> str | None:
@@ -151,16 +178,29 @@ def is_sponsored_article(html: str) -> bool:
 def is_valid_article_url(url: str) -> bool:
     parsed = urlparse(url)
 
-    if parsed.netloc not in ["hotnews.ro", "www.hotnews.ro"]:
+    if parsed.netloc not in ["www.zf.ro", "zf.ro"]:
         return False
 
-    invalid_parts = ["/c/", "/tag/", "/video/", "#"]
+    invalid_parts = [
+        "/search",
+        "/contact",
+        "/termeni",
+        "/politica",
+        "/publicitate",
+        "/abonamente",
+        "/tags/",
+        "/autor/",
+        "#",
+    ]
 
-    return not any(part in parsed.path for part in invalid_parts)
+    if any(part in parsed.path for part in invalid_parts):
+        return False
+
+    return bool(re.search(r"-\d+$", parsed.path))
 
 
 def build_search_url(query: str) -> str:
-    return f"{BASE_URL}/?s={quote_plus(query)}"
+    return f"{BASE_URL}/search?q={quote_plus(query)}"
 
 
 def extract_article_links(soup: BeautifulSoup) -> list[dict]:
@@ -169,15 +209,20 @@ def extract_article_links(soup: BeautifulSoup) -> list[dict]:
 
     for link in soup.find_all("a", href=True):
         url = urljoin(BASE_URL, link["href"])
-        title = clean_text(link.get_text(" ", strip=True))
-
-        if not title or len(title) < 20:
-            continue
 
         if not is_valid_article_url(url):
             continue
 
         if url in seen_urls:
+            continue
+
+        title = clean_text(link.get_text(" ", strip=True))
+
+        if len(title) < 20:
+            parent = link.find_parent()
+            title = clean_text(parent.get_text(" ", strip=True)) if parent else title
+
+        if len(title) < 20:
             continue
 
         seen_urls.add(url)
@@ -200,11 +245,9 @@ def extract_article_details(url: str) -> dict:
     date = time_tag.get_text(" ", strip=True) if time_tag else None
 
     if not date:
-        for page_text in soup.stripped_strings:
-            text = clean_text(page_text)
-            if text.startswith("Publicat:"):
-                date = text
-                break
+        meta_date = soup.find("meta", {"property": "article:published_time"})
+        if meta_date and meta_date.get("content"):
+            date = meta_date["content"]
 
     return {
         "title": clean_text(title_tag.get_text(" ", strip=True)) if title_tag else None,
@@ -258,4 +301,4 @@ def search(query: str, limit: int = 5) -> dict:
 if __name__ == "__main__":
     import json
 
-    print(json.dumps(search("Romania", limit=5), ensure_ascii=False, indent=2))
+    print(json.dumps(search("frauda", limit=5), ensure_ascii=False, indent=2))
