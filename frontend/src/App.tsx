@@ -5,6 +5,8 @@ import "./App.css";
 import Enterprise from "./components/main/enterprise/Enterprise";
 import About from "./components/main/about/About";
 import Beliefs from "./components/main/beliefs/Beliefs";
+import Login from "./components/main/accounts/Login";
+import Register from "./components/main/accounts/Register";
 
 function App() {
     return (
@@ -15,6 +17,8 @@ function App() {
                 <Route path="/enterprise" element={<Enterprise />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/beliefs" element={<Beliefs />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
