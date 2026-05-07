@@ -1,3 +1,5 @@
+import video from "../../../assets/animatie_blender/video.mkv";
+
 export default function HomeContent() {
     return (
         <>
@@ -48,12 +50,16 @@ export default function HomeContent() {
                 </div>
 
                 <div className="w-full h-full flex items-center justify-center relative opacity-0 animate-fadeUp delay-1100 z-10 mt-10">
-                    <div className="relative w-full max-w-250 max-h-150 aspect-square rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl flex items-center justify-center">
-                        {/* aice vine video-ul autoPlay, loop, muted, playsInline */}
-                        <img
+                    <div className="relative w-full max-w-450 max-h-350 aspect-square rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl flex items-center justify-center">
+                        {/*
+                            <img
                             src="https://louisemcsharry.com/wp-content/uploads/2012/06/hovering-cats.gif"
                             className="inset-0 w-full h-full object-cover opacity-50"
-                        />
+                            />
+                            */}
+                        <video autoPlay loop muted playsInline>
+                            <source src={video} type="video/mp4" />
+                        </video>
                     </div>
                 </div>
             </section>
