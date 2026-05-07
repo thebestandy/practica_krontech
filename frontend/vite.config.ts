@@ -8,6 +8,9 @@ export default defineConfig({
     server: {
         host: true,
         port: 5173,
+        allowedHosts: [
+            "nonaristocratically-consolidative-waltraud.ngrok-free.dev",
+        ],
     },
     assetsInclude: ["**/*.mkv"],
 });
