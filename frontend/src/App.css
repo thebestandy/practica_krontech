@@ -1,18 +1,31 @@
 @tailwind utilities;
 
 @keyframes fadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes map {
+    0%, 100% {
+        transform: rotateX(0deg) rotateZ(0deg) translateY(0px);
+    }
+    50% {
+        transform: rotateX(20deg) rotateZ(10deg) translateY(-5px);
+    }
 }
 
 @layer utilities {
   .animate-fadeUp {
     animation: fadeUp 0.8s ease-out forwards; 
+  }
+
+  .map {
+      animation: map 6s ease-in-out infinite;
   }
 }

@@ -1,14 +1,14 @@
-import video from "../../../assets/animatie_blender/video.mkv";
+import video from "../../../assets/animatie_blender/24fps.mkv";
 
 export default function HomeContent() {
     return (
         <>
             <section className="h-screen w-full flex flex-row items-center justify-around px-10 relative overflow-hidden py-20 gap-10">
-                <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10">
+                <div className="w-1/2 md:w-1/2 flex flex-col justify-center relative z-10 mt-20">
                     <h1
                         className="opacity-0 animate-fadeUp delay-[450ms] 
                     text-[clamp(3rem,9vw,9rem)] leading-[1] tracking-[-0.08em] 
-                    font-bold text-[#f5f5dc] mb-10 font-sans"
+                    font-bold text-secondary-highlight mb-10 font-sans"
                     >
                         Introducing <br />
                         <em className="italic font-light text-highlight font-serif">
@@ -50,13 +50,11 @@ export default function HomeContent() {
                 </div>
 
                 <div className="w-full h-full flex items-center justify-center relative opacity-0 animate-fadeUp delay-1100 z-10 mt-10">
-                    <div className="relative w-full max-w-450 max-h-350 aspect-square rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl flex items-center justify-center">
+                    <div className="relative w-full max-w-450 max-h-350 rounded-3xl overflow-hidden flex items-center justify-center">
                         {/*
-                            <img
                             src="https://louisemcsharry.com/wp-content/uploads/2012/06/hovering-cats.gif"
-                            className="inset-0 w-full h-full object-cover opacity-50"
-                            />
-                            */}
+                        */}
+
                         <video autoPlay loop muted playsInline>
                             <source src={video} type="video/mp4" />
                         </video>
@@ -64,7 +62,7 @@ export default function HomeContent() {
                 </div>
             </section>
 
-            <section className="relative grid h-screen w-full snap-center place-items-center">
+            <section className="relative grid h-screen w-full snap-center place-items-center text-highlight">
                 lol
             </section>
         </>

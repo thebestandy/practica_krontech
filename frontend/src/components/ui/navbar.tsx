@@ -19,7 +19,11 @@ export const Navbar = ({ children, className }: any) => {
     const [visible, setVisible] = useState(false);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        setVisible(latest > 100);
+        if (latest > 0) {
+            setVisible(true);
+        } else {
+            setVisible(false);
+        }
     });
 
     return (
@@ -29,14 +33,17 @@ export const Navbar = ({ children, className }: any) => {
         >
             {React.Children.map(children, (child) =>
                 React.isValidElement(child)
-                    ? React.cloneElement(child as any, { visible })
+                    ? React.cloneElement(
+                          child as React.ReactElement<{ visible?: boolean }>,
+                          { visible },
+                      )
                     : child,
             )}
         </motion.div>
     );
 };
 
-export const NavBody = ({ children, className, visible }: any) => {
+export const NavBody = ({ children, className, visible, isDesktop }: any) => {
     return (
         <motion.div
             animate={{
@@ -52,7 +59,8 @@ export const NavBody = ({ children, className, visible }: any) => {
             }}
             className={cn(
                 "relative mx-auto flex w-full max-w-7xl items-center justify-between rounded-sm px-6 py-3",
-                visible && "bg-neutral-950/80",
+                visible && "bg-secondary-highlight-950/80",
+                isDesktop ? "" : "hidden",
                 className,
             )}
         >
@@ -78,12 +86,12 @@ export const NavItems = ({ items, className, onItemClick }: any) => {
                     href={item.link}
                     onClick={onItemClick}
                     onMouseEnter={() => setHovered(idx)}
-                    className="relative px-4 py-2 text-neutral-300 hover:text-blue-400"
+                    className="relative px-4 py-2 dark:text-neutral-300 text-primary-foreground transition-all ease-in-out duration-100"
                 >
                     {hovered === idx && (
                         <motion.div
                             layoutId="hovered"
-                            className="absolute inset-0 rounded-md bg-neutral-800"
+                            className="absolute inset-0 rounded-md dark:bg-neutral-800 bg-highlight/10"
                         />
                     )}
                     <span className="relative z-10">{item.name}</span>
@@ -93,17 +101,20 @@ export const NavItems = ({ items, className, onItemClick }: any) => {
     );
 };
 
-export const MobileNav = ({ children, className, visible }: any) => {
+export const MobileNav = ({ children, className, visible, isDesktop }: any) => {
     return (
         <motion.div
             animate={{
                 backdropFilter: visible ? "blur(10px)" : "none",
+                boxShadow: visible
+                    ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
+                    : "none",
                 y: visible ? 20 : 0,
             }}
             className={cn(
-                "relative mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between px-2 py-2 lg:hidden",
-                visible && "bg-neutral-950/80",
+                "relative mx-auto w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between px-2 py-2",
                 className,
+                isDesktop ? "hidden" : "flex",
             )}
         >
             {children}
@@ -143,7 +154,7 @@ export const MobileNavToggle = ({ isOpen, onClick }: any) =>
 
 export const NavbarLogo = () => (
     <a className="flex items-center px-2 py-1 text-white">
-        <span className="font-medium"></span>
+        <span className="font-medium text-highlight">logo</span>
     </a>
 );
 
