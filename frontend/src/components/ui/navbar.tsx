@@ -6,7 +6,7 @@ import {
     useScroll,
     useMotionValueEvent,
 } from "motion/react";
-
+import logo from "../../assets/Logos/White and Black Modern Initial Logo.png";
 import React, { useRef, useState } from "react";
 
 export const Navbar = ({ children, className }: any) => {
@@ -154,7 +154,9 @@ export const MobileNavToggle = ({ isOpen, onClick }: any) =>
 
 export const NavbarLogo = () => (
     <a className="flex items-center px-2 py-1 text-white">
-        <span className="font-medium text-highlight">logo</span>
+        <span className="font-medium text-highlight">
+            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
+        </span>
     </a>
 );
 

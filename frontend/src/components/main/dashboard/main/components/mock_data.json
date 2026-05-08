@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    { "id": "p1", "type": "Person", "label": "Radu Ionescu", "summary": "Businessman active in infrastructure and energy sectors. Public figure with multiple media mentions.", "url": "N/A" },
+    { "id": "p2", "type": "Person", "label": "Andreea Pop", "summary": "Lawyer specializing in commercial law. Linked to multiple firms via legal representation.", "url": "N/A" },
+    { "id": "p3", "type": "Person", "label": "Victor Dumitrescu", "summary": "Regional procurement official overseeing infrastructure tenders.", "url": "N/A" },
+    { "id": "c1", "type": "Company", "label": "InfraBuild Solutions SRL", "summary": "Construction firm with rapid growth in public sector contracts.", "url": "https://example.com/c1" },
+    { "id": "c2", "type": "Company", "label": "Danube Energy Group SA", "summary": "Energy trading and consulting company with cross-border operations.", "url": "https://example.com/c2" },
+    { "id": "case1", "type": "CourtCase", "label": "Dosar 441/2025", "summary": "Investigation into alleged irregularities in public procurement. Status: Ongoing.", "url": "https://portal.just.ro/441/2025" },
+    { "id": "doc1", "type": "Document", "label": "Audit Report 2024", "summary": "Highlights discrepancies in contract allocation procedures and unusual subcontracting chains.", "url": "https://example.com/audit2024.pdf" },
+    { "id": "doc2", "type": "Document", "label": "Asset Declaration 2023", "summary": "Declares multiple properties, foreign accounts, and indirect holdings via intermediaries.", "url": "https://example.com/assets2023.pdf" },
+    { "id": "soc1", "type": "SocialProfile", "label": "LinkedIn: Radu Ionescu", "summary": "Lists executive roles across several companies with overlapping timelines.", "url": "https://linkedin.com/in/raduionescu" },
+    { "id": "soc2", "type": "SocialProfile", "label": "Instagram: @andreea.pop", "summary": "Frequent posts from high-profile industry events and private gatherings.", "url": "https://instagram.com/andreea.pop" },
+    { "id": "media1", "type": "Media", "label": "Investigative Article: Public Money, Private Networks", "summary": "Alleges coordinated bidding behavior and preferential contract allocation involving multiple firms.", "url": "https://example.com/media1" },
+    { "id": "media2", "type": "Media", "label": "Leak Analysis: Internal Emails", "summary": "Purported leaked emails suggest informal coordination between company executives and officials.", "url": "https://example.com/media2" },
+    { "id": "event1", "type": "Event", "label": "Infrastructure Tender 2024", "summary": "Major regional tender awarded to InfraBuild Solutions under contested circumstances.", "url": "https://example.com/tender2024" },
+    { "id": "loc1", "type": "Location", "label": "Bucharest", "summary": "Primary operational hub for involved entities.", "url": "N/A" }
+  ],
+  "links": [
+    { "source": "p1", "target": "c1", "label": "CONTROLS", "confidence": 0.9 },
+    { "source": "p1", "target": "c2", "label": "SHAREHOLDER_IN", "confidence": 0.7 },
+    { "source": "p2", "target": "c1", "label": "LEGAL_REPRESENTATIVE", "confidence": 0.95 },
+    { "source": "p3", "target": "event1", "label": "OVERSEES", "confidence": 0.9 },
+    { "source": "c1", "target": "event1", "label": "WON_CONTRACT", "confidence": 0.95 },
+    { "source": "event1", "target": "case1", "label": "TRIGGERED_INVESTIGATION", "confidence": 0.85 },
+    { "source": "c1", "target": "doc1", "label": "SUBJECT_OF_AUDIT", "confidence": 0.9 },
+    { "source": "p1", "target": "doc2", "label": "DECLARED_ASSETS", "confidence": 0.95 },
+    { "source": "p1", "target": "soc1", "label": "OWNS_PROFILE", "confidence": 1.0 },
+    { "source": "p2", "target": "soc2", "label": "OWNS_PROFILE", "confidence": 1.0 },
+    { "source": "media1", "target": "c1", "label": "ALLEGES_COLLUSION", "confidence": 0.6 },
+    { "source": "media1", "target": "p1", "label": "MENTIONS", "confidence": 0.7 },
+    { "source": "media2", "target": "p1", "label": "IMPLICATES", "confidence": 0.5 },
+    { "source": "media2", "target": "p3", "label": "IMPLICATES", "confidence": 0.5 },
+    { "source": "p1", "target": "p3", "label": "UNOFFICIAL_CONTACT", "confidence": 0.4 },
+    { "source": "c1", "target": "loc1", "label": "BASED_IN", "confidence": 1.0 },
+    { "source": "c2", "target": "loc1", "label": "OPERATES_IN", "confidence": 0.8 }
+  ]
+}
