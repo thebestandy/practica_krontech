@@ -42,9 +42,9 @@ export default function FinalNavbar() {
 
     useEffect(() => {
         function handleResize() {
-            console.log("width " + window.innerWidth);
+            // console.log("width " + window.innerWidth);
             setIsDesktop(window.innerWidth > 760);
-            console.log("resized: " + isDesktop);
+            // console.log("resized: " + isDesktop);
         }
 
         window.addEventListener("resize", handleResize);
@@ -62,7 +62,7 @@ export default function FinalNavbar() {
                         <button
                             className="inset-0 z-21 h-9 w-30 border duration-100 bg-highlight/10 dark:bg-neutral-800 text-sm 
                             transition-all ease-in hover:cursor-pointer hover:border-secondary-highlight/10 hover:bg-transparent 
-                            text-secondary-highlight hover:text-highlight"
+                            text-secondary-highlight hover:text-highlight/70"
                             onClick={(event: any) => navigate("/dashboard")}
                         >
                             Dashboard

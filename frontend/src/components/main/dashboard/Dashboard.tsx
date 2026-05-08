@@ -1,83 +1,57 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, type FormEvent } from "react";
+import { WebsocketManager } from "./utils/websocketManager";
 
 export default function Dashboard() {
-    const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+    const [connectionStatus, setConnectionStatus] = useState("disconnected");
     const [searchTarget, setSearchTarget] = useState("");
-
     const [scans, setScans] = useState<Record<string, any[]>>({});
     const [activeTab, setActiveTab] = useState<string | null>(null);
 
-    const ws = useRef<WebSocket | null>(null);
+    const wsClient = useRef<WebsocketManager | null>(null);
 
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
+        const client = new WebsocketManager("ws://127.0.0.1:8001/ws/engine");
 
-        const connectWebSocket = () => {
-            ws.current = new WebSocket(`ws://127.0.0.1:8001/ws/engine`);
-
-            ws.current.onopen = () => {
-                setConnectionStatus("connected");
-                console.log("all good");
-            };
-
-            ws.current.onclose = () => {
-                setConnectionStatus("disconnected");
-                timeoutId = setTimeout(connectWebSocket, 3000);
-            };
-
-            ws.current.onerror = (error) => {
-                console.error("websocker err:", error);
-                ws.current?.close();
-            };
-
-            ws.current.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data.scan_id) {
-                    setScans((prevScans) => {
-                        const existingMessages = prevScans[data.scan_id] || [];
-
-                        if (data.type === "SCAN_STARTED") {
-                            setActiveTab(data.scan_id);
-                        }
-
-                        return {
-                            ...prevScans,
-                            [data.scan_id]: [...existingMessages, data],
-                        };
-                    });
-                } else {
-                    console.log("NO ID HERe:", data);
-                }
-            };
+        client.onStatusChange = (status) => {
+            console.log("not called");
+            setConnectionStatus(status);
         };
 
-        connectWebSocket();
+        client.onMessage = (data) => {
+            if (data && data.scan_id) {
+                setScans((prevScans) => {
+                    const existingMessages = prevScans[data.scan_id] || [];
+
+                    if (data.type === "SCAN_STARTED") {
+                        setActiveTab(data.scan_id);
+                    }
+
+                    return {
+                        ...prevScans,
+                        [data.scan_id]: [...existingMessages, data],
+                    };
+                });
+            } else {
+                console.log("received message without id");
+            }
+        };
+
+        client.connect();
+        wsClient.current = client;
 
         return () => {
-            clearTimeout(timeoutId);
-            if (ws.current) {
-                ws.current.onclose = null;
-                ws.current.close();
-            }
+            client.disconnect();
         };
     }, []);
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = (e: FormEvent) => {
         e.preventDefault();
 
-        if (
-            ws.current &&
-            ws.current.readyState === WebSocket.OPEN &&
-            searchTarget
-        ) {
-            ws.current.send(
-                JSON.stringify({
-                    action: "SCAN_PERSON",
-                    target: searchTarget,
-                }),
-            );
-
+        if (wsClient.current && searchTarget) {
+            wsClient.current.send({
+                action: "SCAN_PERSON",
+                target: searchTarget,
+            });
             setSearchTarget("");
         }
     };

@@ -1,4 +1,4 @@
-import video from "../../../assets/animatie_blender/24fps.mkv";
+import video from "../../../assets/animatie_blender/Eevee.mkv";
 
 export default function HomeContent() {
     return (
