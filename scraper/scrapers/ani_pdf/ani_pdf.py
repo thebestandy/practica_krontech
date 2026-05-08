@@ -385,7 +385,7 @@ class ANIScraper:
     def __init__(
         self,
         headless: bool = True,
-        download_dir: str = "./downloads",
+        download_dir: str = "./scraper/scrapers/ani_pdf/downloads",
         delay: float = 1.5,
         sources: List[str] = None,  # ["legacy", "modern", "depozitar"] sau None = toate
     ):
