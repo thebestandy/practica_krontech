@@ -495,27 +495,122 @@ class ANIScraper:
             print()
 
 def main():
-    import sys
+    print("\nANI Scraper - Declaratii de avere")
+    print("=" * 50)
 
-    # idk exemplu
-    name = sys.argv[1] if len(sys.argv) > 1 else "Popescu Ion"
+    print("\nAlege sistemul:")
+    print("1. Legacy")
+    print("2. Modern")
+    print("3. Depozitar")
+    print("4. Toate")
 
-    print(f"\nANI Scraper")
-    print(f"Cautare: {name!r}")
-    print(f"Sisteme: legacy (2008-2022) + modern (2022-2025) + depozitar (alegeri)\n")
+    choice = input("\nAlege selectie: ").strip()
 
-    with ANIScraper(headless=False, delay=1.5) as scraper:
-        results = scraper.search(name)
-        ANIScraper.print_results(results)
+    match choice:
 
-        if results:
-            out = f"results_{re.sub(r'[^\\w]', '_', name)}.json"
-            scraper.export_json(results, out)
+        case "1":
+            name = input("\nNume pentru LEGACY: ").strip()
 
-            # print("Descarcare PDF-uri...")
-            # n = scraper.download_all(results)
-            # print(f"Descarcate: {n} fișiere în ./downloads/")
+        case "2":
+            name = input("\nNume pentru MODERN: ").strip()
 
+        case "3":
+            name = input("\nNume pentru DEPOZITAR: ").strip()
+
+        case "4":
+            legacy_name = input("\nNume LEGACY: ").strip()
+            modern_name = input("Nume MODERN: ").strip()
+            depozitar_name = input("Nume DEPOZITAR: ").strip()
+
+        case _:
+            print("\nOptiune invalida.")
+            return
+
+    scraper = ANIScraper(headless = False, delay = 1.5)
+
+    try:
+        scraper.driver = _build_driver(
+            scraper.headless,
+            str(scraper.download_dir)
+        )
+
+        match choice:
+            case "1":
+
+                scraper.sources = ["legacy"]
+
+                results = scraper.search(name)
+
+                ANIScraper.print_results(results)
+
+                if results:
+                    out = f"results_legacy_{re.sub(r'[^\\w]', '_', name)}.json"
+                    scraper.export_json(results, out)
+
+                    # print("Descarcare PDF-uri...")
+                    # n = scraper.download_all(results)
+                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+
+            case "2":
+
+                scraper.sources = ["modern"]
+
+                results = scraper.search(name)
+
+                ANIScraper.print_results(results)
+
+                if results:
+                    out = f"results_modern_{re.sub(r'[^\\w]', '_', name)}.json"
+                    scraper.export_json(results, out)
+
+                    # print("Descarcare PDF-uri...")
+                    # n = scraper.download_all(results)
+                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+
+            case "3":
+
+                scraper.sources = ["depozitar"]
+
+                results = scraper.search(name)
+
+                ANIScraper.print_results(results)
+
+                if results:
+                    out = f"results_depozitar_{re.sub(r'[^\\w]', '_', name)}.json"
+                    scraper.export_json(results, out)
+
+                    # print("Descarcare PDF-uri...")
+                    # n = scraper.download_all(results)
+                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+
+            case "4":
+
+                all_results = []
+
+                if legacy_name:
+                    scraper.sources = ["legacy"]
+                    all_results.extend(scraper.search(legacy_name))
+
+                if modern_name:
+                    scraper.sources = ["modern"]
+                    all_results.extend(scraper.search(modern_name))
+
+                if depozitar_name:
+                    scraper.sources = ["depozitar"]
+                    all_results.extend(scraper.search(depozitar_name))
+
+                ANIScraper.print_results(all_results)
+
+                if all_results:
+                    scraper.export_json(all_results, "results_all.json")
+
+                    # print("Descarcare PDF-uri...")
+                    # n = scraper.download_all(all_results)
+                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+
+    finally:
+        if scraper.driver:
+            scraper.driver.quit()
 
 if __name__ == "__main__":
     main()
