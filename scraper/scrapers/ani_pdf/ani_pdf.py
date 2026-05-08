@@ -549,7 +549,7 @@ def main():
 
                     # print("Descarcare PDF-uri...")
                     # n = scraper.download_all(results)
-                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+                    # print(f"Descarcate: {n} fisiere in ./scraper/scrapers/ani_pdf/downloads/")
 
             case "2":
 
@@ -565,7 +565,7 @@ def main():
 
                     # print("Descarcare PDF-uri...")
                     # n = scraper.download_all(results)
-                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+                    # print(f"Descarcate: {n} fisiere in ./scraper/scrapers/ani_pdf/downloads/")
 
             case "3":
 
@@ -581,7 +581,7 @@ def main():
 
                     # print("Descarcare PDF-uri...")
                     # n = scraper.download_all(results)
-                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+                    # print(f"Descarcate: {n} fisiere in ./scraper/scrapers/ani_pdf/downloads/")
 
             case "4":
 
@@ -606,7 +606,7 @@ def main():
 
                     # print("Descarcare PDF-uri...")
                     # n = scraper.download_all(all_results)
-                    # print(f"Descarcate: {n} fisiere in ./downloads/")
+                    # print(f"Descarcate: {n} fisiere in ./scraper/scrapers/ani_pdf/downloads/")
 
     finally:
         if scraper.driver:
