@@ -32,9 +32,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'accounts',
-
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 
 
     'django.contrib.admin',
