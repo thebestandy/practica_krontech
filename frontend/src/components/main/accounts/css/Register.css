@@ -1,17 +1,17 @@
 @import "./AuthColors.css";
 
 .register-header {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
 
     text-align: center;
 }
 
 .register-header h1 {
-    margin: 0 0 10px;
+    margin: 0 0 6px;
 
     color: var(--auth-text-primary);
 
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.04em;
 }
@@ -21,21 +21,81 @@
 
     color: var(--auth-text-secondary);
 
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .register-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
-.register-login-text {
-    margin-top: 32px;
+.register-account-type {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.register-account-type p {
+    margin: 0;
+
+    color: var(--auth-text-primary);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.register-account-type-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.register-account-type-option {
+    height: 38px;
+
+    border: 1px solid var(--auth-border-input);
+    border-radius: var(--auth-radius-md);
+
+    background: var(--auth-bg-input);
 
     color: var(--auth-text-secondary);
 
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        border-color var(--auth-transition),
+        background var(--auth-transition),
+        color var(--auth-transition),
+        box-shadow var(--auth-transition);
+}
+
+.register-account-type-option:hover {
+    background: var(--auth-bg-input-focus);
+
+    border-color: var(--auth-border-hover);
+}
+
+.register-account-type-option.active {
+    border-color: var(--auth-accent);
+
+    background: rgba(59, 130, 246, 0.12);
+
+    color: var(--auth-text-primary);
+
+    box-shadow: var(--auth-shadow-input-focus);
+}
+
+.register-login-text {
+    margin-top: 14px;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 13px;
     text-align: center;
 }
 

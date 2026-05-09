@@ -17,6 +17,9 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [accountType, setAccountType] = useState<"personal" | "company">(
+        "personal"
+    );
 
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -65,7 +68,8 @@ export default function Register() {
             return;
         }
 
-        // TODO: API call for register/create account.
+        // TODO: API call for register/create account. ({ email, password, accountType });
+
         navigate("/check-email", {
             state: {
                 email,
@@ -121,14 +125,37 @@ export default function Register() {
                     }}
                 />
 
-                <AuthButton type="submit">
-                    Create account
-                </AuthButton>
+                <div className="register-account-type">
+                    <p>Account type</p>
+
+                    <div className="register-account-type-options">
+                        <button
+                            type="button"
+                            className={`register-account-type-option ${
+                                accountType === "personal" ? "active" : ""
+                            }`}
+                            onClick={() => setAccountType("personal")}
+                        >
+                            Personal
+                        </button>
+
+                        <button
+                            type="button"
+                            className={`register-account-type-option ${
+                                accountType === "company" ? "active" : ""
+                            }`}
+                            onClick={() => setAccountType("company")}
+                        >
+                            Company
+                        </button>
+                    </div>
+                </div>
+
+                <AuthButton type="submit">Create account</AuthButton>
             </form>
 
             <p className="register-login-text">
-                Already have an account?{" "}
-                <Link to="/login">Sign in</Link>
+                Already have an account? <Link to="/login">Sign in</Link>
             </p>
         </AuthLayout>
     );
