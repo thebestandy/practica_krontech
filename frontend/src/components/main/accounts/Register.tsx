@@ -66,7 +66,11 @@ export default function Register() {
         }
 
         // TODO: API call for register/create account.
-        navigate("/check-email");
+        navigate("/check-email", {
+            state: {
+                email,
+            },
+        });
     }
 
     return (
