@@ -6,7 +6,11 @@ import {
     useScroll,
     useMotionValueEvent,
 } from "motion/react";
-import logo from "../../assets/Logos/Purple.png";
+import { useTheme } from "../theme-provider";
+
+import logoDark from "../../assets/Logos/Yellow.png";      // logo-ul actual
+import logoTurquoise from "../../assets/Logos/Turquoise.png"; // adaugă logo-urile tale
+import logoPurple from "../../assets/Logos/Purple.png";
 import React, { useRef, useState } from "react";
 
 export const Navbar = ({ children, className }: any) => {
@@ -153,13 +157,38 @@ export const MobileNavToggle = ({ isOpen, onClick }: any) =>
         <IconMenu2 className="text-foreground" onClick={onClick} />
     );
 
-export const NavbarLogo = () => (
-    <a className="flex items-center px-2 py-1 text-white">
-        <span className="font-medium text-highlight">
-            <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
-        </span>
-    </a>
-);
+export const NavbarLogo = () => {
+    // <a className="flex items-center px-2 py-1 text-white">
+    //     <span className="font-medium text-highlight">
+    //         <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
+    //     </span>
+    // </a>
+    const { theme } = useTheme();
+
+    const logoMap: Record<string, string> = {
+        dark: logoDark,
+        purple: logoPurple,
+        turquoise: logoTurquoise,
+    };
+
+    const currentLogo = logoMap[theme] ?? logoDark;
+
+    return (
+        <a className="flex items-center px-2 py-1 text-white">
+            <span className="font-medium text-highlight">
+                <motion.img
+                    key={theme}
+                    src={currentLogo}
+                    alt="Logo"
+                    className="w-10 h-10 object-contain"
+                    initial={{ opacity: 0, rotate: -15, scale: 0.8 }}
+                    animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                />
+            </span>
+        </a>
+    );
+};
 
 export const NavbarButton = ({
     href,

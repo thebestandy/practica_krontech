@@ -1,6 +1,19 @@
-import video from "../../../assets/animatie_blender/24fpsPurple.mkv";
+import { useTheme } from "../../../components/theme-provider";
+import videoDark from "../../../assets/animatie_blender/Eevee.mkv";
+import videoPurple from "../../../assets/animatie_blender/24fpsPurple.mkv";
+import videoTurquoise from "../../../assets/animatie_blender/24fpsTurquoise.mkv";
 
 export default function HomeContent() {
+    const { theme } = useTheme();
+
+    const videoMap: Record<string, string> = {
+        dark: videoDark,
+        purple: videoPurple,
+        turquoise: videoTurquoise,
+    };
+
+    const currentVideo = videoMap[theme] ?? videoPurple;
+
     return (
         <>
             <section className="h-screen w-full flex flex-row items-center justify-around px-10 relative overflow-hidden py-20 gap-10">
@@ -51,12 +64,8 @@ export default function HomeContent() {
 
                 <div className="w-full h-full flex items-center justify-center relative opacity-0 animate-fadeUp delay-1100 z-10 mt-10">
                     <div className="relative w-full max-w-450 max-h-350 rounded-3xl overflow-hidden flex items-center justify-center">
-                        {/*
-                            src="https://louisemcsharry.com/wp-content/uploads/2012/06/hovering-cats.gif"
-                        */}
-
-                        <video autoPlay loop muted playsInline>
-                            <source src={video} type="video/mp4" />
+                        <video key={currentVideo} autoPlay loop muted playsInline>
+                            <source src={currentVideo} type="video/mp4" />
                         </video>
                     </div>
                 </div>
