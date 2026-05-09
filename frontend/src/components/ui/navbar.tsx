@@ -8,6 +8,7 @@ import {
 } from "motion/react";
 import { useTheme } from "../theme-provider";
 
+import logoDark from "../../assets/Logos/Yellow.png";     
 import logoTurquoise from "../../assets/Logos/Turquoise.png"; 
 import logoPurple from "../../assets/Logos/Purple.png";
 import React, { useRef, useState } from "react";
