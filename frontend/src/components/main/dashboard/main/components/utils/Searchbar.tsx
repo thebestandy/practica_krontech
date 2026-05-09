@@ -1,7 +1,29 @@
 import { SearchIcon, XIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useWebSocket } from "../../../utils/WebsocketProvider";
 
 export default function Search() {
+    const [searchTarget, setSearchTarget] = useState("");
+    const { startScan, connectionStatus } = useWebSocket();
+
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault();
+
+        console.log("search submited");
+
+        if (searchTarget.trim()) {
+            startScan(searchTarget);
+            console.log("scan should start");
+            setSearchTarget("");
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSearch(e);
+        }
+    };
+
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -12,8 +34,11 @@ export default function Search() {
         >
             <input
                 type="text"
+                onChange={(e) => setSearchTarget(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e)}
+                value={searchTarget}
                 placeholder="Search..."
-                className={`relative w-full h-full text-base font-normal text-highlight bg-transparent border-none rounded-md outline-none transition-all duration-500 ease-in-out ${
+                className={`relative w-full h-full text-base font-normal text-primary-foreground bg-transparent border-none rounded-md outline-none transition-all duration-500 ease-in-out ${
                     isOpen ? "pl-[65px] pr-[15px]" : "px-[15px]"
                 }`}
             />

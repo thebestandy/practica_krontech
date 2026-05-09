@@ -1,15 +1,90 @@
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D from "react-force-graph-2d";
-import graphData from "./mock_data.json";
+import mockData from "./mock_data.json";
 import Datasheet from "./utils/Datasheet";
+import { useWebSocket } from "../../utils/WebsocketProvider";
 
 export default function Graph() {
-    const nodes = graphData["nodes"];
-    const edges = graphData["links"];
-
     const [selectedNode, setSelectedNode] = useState(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const containerRef = useRef(null);
+
+    const { scans } = useWebSocket();
+    const [graphData, setGraphData] = useState(mockData);
+
+    const nodes = graphData["nodes"];
+    const edges = graphData["links"];
+
+    const scanEntries = Object.entries(scans);
+
+    useEffect(() => {
+        setGraphData((prev) => {
+            console.log("yay in graph data updated ");
+            let currentNodes = [...prev.nodes];
+            let currentLinks = [...prev.links];
+            let hasChanges = false;
+
+            scanEntries.forEach(([scan_id, updates]) => {
+                updates.forEach((update) => {
+                    if (!update.data) return;
+
+                    const newNodes = update.data.nodes || [];
+                    const newLinks = update.data.links || [];
+
+                    const existingNodeIds = new Set(
+                        currentNodes.map((n) => n.id),
+                    );
+                    const nodesToAdd = newNodes.filter(
+                        (n) => !existingNodeIds.has(n.id),
+                    );
+
+                    if (nodesToAdd.length > 0) {
+                        currentNodes = [...currentNodes, ...nodesToAdd];
+                        hasChanges = true;
+                    }
+
+                    const validNodeIds = new Set(currentNodes.map((n) => n.id));
+
+                    const existingLinkStrings = new Set(
+                        currentLinks.map(
+                            (l) =>
+                                `${l.source.id || l.source}-${l.target.id || l.target}-${l.label}`,
+                        ),
+                    );
+
+                    const linksToAdd = newLinks.filter((l) => {
+                        const isNotDuplicate = !existingLinkStrings.has(
+                            `${l.source}-${l.target}-${l.label}`,
+                        );
+                        const sourceExists = validNodeIds.has(l.source);
+                        const targetExists = validNodeIds.has(l.target);
+
+                        if (!sourceExists || !targetExists) {
+                            console.warn(
+                                `data integrity issue from the backend: ${l.source} -> ${l.target}`,
+                            );
+                        }
+
+                        return isNotDuplicate && sourceExists && targetExists;
+                    });
+
+                    if (linksToAdd.length > 0) {
+                        currentLinks = [...currentLinks, ...linksToAdd];
+                        hasChanges = true;
+                    }
+                });
+            });
+
+            if (!hasChanges) {
+                return prev;
+            }
+
+            return {
+                nodes: currentNodes,
+                links: currentLinks,
+            };
+        });
+    }, [scans]);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -36,7 +111,7 @@ export default function Graph() {
         <>
             <div className="relative w-full h-full">
                 <div
-                    className="flex-1 relative bg-purple-950 w-full h-full"
+                    className="flex-1 relative bg-secondary/40 w-full h-full"
                     ref={containerRef}
                 >
                     <ForceGraph2D

@@ -6,7 +6,7 @@ import {
     useScroll,
     useMotionValueEvent,
 } from "motion/react";
-import logo from "../../assets/Logos/White and Black Modern Initial Logo.png";
+import logo from "../../assets/Logos/White and Black Modern Initial Logo (1).png";
 import React, { useRef, useState } from "react";
 
 export const Navbar = ({ children, className }: any) => {
@@ -58,7 +58,7 @@ export const NavBody = ({ children, className, visible, isDesktop }: any) => {
                 damping: 50,
             }}
             className={cn(
-                "relative mx-auto flex w-full max-w-7xl items-center justify-between rounded-sm px-6 py-3",
+                "relative mx-auto flex w-full items-center justify-between rounded-sm px-6 py-3",
                 visible && "bg-secondary-highlight-950/80",
                 isDesktop ? "" : "hidden",
                 className,
