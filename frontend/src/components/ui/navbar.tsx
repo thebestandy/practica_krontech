@@ -86,7 +86,7 @@ export const NavItems = ({ items, className, onItemClick }: any) => {
                     href={item.link}
                     onClick={onItemClick}
                     onMouseEnter={() => setHovered(idx)}
-                    className="relative px-4 py-2 dark:text-neutral-300 text-primary-foreground transition-all ease-in-out duration-100"
+                    className="relative px-4 py-2 hover:text-foreground/80 dark:text-neutral-300 text-primary-foreground transition-all ease-in-out duration-100"
                 >
                     {hovered === idx && (
                         <motion.div
@@ -136,7 +136,7 @@ export const MobileNavMenu = ({ children, isOpen }: any) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-x-0 top-16 z-50 flex flex-col gap-4 rounded-lg bg-neutral-950 px-4 py-8"
+                    className="absolute inset-x-0 top-16 z-50 flex flex-col gap-4 rounded-lg bg-secondary-highlight-950/80 backdrop-blur-2xl px-4 py-8"
                 >
                     {children}
                 </motion.div>
@@ -147,9 +147,9 @@ export const MobileNavMenu = ({ children, isOpen }: any) => {
 
 export const MobileNavToggle = ({ isOpen, onClick }: any) =>
     isOpen ? (
-        <IconX className="text-white" onClick={onClick} />
+        <IconX className="text-foreground" onClick={onClick} />
     ) : (
-        <IconMenu2 className="text-white" onClick={onClick} />
+        <IconMenu2 className="text-foreground" onClick={onClick} />
     );
 
 export const NavbarLogo = () => (

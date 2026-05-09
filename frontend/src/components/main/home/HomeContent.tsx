@@ -1,4 +1,4 @@
-import video from "../../../assets/animatie_blender/Eevee.mkv";
+import video from "../../../assets/animatie_blender/24fpsPurple.mkv";
 
 export default function HomeContent() {
     return (
@@ -19,7 +19,7 @@ export default function HomeContent() {
                     <p
                         className="opacity-0 animate-fadeUp delay-[650ms]
                     text-0.9em leading-[1.85] 
-                    font-light text-stone-400 max-w-[40ch] mb-16 font-sans"
+                    font-light text-secondary-foreground max-w-[40ch] mb-16 font-sans"
                     >
                         ttext text text text text text text text text text text
                         text text text text text text text text text text text
@@ -29,11 +29,11 @@ export default function HomeContent() {
                     </p>
 
                     <div className="opacity-0 animate-fadeUp delay-[900ms] flex items-center gap-4">
-                        <span className="text-[0.6rem] tracking-[0.24em] uppercase text-highlight font-mono">
+                        <span className="text-[0.6rem] tracking-[0.24em] uppercase text-foreground font-mono">
                             Scroll
                         </span>
 
-                        <div className="w-[46px] h-[46px] rounded-full border border-highlight flex items-center justify-center shrink-0">
+                        <div className="w-[46px] h-[46px] rounded-full border border-foreground flex items-center justify-center shrink-0">
                             <svg
                                 viewBox="0 0 13 13"
                                 fill="none"
@@ -41,7 +41,7 @@ export default function HomeContent() {
                                 strokeWidth="1.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                className="w-[13px] h-[13px] text-highlight"
+                                className="w-[13px] h-[13px] text-foreground"
                             >
                                 <path d="M6.5 1v11M1 7l5.5 5L12 7" />
                             </svg>
@@ -62,7 +62,7 @@ export default function HomeContent() {
                 </div>
             </section>
 
-            <section className="relative grid h-screen w-full snap-center place-items-center text-highlight">
+            <section className="relative grid h-screen w-full snap-center place-items-center text-secondary-foreground">
                 lol
             </section>
         </>
