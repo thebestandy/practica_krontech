@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import "../css/AuthButton.css";
+import "../css/layout/AuthButton.css";
 
 interface AuthButtonProps {
     children: ReactNode;

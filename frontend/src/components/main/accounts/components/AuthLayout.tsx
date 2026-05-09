@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import scrapsLogo from "../../../../assets/Logos/White and Black Modern Initial Logo (2).png";
 
-import "../css/AuthLayout.css";
+import "../css/layout/AuthLayout.css";
 
 interface AuthLayoutProps {
     children: ReactNode;

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import googleLogo from "../../../../assets/AuthPages/GoogleLogo.png";
 
-import "../css/GoogleButton.css";
+import "../css/layout/GoogleButton.css";
 
 export default function GoogleButton() {
     const navigate = useNavigate();

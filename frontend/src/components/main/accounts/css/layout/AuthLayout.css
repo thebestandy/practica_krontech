@@ -1,4 +1,4 @@
-@import "./AuthColors.css";
+@import "../AuthColors.css";
 
 .auth-layout {
     width: 100%;
@@ -27,7 +27,7 @@
             rgba(2, 8, 23, 0.78),
             rgba(3, 16, 34, 0.82)
         ),
-        url("../../../../assets/AuthPages/AuthBackground.png");
+        url("../../../../../assets/AuthPages/AuthBackground.png");
 
     background-size: cover;
     background-position: center;

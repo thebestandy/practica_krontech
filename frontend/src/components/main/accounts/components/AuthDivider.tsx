@@ -1,4 +1,4 @@
-import "../css/AuthDivider.css";
+import "../css/layout/AuthDivider.css";
 
 export default function AuthDivider() {
     return (

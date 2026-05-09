@@ -1,4 +1,4 @@
-import "../css/AuthInput.css";
+import "../css/layout/AuthInput.css";
 
 interface AuthInputProps {
     label: string;
