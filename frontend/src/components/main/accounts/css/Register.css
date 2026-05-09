@@ -1,0 +1,51 @@
+@import "./AuthColors.css";
+
+.register-header {
+    margin-bottom: 32px;
+
+    text-align: center;
+}
+
+.register-header h1 {
+    margin: 0 0 10px;
+
+    color: var(--auth-text-primary);
+
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.register-header p {
+    margin: 0;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 14px;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.register-login-text {
+    margin-top: 32px;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 14px;
+    text-align: center;
+}
+
+.register-login-text a {
+    color: var(--auth-text-primary);
+
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-login-text a:hover {
+    color: var(--auth-accent);
+}
