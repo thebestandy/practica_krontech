@@ -15,7 +15,7 @@ export default function CheckEmail() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const email = location.state?.email || "hello@app.com";
+    const email = location.state?.email || "example@mail.com";
 
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
