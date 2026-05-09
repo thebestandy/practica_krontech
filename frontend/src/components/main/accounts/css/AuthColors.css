@@ -9,6 +9,11 @@
     --auth-border-input: #313131;
     --auth-border-hover: #4a4a4a;
 
+    --auth-button-bg: rgba(37, 99, 235, 0.08);
+    --auth-button-border: rgba(59, 130, 246, 0.45);
+
+    --auth-button-hover: #60a5fa;
+
     --auth-text-primary: #ffffff;
     --auth-text-secondary: #8f8f8f;
     --auth-text-muted: #777777;
