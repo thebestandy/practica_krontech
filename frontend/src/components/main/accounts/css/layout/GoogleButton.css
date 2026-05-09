@@ -1,0 +1,47 @@
+@import "../AuthColors.css";
+
+.google-button {
+    width: 100%;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    border: 1px solid var(--auth-border);
+    border-radius: var(--auth-radius-md);
+
+    background: var(--auth-bg-input);
+
+    color: var(--auth-text-primary);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background var(--auth-transition),
+        border-color var(--auth-transition),
+        transform var(--auth-transition);
+}
+
+.google-button:hover {
+    background: var(--auth-bg-input-focus);
+
+    border-color: var(--auth-border-hover);
+
+    transform: translateY(-1px);
+}
+
+.google-button:active {
+    transform: translateY(0);
+}
+
+.google-button-icon {
+    width: 18px;
+    height: 18px;
+
+    object-fit: contain;
+}

@@ -1,0 +1,184 @@
+@import "./AuthColors.css";
+
+.check-email-form {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.check-email-header {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+.check-email-image {
+    width: 200px;
+
+    margin: 0 auto 8px;
+
+    display: block;
+
+    object-fit: contain;
+}
+
+.check-email-header h1 {
+    margin: 0 0 18px;
+
+    color: var(--auth-text-primary);
+
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+}
+
+.check-email-header p {
+    max-width: 320px;
+
+    margin: 0 auto 12px;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.check-email-header p span {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    color: var(--auth-text-primary);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.check-email-header small {
+    max-width: 280px;
+
+    color: var(--auth-text-muted);
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.check-email-code-group {
+    margin: 34px 0 24px;
+}
+
+.check-email-code-boxes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.check-email-code-separator {
+    margin: 0 2px;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.check-email-code-box {
+    width: 52px;
+    height: 58px;
+
+    border: 1px solid var(--auth-border-input);
+    border-radius: var(--auth-radius-md);
+
+    background: var(--auth-bg-input);
+
+    color: var(--auth-text-primary);
+
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+
+    caret-color: transparent;
+
+    outline: none;
+
+    transition:
+        border-color var(--auth-transition),
+        box-shadow var(--auth-transition),
+        background var(--auth-transition);
+}
+
+.check-email-code-box:focus {
+    border-color: var(--auth-accent);
+
+    box-shadow: var(--auth-shadow-input-focus);
+
+    background: var(--auth-bg-input-focus);
+}
+
+.check-email-code-box-error {
+    border-color: var(--auth-error);
+
+    box-shadow: var(--auth-shadow-input-error);
+}
+
+.check-email-message-slot {
+    min-height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 12px;
+}
+
+.check-email-error,
+.check-email-success {
+    margin: 0;
+
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.check-email-error {
+    color: var(--auth-error-light);
+}
+
+.check-email-success {
+    color: var(--auth-accent-hover);
+}
+
+.check-email-resend {
+    margin: 24px 0 0;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 14px;
+    text-align: center;
+}
+
+.check-email-resend button {
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: var(--auth-accent);
+
+    font: inherit;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.check-email-resend button:hover {
+    color: var(--auth-accent-hover);
+}

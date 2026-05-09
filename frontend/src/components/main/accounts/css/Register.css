@@ -1,0 +1,122 @@
+@import "./AuthColors.css";
+
+.register-header {
+    margin-bottom: 12px;
+
+    text-align: center;
+}
+
+.register-header h1 {
+    margin: 0 0 4px;
+
+    color: var(--auth-text-primary);
+
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.register-header p {
+    margin: 0;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.register-account-type {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.register-account-type p {
+    margin: 0;
+
+    color: var(--auth-text-primary);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.register-account-type-options {
+    display: flex;
+
+    padding: 4px;
+
+    border: 1px solid var(--auth-border-input);
+    border-radius: var(--auth-radius-md);
+
+    background: var(--auth-bg-input);
+}
+
+.register-account-type-option {
+    flex: 1;
+
+    height: 32px;
+
+    border: 1px solid transparent;
+    border-radius: calc(var(--auth-radius-md) - 4px);
+
+    background: transparent;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background var(--auth-transition),
+        border-color var(--auth-transition),
+        color var(--auth-transition),
+        transform var(--auth-transition);
+}
+
+.register-account-type-option:hover {
+    color: var(--auth-text-primary);
+
+    transform: translateY(-1px);
+}
+
+.register-account-type-option:active {
+    transform: translateY(0);
+}
+
+.register-account-type-option.active {
+    background: var(--auth-toggle-active-bg);
+
+    border-color: var(--auth-toggle-active-border);
+
+    color: var(--auth-text-primary);
+}
+
+.register-login-text {
+    margin-top: 10px;
+
+    color: var(--auth-text-secondary);
+
+    font-size: 12px;
+    text-align: center;
+}
+
+.register-login-text a {
+    color: var(--auth-text-primary);
+
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: color var(--auth-transition);
+}
+
+.register-login-text a:hover {
+    color: var(--auth-accent);
+}

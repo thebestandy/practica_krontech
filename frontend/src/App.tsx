@@ -7,6 +7,9 @@ import About from "./components/main/about/About";
 import Beliefs from "./components/main/beliefs/Beliefs";
 import Login from "./components/main/accounts/Login";
 import Register from "./components/main/accounts/Register";
+import ForgotPassword from "./components/main/accounts/ForgotPassword";
+import CheckEmail from "./components/main/accounts/CheckEmail";
+import ResetPassword from "./components/main/accounts/ResetPassword";
 
 function App() {
     return (
@@ -18,7 +21,10 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/beliefs" element={<Beliefs />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/check-email" element={<CheckEmail />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

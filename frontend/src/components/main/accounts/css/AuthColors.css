@@ -1,0 +1,45 @@
+:root {
+    --auth-bg-main: #05080d;
+    --auth-bg-panel: #181818;
+
+    --auth-bg-input: #262626;
+    --auth-bg-input-focus: #2b2b2b;
+
+    --auth-border: #383838;
+    --auth-border-input: #313131;
+    --auth-border-hover: #4a4a4a;
+
+    --auth-button-bg: rgba(37, 99, 235, 0.08);
+    --auth-button-border: rgba(59, 130, 246, 0.45);
+
+    --auth-button-hover: #60a5fa;
+
+    --auth-button-bg-active: rgba(37, 99, 235, 0.12);
+
+    --auth-toggle-active-bg: rgba(37, 99, 235, 0.16);
+    --auth-toggle-active-border: rgba(59, 130, 246, 0.45);
+
+    --auth-text-primary: #ffffff;
+    --auth-text-secondary: #8f8f8f;
+    --auth-text-muted: #777777;
+
+    --auth-accent: #3b82f6;
+    --auth-accent-dark: #1f5eea;
+    --auth-accent-hover: #60a5fa;
+
+    --auth-error: #ef4444;
+    --auth-error-light: #f87171;
+
+    --auth-shadow-button:
+        0 14px 30px rgba(37, 99, 235, 0.28);
+
+    --auth-shadow-input-focus:
+        0 0 0 4px rgba(37, 99, 235, 0.15);
+
+    --auth-shadow-input-error:
+        0 0 0 4px rgba(239, 68, 68, 0.12);
+
+    --auth-radius-md: 10px;
+
+    --auth-transition: 0.2s ease;
+}
