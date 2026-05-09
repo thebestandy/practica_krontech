@@ -5,20 +5,27 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "./utils/ui/resizable";
+import { WebSocketProvider } from "./utils/WebsocketProvider";
 
 export default function Dashboard() {
     return (
-        <div className="w-full h-screen">
-            <ResizablePanelGroup orientation="horizontal">
-                <ResizablePanel defaultSize="25%" maxSize="35%" minSize="10%">
-                    <DashboardSidebar />
-                </ResizablePanel>
-                <ResizableHandle />
+        <WebSocketProvider>
+            <div className="w-full h-screen">
+                <ResizablePanelGroup orientation="horizontal">
+                    <ResizablePanel
+                        defaultSize="25%"
+                        maxSize="35%"
+                        minSize="10%"
+                    >
+                        <DashboardSidebar />
+                    </ResizablePanel>
+                    <ResizableHandle />
 
-                <ResizablePanel defaultSize="75%">
-                    <DashboardMain />
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </div>
+                    <ResizablePanel defaultSize="75%">
+                        <DashboardMain />
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </div>
+        </WebSocketProvider>
     );
 }

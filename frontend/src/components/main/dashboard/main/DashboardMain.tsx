@@ -4,6 +4,7 @@ import {
     ResizablePanelGroup,
 } from "../utils/ui/resizable";
 import Graph from "./components/Graph";
+import Table from "./components/Table";
 import Search from "./components/utils/Searchbar";
 
 export default function DashboardMain() {
@@ -22,8 +23,8 @@ export default function DashboardMain() {
                 <ResizableHandle />
 
                 <ResizablePanel>
-                    <div className="w-full h-full grid place-items-center text-highlight">
-                        tabular data will go here
+                    <div className="w-full h-full">
+                        <Table />
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>

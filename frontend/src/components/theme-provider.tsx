@@ -1,6 +1,6 @@
 import * as React from "react";
 
-type Theme = "dark" | "light" | "secondary-light" | "system";
+type Theme = "dark" | "light" | "secondary-light" | "system" | "blue";
 type ResolvedTheme = Exclude<Theme, "system">;
 
 type ThemeProviderProps = {
@@ -21,6 +21,7 @@ export const THEME_VALUES: Theme[] = [
     "light",
     "secondary-light",
     "system",
+    "blue",
 ];
 
 const ThemeProviderContext = React.createContext<

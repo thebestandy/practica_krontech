@@ -1,4 +1,8 @@
 import { Bell } from "lucide-react";
+import { useWebSocket } from "../../utils/WebsocketProvider";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { cn } from "../../../../ui/lib/utils";
+import { useEffect, useState } from "react";
 
 interface DashboardEntry {
     title: string;
@@ -7,48 +11,155 @@ interface DashboardEntry {
 }
 
 function Notifications({ data }: { data: DashboardEntry[] }) {
+    const { scans, connectionStatus } = useWebSocket();
+
+    const scanEntries = Object.entries(scans);
+
     return (
         <div className="flex h-full flex-col px-2 py-5">
             <div className="mb-3 flex shrink-0 items-center justify-between">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Notifications
-                </h2>
+                <div className="flex gap-2">
+                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Notifications
+                    </h2>
+                    <Tooltip.Provider delayDuration={200}>
+                        <Tooltip.Root>
+                            <Tooltip.Trigger asChild>
+                                <button
+                                    className="relative flex h-6 w-6 items-center justify-center rounded-full hover:bg-slate-100 mt-[-3px]
+                                focus:outline-none dark:hover:bg-slate-800 transition-colors"
+                                >
+                                    <span
+                                        className={cn(
+                                            "absolute inline-flex h-3 w-3 animate-ping rounded-full opacity-75",
+                                            connectionStatus === "disconnected"
+                                                ? "bg-red-400"
+                                                : "bg-green-400",
+                                        )}
+                                    ></span>
+                                    <span
+                                        className={cn(
+                                            "relative inline-flex h-2 w-2 rounded-full",
+                                            connectionStatus === "disconnected"
+                                                ? "bg-red-500"
+                                                : "bg-green-500",
+                                        )}
+                                    ></span>
+                                </button>
+                            </Tooltip.Trigger>
+
+                            <Tooltip.Portal>
+                                <Tooltip.Content
+                                    sideOffset={6}
+                                    className="z-50 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 dark:border-slate-800 dark:bg-slate-950"
+                                >
+                                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                                        <span className="font-medium">
+                                            Connection:
+                                        </span>
+                                        <span
+                                            className={cn(
+                                                "font-semibold",
+                                                connectionStatus ===
+                                                    "disconnected"
+                                                    ? "dark:text-red-600 text-red-400"
+                                                    : "text-green-600 dark:text-green-400",
+                                            )}
+                                        >
+                                            {connectionStatus === "disconnected"
+                                                ? "Offline"
+                                                : "Online"}
+                                        </span>
+                                    </div>
+                                    <Tooltip.Arrow className="fill-white dark:fill-slate-950" />
+                                </Tooltip.Content>
+                            </Tooltip.Portal>
+                        </Tooltip.Root>
+                    </Tooltip.Provider>
+                </div>
                 <Bell className="size-3 text-muted-foreground" />
             </div>
-            <div className="flex-1 overflow-y-auto">
-                {data.map((item, index) => (
-                    <Notification key={index} item={item} />
-                ))}
-            </div>
+            {scanEntries.length === 0 ? (
+                <div className="w-full h-full grid place-items-center text-xs text-zinc-400 text-center">
+                    {connectionStatus === "disconnected"
+                        ? "Systems not online. Contact developer"
+                        : "No workers yet"}
+                </div>
+            ) : (
+                <div className="flex-1 overflow-y-auto">
+                    {scanEntries.map(([scanId, thing]) => {
+                        const latestUpdate = thing[thing.length - 1];
+
+                        if (!latestUpdate) return null;
+
+                        return (
+                            <Notification
+                                key={scanId}
+                                targetName={latestUpdate.target}
+                                progress={latestUpdate.progress}
+                                latestMessage={latestUpdate.message}
+                            />
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
 
-function Notification({ item }: { item: DashboardEntry }) {
+function Notification({
+    targetName,
+    progress,
+    latestMessage,
+}: {
+    targetName: string;
+    progress: number;
+    latestMessage: string;
+}) {
+    console.log(progress);
+    console.log(targetName);
     return (
         <div
             className="my-3 relative rounded-xl border 
         border-secondary-foreground/50 bg-muted/30 p-4 transition-colors hover:bg-muted/50"
         >
             <h3 className="mb-1 text-sm font-semibold text-foreground">
-                {item.title}
+                {targetName}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-                {item.summary}
+                {latestMessage ? latestMessage : <Dots />}
             </p>
 
             <div className="mt-4 flex items-center gap-2">
                 <div className="h-1.5 w-full rounded-full bg-muted-foreground/20">
                     <div
-                        className="h-full rounded-full transition-all bg-highlight"
-                        style={{ width: `${item.progress}%` }}
+                        className="h-full rounded-full transition-all duration-500 ease-out bg-highlight"
+                        style={{ width: `${progress}%` }}
                     />
                 </div>
                 <span className="text-[10px] font-medium text-muted-foreground">
-                    {item.progress}%
+                    {progress}%
                 </span>
             </div>
         </div>
+    );
+}
+
+function Dots() {
+    const [dotCount, setDotCount] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDotCount((prev) => (prev < 3 ? prev + 1 : 0));
+        }, 200);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <span className="font-medium text-muted-foreground">
+            Working{".".repeat(dotCount)}
+        </span>
     );
 }
 
