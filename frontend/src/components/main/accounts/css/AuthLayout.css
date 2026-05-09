@@ -1,0 +1,95 @@
+@import "./AuthColors.css";
+
+.auth-layout {
+    width: 100%;
+    min-height: 100vh;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    background: var(--auth-bg-main);
+
+    color: var(--auth-text-primary);
+}
+
+.auth-layout-left {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(2, 8, 23, 0.78),
+            rgba(3, 16, 34, 0.82)
+        ),
+        url("../../../../assets/AuthPages/AuthBackground.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.auth-layout-logo-link {
+    position: relative;
+    z-index: 1;
+
+    transition: var(--auth-transition);
+}
+
+.auth-layout-logo-link:hover {
+    transform: scale(1.03);
+}
+
+.auth-layout-logo {
+    width: 210px;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 18px rgba(59, 130, 246, 0.42))
+        drop-shadow(0 0 42px rgba(37, 99, 235, 0.18));
+}
+
+.auth-layout-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(255, 255, 255, 0.03),
+            transparent 30%
+        ),
+        var(--auth-bg-panel);
+}
+
+.auth-layout-card {
+    width: 100%;
+    max-width: 440px;
+}
+
+@media (max-width: 900px) {
+    .auth-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-layout-left {
+        min-height: 280px;
+    }
+
+    .auth-layout-right {
+        min-height: calc(100vh - 280px);
+    }
+
+    .auth-layout-logo {
+        width: 160px;
+    }
+}

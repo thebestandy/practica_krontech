@@ -1,0 +1,39 @@
+@import "./AuthColors.css";
+
+.auth-button {
+    width: 100%;
+    height: 48px;
+
+    border: none;
+    border-radius: var(--auth-radius-md);
+
+    background: linear-gradient(
+        180deg,
+        var(--auth-accent) 0%,
+        var(--auth-accent-dark) 100%
+    );
+
+    color: var(--auth-text-primary);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow: var(--auth-shadow-button);
+
+    transition:
+        transform var(--auth-transition),
+        filter var(--auth-transition),
+        box-shadow var(--auth-transition);
+}
+
+.auth-button:hover {
+    filter: brightness(1.08);
+
+    transform: translateY(-1px);
+}
+
+.auth-button:active {
+    transform: translateY(0);
+}
