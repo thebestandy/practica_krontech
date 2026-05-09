@@ -34,7 +34,6 @@
 
     transition:
         border-color var(--auth-transition),
-        box-shadow var(--auth-transition),
         background var(--auth-transition);
 }
 
@@ -45,21 +44,15 @@
 .auth-input:focus {
     border-color: var(--auth-accent);
 
-    box-shadow: var(--auth-shadow-input-focus);
-
     background: var(--auth-bg-input-focus);
 }
 
 .auth-input-error {
     border-color: var(--auth-error);
-
-    box-shadow: var(--auth-shadow-input-error);
 }
 
 .auth-input-error:focus {
     border-color: var(--auth-error);
-
-    box-shadow: var(--auth-shadow-input-error);
 }
 
 .auth-input-error-message {

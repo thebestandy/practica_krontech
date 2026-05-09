@@ -31,12 +31,6 @@
     background: var(--auth-bg-input-focus);
 
     border-color: var(--auth-border-hover);
-
-    transform: translateY(-1px);
-}
-
-.google-button:active {
-    transform: translateY(0);
 }
 
 .google-button-icon {

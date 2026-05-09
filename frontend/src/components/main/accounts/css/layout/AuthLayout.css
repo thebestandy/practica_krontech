@@ -21,13 +21,7 @@
 
     overflow: hidden;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(2, 8, 23, 0.78),
-            rgba(3, 16, 34, 0.82)
-        ),
-        url("../../../../../assets/AuthPages/AuthBackground.png");
+    background: url("../../../../../assets/AuthPages/AuthBackground.png");
 
     background-size: cover;
     background-position: center;
@@ -42,17 +36,13 @@
 }
 
 .auth-layout-logo-link:hover {
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 .auth-layout-logo {
     width: 210px;
 
     object-fit: contain;
-
-    filter:
-        drop-shadow(0 0 18px rgba(59, 130, 246, 0.42))
-        drop-shadow(0 0 42px rgba(37, 99, 235, 0.18));
 }
 
 .auth-layout-right {
@@ -65,7 +55,7 @@
     background:
         radial-gradient(
             circle at 50% 45%,
-            rgba(255, 255, 255, 0.03),
+            color-mix(in oklch, var(--foreground) 3%, transparent),
             transparent 30%
         ),
         var(--auth-bg-panel);

@@ -111,22 +111,17 @@
 
     transition:
         border-color var(--auth-transition),
-        box-shadow var(--auth-transition),
         background var(--auth-transition);
 }
 
 .check-email-code-box:focus {
     border-color: var(--auth-accent);
 
-    box-shadow: var(--auth-shadow-input-focus);
-
     background: var(--auth-bg-input-focus);
 }
 
 .check-email-code-box-error {
     border-color: var(--auth-error);
-
-    box-shadow: var(--auth-shadow-input-error);
 }
 
 .check-email-message-slot {
