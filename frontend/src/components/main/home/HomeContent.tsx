@@ -8,11 +8,11 @@ export default function HomeContent() {
                     <h1
                         className="opacity-0 animate-fadeUp delay-[450ms] 
                     text-[clamp(3rem,9vw,9rem)] leading-[1] tracking-[-0.08em] 
-                    font-bold text-secondary-highlight mb-10 font-sans"
+                    font-bold text-foreground mb-10 font-sans"
                     >
                         Introducing <br />
                         <em className="italic font-light text-highlight font-serif">
-                            Echipa de 7
+                            E-Scraps
                         </em>
                     </h1>
 
@@ -21,15 +21,15 @@ export default function HomeContent() {
                     text-0.9em leading-[1.85] 
                     font-light text-secondary-foreground max-w-[40ch] mb-16 font-sans"
                     >
-                        ttext text text text text text text text text text text
                         text text text text text text text text text text text
                         text text text text text text text text text text text
-                        text text text text text text exttext text text text
+                        text text text text text text text text text text text
+                        text text text text text text text text text text text
                         text text text text text
                     </p>
 
                     <div className="opacity-0 animate-fadeUp delay-[900ms] flex items-center gap-4">
-                        <span className="text-[0.6rem] tracking-[0.24em] uppercase text-foreground font-mono">
+                        <span className="text-[1rem] tracking-[0.24em] uppercase text-foreground font-mono">
                             Scroll
                         </span>
 

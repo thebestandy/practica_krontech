@@ -6,7 +6,7 @@ import {
     useScroll,
     useMotionValueEvent,
 } from "motion/react";
-import logo from "../../assets/Logos/White and Black Modern Initial Logo (1).png";
+import logo from "../../assets/Logos/Purple.png";
 import React, { useRef, useState } from "react";
 
 export const Navbar = ({ children, className }: any) => {
@@ -16,14 +16,15 @@ export const Navbar = ({ children, className }: any) => {
         offset: ["start start", "end start"],
     });
 
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         if (latest > 0) {
             setVisible(true);
         } else {
-            setVisible(false);
+            setVisible(true);
         }
+        
     });
 
     return (
@@ -59,7 +60,7 @@ export const NavBody = ({ children, className, visible, isDesktop }: any) => {
             }}
             className={cn(
                 "relative mx-auto flex w-full items-center justify-between rounded-sm px-6 py-3",
-                visible && "bg-secondary-highlight-950/80",
+                visible && "bg-secondary-highlight/25",
                 isDesktop ? "" : "hidden",
                 className,
             )}
@@ -86,7 +87,7 @@ export const NavItems = ({ items, className, onItemClick }: any) => {
                     href={item.link}
                     onClick={onItemClick}
                     onMouseEnter={() => setHovered(idx)}
-                    className="relative px-4 py-2 hover:text-foreground/80 dark:text-neutral-300 text-primary-foreground transition-all ease-in-out duration-100"
+                    className="relative px-4 py-2 hover:text-foreground/80 text-lg dark:text-neutral-300 text-primary-foreground transition-all ease-in-out duration-100"
                 >
                     {hovered === idx && (
                         <motion.div
