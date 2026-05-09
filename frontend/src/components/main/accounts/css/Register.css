@@ -1,17 +1,17 @@
 @import "./AuthColors.css";
 
 .register-header {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 
     text-align: center;
 }
 
 .register-header h1 {
-    margin: 0 0 6px;
+    margin: 0 0 4px;
 
     color: var(--auth-text-primary);
 
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.04em;
 }
@@ -21,20 +21,20 @@
 
     color: var(--auth-text-secondary);
 
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .register-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .register-account-type {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
 }
 
 .register-account-type p {
@@ -42,60 +42,69 @@
 
     color: var(--auth-text-primary);
 
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
 }
 
 .register-account-type-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
+    display: flex;
 
-.register-account-type-option {
-    height: 38px;
+    padding: 4px;
 
     border: 1px solid var(--auth-border-input);
     border-radius: var(--auth-radius-md);
 
     background: var(--auth-bg-input);
+}
+
+.register-account-type-option {
+    flex: 1;
+
+    height: 32px;
+
+    border: 1px solid transparent;
+    border-radius: calc(var(--auth-radius-md) - 4px);
+
+    background: transparent;
 
     color: var(--auth-text-secondary);
 
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
 
     cursor: pointer;
 
     transition:
-        border-color var(--auth-transition),
         background var(--auth-transition),
+        border-color var(--auth-transition),
         color var(--auth-transition),
-        box-shadow var(--auth-transition);
+        transform var(--auth-transition);
 }
 
 .register-account-type-option:hover {
-    background: var(--auth-bg-input-focus);
+    color: var(--auth-text-primary);
 
-    border-color: var(--auth-border-hover);
+    transform: translateY(-1px);
+}
+
+.register-account-type-option:active {
+    transform: translateY(0);
 }
 
 .register-account-type-option.active {
-    border-color: var(--auth-accent);
+    background: var(--auth-toggle-active-bg);
 
-    background: rgba(59, 130, 246, 0.12);
+    border-color: var(--auth-toggle-active-border);
 
     color: var(--auth-text-primary);
-
-    box-shadow: var(--auth-shadow-input-focus);
 }
 
 .register-login-text {
-    margin-top: 14px;
+    margin-top: 10px;
 
     color: var(--auth-text-secondary);
 
-    font-size: 13px;
+    font-size: 12px;
     text-align: center;
 }
 
@@ -104,6 +113,8 @@
 
     font-weight: 700;
     text-decoration: none;
+
+    transition: color var(--auth-transition);
 }
 
 .register-login-text a:hover {
