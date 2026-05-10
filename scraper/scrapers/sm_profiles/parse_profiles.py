@@ -19,10 +19,8 @@ def parse_saved_links():
         
         try:
             context = browser.new_context(
-                storage_state="auth.json", # <--- THIS IS THE MAGIC LINE
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             )
-            print("🍪 Successfully loaded auth.json cookies!")
         except Exception:
             print("⚠️ No auth.json found. Running anonymously (LinkedIn WILL block you).")
             context = browser.new_context(
