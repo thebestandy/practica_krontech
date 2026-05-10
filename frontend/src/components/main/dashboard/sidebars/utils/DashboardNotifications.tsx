@@ -98,6 +98,7 @@ function Notifications({ data }: { data: DashboardEntry[] }) {
                                 targetName={latestUpdate.target}
                                 progress={latestUpdate.progress}
                                 latestMessage={latestUpdate.message}
+                                type={latestUpdate.type}
                             />
                         );
                     })}
@@ -111,13 +112,32 @@ function Notification({
     targetName,
     progress,
     latestMessage,
+    type,
 }: {
     targetName: string;
-    progress: number;
+    progress?: number;
     latestMessage: string;
+    type?: string;
 }) {
     console.log(progress);
     console.log(targetName);
+
+    const [realP, setProgress] = useState(progress ?? 0);
+    const [err, setErr] = useState(type !== "ERROR" ? "ok" : "err");
+
+    useEffect(() => {
+        if (type === "ERROR") {
+            console.warn("ts frying yo ahh");
+            setErr("err");
+            setProgress(100);
+        } else {
+            if (progress !== undefined) {
+                setProgress(progress);
+            }
+            setProgress((prev) => Math.min(prev + 1, 100));
+        }
+    }, [progress, latestMessage]);
+
     return (
         <div
             className="my-3 relative rounded-xl border 
@@ -126,19 +146,40 @@ function Notification({
             <h3 className="mb-1 text-sm font-semibold text-foreground">
                 {targetName}
             </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p
+                className={cn(
+                    "text-xs text-muted-foreground leading-relaxed",
+                    err === "err" ? "text-red-500" : "",
+                )}
+            >
                 {latestMessage ? latestMessage : <Dots />}
+                {err === "err"
+                    ? "\nContact the developer or your scraper isn't properly integrated."
+                    : ""}
             </p>
 
             <div className="mt-4 flex items-center gap-2">
                 <div className="h-1.5 w-full rounded-full bg-muted-foreground/20">
                     <div
-                        className="h-full rounded-full transition-all duration-500 ease-out bg-highlight"
-                        style={{ width: `${progress}%` }}
+                        className={cn(
+                            "h-full rounded-full transition-all duration-500 ease-out",
+
+                            err === "err"
+                                ? "text-red-500 bg-red-500"
+                                : "bg-highlight",
+                        )}
+                        style={{ width: `${realP}%` }}
                     />
                 </div>
-                <span className="text-[10px] font-medium text-muted-foreground">
-                    {progress}%
+                <span
+                    className={cn(
+                        "text-[10px] font-medium text-muted-foreground",
+                        err === "err"
+                            ? "text-red-500"
+                            : "text-muted-foreground",
+                    )}
+                >
+                    {realP}%
                 </span>
             </div>
         </div>

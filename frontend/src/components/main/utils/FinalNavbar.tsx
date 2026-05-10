@@ -59,10 +59,28 @@ export default function FinalNavbar() {
                     <NavbarLogo />
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
+                        {/*
                         <button
                             className="inset-0 z-21 h-11 w-30 border duration-100 bg-highlight/10 dark:bg-neutral-800 text-lg  
                             transition-all ease-in hover:cursor-pointer hover:border-foreground/10 hover:bg-transparent 
                             text-foreground hover:text-foreground/90 rounded-md"
+                            onClick={(event: any) => navigate("/dashboard")}
+                        >
+                            Dashboard
+                        </button>
+
+                        */}
+                        <button
+                            className="relative z-10 block overflow-hidden px-6 py-3 text-white bg-transparent rounded-sm
+                            border border-zinc-400 bg-white
+               
+                               before:content-[''] before:absolute before:-z-10 before:top-1/2 before:left-full 
+                               before:-mt-[15px] before:ml-[1px] before:w-[30px] before:h-[30px] 
+                               before:rounded-full before:bg-purple-300 
+                               before:origin-[100%_50%] before:[transform:scale3d(1,2,1)] 
+                               before:transition-[transform,opacity] before:duration-300 before:ease-[cubic-bezier(0.7,0,0.9,1)]
+                               
+                               hover:before:[transform:scale3d(9,9,1)] hover:cursor-pointer hover:text-zinc-500 transition-colors duration-400 ease-in"
                             onClick={(event: any) => navigate("/dashboard")}
                         >
                             Dashboard

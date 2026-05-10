@@ -3,6 +3,7 @@ import { useWebSocket } from "../../utils/WebsocketProvider";
 import { ExternalLink } from "lucide-react";
 import { cn } from "../../../../ui/lib/utils";
 import Datasheet from "./utils/Datasheet";
+import { useGraphSelection } from "./utils/NodeProvider";
 
 interface GraphNode {
     id: string;
@@ -65,7 +66,7 @@ export default function Table() {
 
     useEffect(() => {
         setNodes((prev) => {
-            console.log("update works");
+            console.log("update works in table");
             let currentNodes = [...prev];
             let hasChanges = false;
 
@@ -90,6 +91,30 @@ export default function Table() {
             return hasChanges ? currentNodes : prev;
         });
     }, [scans]);
+
+    const [contextMenu, setContextMenu] = useState<{
+        x: number;
+        y: number;
+        node: GraphNode;
+    } | null>(null);
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        document.addEventListener("click", handleClick);
+        return () => {
+            document.removeEventListener("click", handleClick);
+        };
+    }, []);
+
+    const { sendNodeToGraph } = useGraphSelection();
+
+    const handleSendToGraph = (node: GraphNode) => {
+        console.log("send that son of a gun ", node);
+
+        sendNodeToGraph(node);
+
+        setContextMenu(null);
+    };
 
     const getTypeStyles = (type: string) => {
         const styles: Record<string, string> = {
@@ -140,6 +165,14 @@ export default function Table() {
                                         key={node.id}
                                         className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all hover:cursor-pointer hover:backdrop-blur-2xl"
                                         onClick={() => setSelectedRow(node)}
+                                        onContextMenu={(e) => {
+                                            e.preventDefault();
+                                            setContextMenu({
+                                                x: e.clientX,
+                                                y: e.clientY,
+                                                node: node,
+                                            });
+                                        }}
                                     >
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span
@@ -183,6 +216,23 @@ export default function Table() {
                     </table>
                 </div>
             </div>
+
+            {contextMenu && (
+                <div
+                    className="fixed z-50 min-w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                >
+                    <button
+                        className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-crosshair"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleSendToGraph(contextMenu.node);
+                        }}
+                    >
+                        Send node to graph
+                    </button>
+                </div>
+            )}
 
             {selectedRow && (
                 <Datasheet
