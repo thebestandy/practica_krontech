@@ -3,9 +3,9 @@ import EnterpriseContent from "./EnterpriseContent";
 
 export default function Enterprise() {
     return (
-        <>
+        <div className="min-h-screen bg-background text-foreground font-mono selection:bg-highlight selection:text-black overflow-x-hidden">
             <FinalNavbar />
             <EnterpriseContent />
-        </>
+        </div>
     );
 }
