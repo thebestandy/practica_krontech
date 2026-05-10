@@ -21,7 +21,7 @@
 
     overflow: hidden;
 
-    background: url("../../../../../assets/AuthPages/AuthBackground.png");
+    background: var(--auth-backgroundImage);
 
     background-size: cover;
     background-position: center;

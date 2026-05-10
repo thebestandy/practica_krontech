@@ -9,29 +9,27 @@
     justify-content: center;
     gap: 12px;
 
-    border: 1px solid var(--auth-border);
+    border: 1px solid var(--auth-button-secondary-border);
     border-radius: var(--auth-radius-md);
 
-    background: var(--auth-bg-input);
+    background: var(--auth-button-secondary-bg);
 
-    color: var(--auth-text-primary);
+    color: var(--auth-button-secondary-text);
 
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
 
     cursor: pointer;
 
-    transition:
-        background var(--auth-transition),
-        border-color var(--auth-transition),
-        transform var(--auth-transition);
+    transition: all var(--auth-transition);
 }
 
 .google-button:hover {
-    background: var(--auth-bg-input-focus);
-
-    border-color: var(--auth-border-hover);
+    background: var(--auth-button-secondary-hover-bg);
+    border-color: var(--auth-button-secondary-hover-border);
+    color: var(--auth-button-secondary-hover-text);
 }
+
 
 .google-button-icon {
     width: 18px;

@@ -1,10 +1,13 @@
 import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "../../theme-provider";
 
 import AuthLayout from "./components/AuthLayout";
 import AuthButton from "./components/AuthButton";
 
-import checkEmailImage from "../../../assets/AuthPages/MailIcon.png";
+import mailIconDark from "../../../assets/AuthPages/MailIcon.png";     
+import mailIconPurple from "../../../assets/AuthPages/MailIcon.png";
+import mailIconTurquoise from "../../../assets/AuthPages/MailIcon.png"; 
 
 import "./css/CheckEmail.css";
 
@@ -12,6 +15,16 @@ const CODE_LENGTH = 6;
 const MOCK_CONFIRMATION_CODE = "A1B2C3";
 
 export default function CheckEmail() {
+    const { theme } = useTheme();
+
+    const mailIconMap: Record<string, string> = {
+        dark: mailIconDark,
+        purple: mailIconPurple,
+        turquoise: mailIconTurquoise,
+    };
+
+    const currentMailIcon = mailIconMap[theme] ?? mailIconDark;
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -132,7 +145,7 @@ export default function CheckEmail() {
             >
                 <div className="check-email-header">
                     <img
-                        src={checkEmailImage}
+                        src={currentMailIcon}
                         alt="Check Email"
                         className="check-email-image"
                     />
