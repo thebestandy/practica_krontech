@@ -60,7 +60,13 @@ export default function HomeContent() {
 
                 <div className="w-full h-full flex items-center justify-center relative opacity-0 animate-fadeUp delay-1100 z-10 mt-10">
                     <div className="relative w-full max-w-450 max-h-350 rounded-3xl overflow-hidden flex items-center justify-center">
-                        <video key={currentVideo} autoPlay loop muted playsInline>
+                        <video
+                            key={currentVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                        >
                             <source src={currentVideo} type="video/mp4" />
                         </video>
                     </div>
@@ -73,3 +79,4 @@ export default function HomeContent() {
         </>
     );
 }
+

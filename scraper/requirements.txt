@@ -3,3 +3,6 @@ websockets
 fastapi
 uvicorn[standard]
 motor
+requests
+beautifulsoup4
+lxml

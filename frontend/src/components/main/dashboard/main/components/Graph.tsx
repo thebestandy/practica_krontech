@@ -3,6 +3,7 @@ import ForceGraph2D from "react-force-graph-2d";
 import mockData from "./mock_data.json";
 import Datasheet from "./utils/Datasheet";
 import { useWebSocket } from "../../utils/WebsocketProvider";
+import { useGraphSelection } from "./utils/NodeProvider";
 
 export default function Graph() {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -17,6 +18,26 @@ export default function Graph() {
 
     const scanEntries = Object.entries(scans);
 
+    const { incomingNode } = useGraphSelection();
+
+    useEffect(() => {
+        if (!incomingNode) return; // shutup the linter
+        setGraphData((prev) => {
+            const nodeExists = prev.nodes.some((n) => n.id === incomingNode.id);
+
+            if (nodeExists) {
+                console.warn("it alr exists");
+                return prev;
+            }
+
+            console.log("yo if this works imma be suppa happy", incomingNode);
+            return {
+                ...prev,
+                nodes: [...prev.nodes, incomingNode],
+            };
+        });
+    }, [incomingNode]);
+
     useEffect(() => {
         setGraphData((prev) => {
             console.log("yay in graph data updated ");
@@ -27,6 +48,15 @@ export default function Graph() {
             scanEntries.forEach(([scan_id, updates]) => {
                 updates.forEach((update) => {
                     if (!update.data) return;
+
+                    if (update.data.certainty && update.data.certainty === "0")
+                        return;
+                    if (update.type === "ERROR") {
+                        console.warn("yeah, ts is frying yo ahh");
+                        return;
+                    }
+
+                    console.warn(update.type);
 
                     const newNodes = update.data.nodes || [];
                     const newLinks = update.data.links || [];
