@@ -34,11 +34,7 @@ export default function HomeContent() {
                     text-0.9em leading-[1.85] 
                     font-light text-secondary-foreground max-w-[40ch] mb-16 font-sans"
                     >
-                        text text text text text text text text text text text
-                        text text text text text text text text text text text
-                        text text text text text text text text text text text
-                        text text text text text text text text text text text
-                        text text text text text
+                        test test test
                     </p>
 
                     <div className="opacity-0 animate-fadeUp delay-[900ms] flex items-center gap-4">

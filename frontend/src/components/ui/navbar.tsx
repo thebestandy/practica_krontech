@@ -20,13 +20,13 @@ export const Navbar = ({ children, className }: any) => {
         offset: ["start start", "end start"],
     });
 
-    const [visible, setVisible] = useState(true);
+    const [visible, setVisible] = useState(false);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         if (latest > 0) {
             setVisible(true);
         } else {
-            setVisible(true);
+            setVisible(false);
         }
         
     });
@@ -64,7 +64,7 @@ export const NavBody = ({ children, className, visible, isDesktop }: any) => {
             }}
             className={cn(
                 "relative mx-auto flex w-full items-center justify-between rounded-sm px-6 py-3",
-                visible && "bg-secondary-highlight/25",
+                visible && "bg-secondary-highlight/30",
                 isDesktop ? "" : "hidden",
                 className,
             )}
