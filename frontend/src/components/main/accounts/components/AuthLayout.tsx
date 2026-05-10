@@ -23,10 +23,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             </section>
 
             <section className="auth-layout-right">
-                <div className="auth-layout-card">
-                    {children}
-                </div>
+                <div className="auth-layout-card">{children}</div>
             </section>
         </main>
     );
 }
+

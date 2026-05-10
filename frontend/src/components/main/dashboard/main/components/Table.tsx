@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useWebSocket } from "../../utils/WebsocketProvider";
 import { ExternalLink } from "lucide-react";
 import { cn } from "../../../../ui/lib/utils";
+import Datasheet from "./utils/Datasheet";
 
 interface GraphNode {
     id: string;
@@ -11,10 +12,56 @@ interface GraphNode {
     url?: string;
 }
 
+function Dots() {
+    const [dotCount, setDotCount] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDotCount((prev) => (prev < 3 ? prev + 1 : 0));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <span className="w-100">
+            <span className="font-medium text-muted-foreground">
+                Waiting for you to search for someone
+                <span
+                    className={cn(
+                        "transition-all ease-in duration-100",
+                        dotCount >= 1 ? "opacity-100" : "opacity-0",
+                    )}
+                >
+                    .
+                </span>
+                <span
+                    className={cn(
+                        "transition-all ease-in duration-100",
+                        dotCount >= 2 ? "opacity-100" : "opacity-0",
+                    )}
+                >
+                    .
+                </span>
+                <span
+                    className={cn(
+                        "transition-all ease-in duration-100",
+                        dotCount >= 3 ? "opacity-100" : "opacity-0",
+                    )}
+                >
+                    .
+                </span>
+            </span>
+        </span>
+    );
+}
+
 export default function Table() {
     const { scans } = useWebSocket();
     const [nodes, setNodes] = useState<GraphNode[]>([]);
     const scanEntries = Object.entries(scans);
+
+    const [selectedRow, setSelectedRow] = useState(null);
 
     useEffect(() => {
         setNodes((prev) => {
@@ -57,82 +104,93 @@ export default function Table() {
     };
 
     return (
-        <div className="h-full w-full overflow-hidden flex flex-col border">
-            <div className="overflow-auto flex-1">
-                <table className="w-full text-left border-collapse">
-                    <thead className="sticky top-0 z-10 backdrop-blur-md dark:bg-slate-900/90">
-                        <tr className="border-b border-slate-800">
-                            <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                Type
-                            </th>
-                            <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                Label
-                            </th>
-                            <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                Summary
-                            </th>
-                            <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                Link
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y dark:divide-slate-900">
-                        {nodes.length === 0 ? (
-                            <tr>
-                                <td
-                                    colSpan={4}
-                                    className="px-4 py-12 text-center text-sm text-slate-400 italic"
-                                >
-                                    no nodes
-                                </td>
+        <>
+            <div className="h-full w-full overflow-hidden flex flex-col border">
+                <div className="overflow-auto flex-1">
+                    <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 z-10 backdrop-blur-md dark:bg-slate-900/90">
+                            <tr className="border-b border-slate-800">
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    Type
+                                </th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    Label
+                                </th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    Summary
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    Link
+                                </th>
                             </tr>
-                        ) : (
-                            nodes.map((node) => (
-                                <tr
-                                    key={node.id}
-                                    className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all"
-                                >
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <span
-                                            className={cn(
-                                                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
-                                                getTypeStyles(node.type),
-                                            )}
-                                        >
-                                            {node.type}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm font-semibold text-slate-100">
-                                        {node.label}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-slate-400 leading-relaxed max-w-md">
-                                        <p className="line-clamp-2">
-                                            {node.summary || "-"}
-                                        </p>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        {node.url && node.url !== "N/A" ? (
-                                            <a
-                                                href={node.url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 transition-all"
-                                            >
-                                                Source{" "}
-                                                <ExternalLink size={12} />
-                                            </a>
-                                        ) : (
-                                            <span className="text-slate-700">
-                                                -
-                                            </span>
-                                        )}
+                        </thead>
+                        <tbody className="divide-y dark:divide-slate-900">
+                            {nodes.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={4}
+                                        className="px-4 py-12 text-center text-sm italic"
+                                    >
+                                        <Dots />
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                nodes.map((node) => (
+                                    <tr
+                                        key={node.id}
+                                        className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all hover:cursor-pointer hover:backdrop-blur-2xl"
+                                        onClick={() => setSelectedRow(node)}
+                                    >
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <span
+                                                className={cn(
+                                                    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+                                                    getTypeStyles(node.type),
+                                                )}
+                                            >
+                                                {node.type}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">
+                                            {node.label}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-slate-400 leading-relaxed max-w-md">
+                                            <p className="line-clamp-2">
+                                                {node.summary || "-"}
+                                            </p>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            {node.url && node.url !== "N/A" ? (
+                                                <a
+                                                    href={node.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 transition-all"
+                                                >
+                                                    Source{" "}
+                                                    <ExternalLink size={12} />
+                                                </a>
+                                            ) : (
+                                                <span className="text-slate-700">
+                                                    -
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+
+            {selectedRow && (
+                <Datasheet
+                    data={selectedRow}
+                    isOpen={selectedRow ? true : false}
+                    onClose={() => setSelectedRow(null)}
+                />
+            )}
+        </>
     );
 }

@@ -89,7 +89,7 @@ export default function DashboardSidebar() {
                         <div
                             className={cn(
                                 isCompact
-                                    ? "ml-2"
+                                    ? "hidden"
                                     : "flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground",
                             )}
                         >

@@ -82,7 +82,7 @@ function Notifications({ data }: { data: DashboardEntry[] }) {
             {scanEntries.length === 0 ? (
                 <div className="w-full h-full grid place-items-center text-xs text-zinc-400 text-center">
                     {connectionStatus === "disconnected"
-                        ? "Systems not online. Contact developer"
+                        ? "Systems not online. Contact developers"
                         : "No workers yet"}
                 </div>
             ) : (
