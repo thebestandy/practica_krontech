@@ -175,13 +175,7 @@ export default function BeliefContent() {
         <header style={{ paddingTop: "4rem", paddingBottom: "3rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem" }}>
            
-            <span style={{
-              fontSize: "13px", fontWeight: 600, color: "var(--muted-foreground)",
-              letterSpacing: "0.1em", textTransform: "uppercase" as const,
-              fontFamily: "'JetBrains Mono', monospace",
-            }}>
-              e-Scraps · Principii
-            </span>
+           
           </div>
 
           <h1 style={{
