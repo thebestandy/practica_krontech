@@ -1,10 +1,12 @@
-# Worker Scrapers
+# Worker
 
 import asyncio
 from asyncio.tasks import as_completed
 
 from scrapers.ani_pdf.ani_pdf_v2 import AniScraper
 from scrapers.seap_sicap.seap_sicap import ElicitatieScraper
+from scrapers.anaf_portjust.anaf import AnafScraper
+from scrapers.anaf_portjust.portal_just import PortalJustScraper
 
 class Worker:
     def __init__(self, websocket, manager, scan_id, target):
@@ -32,6 +34,8 @@ class Worker:
             asyncio.create_task(SeapScraper().run(self.target)),
             asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(ElicitatieScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(PortalJustScraper().search, self.target)),
         ]
 
         for finished_task in asyncio.as_completed(queue):

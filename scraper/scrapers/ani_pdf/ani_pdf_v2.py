@@ -10,11 +10,10 @@ from dataclasses import dataclass, field
 from typing import List
 from datetime import datetime
 
-# Logging setup
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%H:%M:%S",
+    level = logging.INFO,
+    format = "%(asctime)s [%(levelname)s] %(message)s",
+    datefmt = "%H:%M:%S",
 )
 log = logging.getLogger("ani_legacy_scraper")
 
@@ -34,7 +33,7 @@ class PersonResult:
     name: str
     institution: str
     position: str = ""
-    pdfs: List[DeclarationPDF] = field(default_factory=list)
+    pdfs: List[DeclarationPDF] = field(default_factory = list)
 
 
 class AniScraper:
@@ -70,14 +69,11 @@ class AniScraper:
     def search(self, name: str):
         log.info(f"Searching Legacy Portal for: {name}")
 
-        # The Legacy site uses JSF (JavaServer Faces), which requires a VIEWSTATE
-        # We fetch the page once to get the necessary session cookies and form tokens
         try:
             initial_resp = self.session.get(self.SEARCH_ENDPOINT)
             soup = BeautifulSoup(initial_resp.text, "lxml")
             view_state = soup.find("input", {"name": "javax.faces.ViewState"})["value"]
 
-            # Prepare the form data to mimic the search button click
             payload = {
                 "form": "form",
                 "form:searchKey_input": name,
@@ -86,7 +82,7 @@ class AniScraper:
                 "javax.faces.ViewState": view_state,
             }
 
-            response = self.session.post(self.SEARCH_ENDPOINT, data=payload)
+            response = self.session.post(self.SEARCH_ENDPOINT, data = payload)
             return self._parse_results(response.text)
 
         except Exception as e:
@@ -98,15 +94,12 @@ class AniScraper:
         results = []
         seen_uids = set()
 
-        # Look for all table rows
         all_rows = soup.find_all("tr")
 
-        # Filter for rows that actually contain a download link
-        # This bypasses headers and footer garbage automatically
         data_rows = [
             row
             for row in all_rows
-            if row.find("a", href=re.compile(r"DownloadServlet"))
+            if row.find("a", href = re.compile(r"DownloadServlet"))
         ]
 
         log.info(f"Analyzing {len(data_rows)} filtered data rows.")
@@ -114,20 +107,16 @@ class AniScraper:
         for row in data_rows:
             cells = row.find_all("td")
 
-            # The Legacy portal usually has 9 columns in the result table
             if len(cells) < 8:
                 continue
 
-            # Standard Legacy Column Mapping:
-            # 0: Name, 1: Institution, 2: Position, 3: Locality,
-            # 4: County, 5: Date, 6: Type, 7: Link
-            name = cells[0].get_text(strip=True)
-            inst = cells[1].get_text(strip=True)
-            pos = cells[2].get_text(strip=True)
-            date_str = cells[5].get_text(strip=True)
-            doc_type_raw = cells[6].get_text(strip=True)
+            name = cells[0].get_text(strip = True)
+            inst = cells[1].get_text(strip = True)
+            pos = cells[2].get_text(strip = True)
+            date_str = cells[5].get_text(strip = True)
+            doc_type_raw = cells[6].get_text(strip = True)
 
-            a = cells[7].find("a", href=re.compile(r"DownloadServlet"))
+            a = cells[7].find("a", href = re.compile(r"DownloadServlet"))
             if not a:
                 continue
 
@@ -144,17 +133,16 @@ class AniScraper:
             year = date_str.split(".")[-1] if "." in date_str else ""
             doc_type = "avere" if "avere" in doc_type_raw.lower() else "interese"
 
-            # Check if we already have this person to group their PDFs
             existing_person = next(
                 (p for p in results if p.name == name and p.institution == inst), None
             )
 
             new_pdf = DeclarationPDF(
-                title=f"{doc_type_raw} ({date_str})",
-                year=year,
-                type=doc_type,
-                url=href,
-                unique_id=uid,
+                title = f"{doc_type_raw} ({date_str})",
+                year = year,
+                type = doc_type,
+                url = href,
+                unique_id = uid,
             )
 
             if existing_person:
@@ -162,11 +150,10 @@ class AniScraper:
             else:
                 results.append(
                     PersonResult(
-                        name=name, institution=inst, position=pos, pdfs=[new_pdf]
+                        name = name, institution = inst, position = pos, pdfs = [new_pdf]
                     )
                 )
 
-        # de aici am modifica ce returneaza
         graph_nodes = []
         for person in results:
             person_id = hashlib.md5(
@@ -178,7 +165,6 @@ class AniScraper:
                 " at ".join(summary_parts) if summary_parts else "unknown institush"
             )
 
-            # bih ahh schema
             graph_nodes.append(
                 {
                     "id": f"person_{person_id}",
@@ -214,7 +200,6 @@ class AniScraper:
 
         return res
 
-
 # le-am lasat comentate
 # def export_to_json(results: List[PersonResult], filename: str):
 #     output = {
@@ -226,7 +211,7 @@ class AniScraper:
 #         "data": [r.to_dict() for r in results]
 #     }
 #     with open(filename, "w", encoding="utf-8") as f:
-#         json.dump(output, f, ensure_ascii=False, indent=4)
+#         json.dump(output, f, ensure_ascii = False, indent = 4)
 #     log.info(f"JSON exported to {filename}")
 #
 # if __name__ == "__main__":
