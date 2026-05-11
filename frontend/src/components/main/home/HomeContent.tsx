@@ -1,7 +1,7 @@
 import { useTheme } from "../../../components/theme-provider";
 import videoDark from "../../../assets/animatie_blender/Eevee.mkv";
 import videoPurple from "../../../assets/animatie_blender/24fpsPurple.mkv";
-import videoTurquoise from "../../../assets/animatie_blender/24fpsTurquoise.mkv";
+import videoTurquoise from "../../../assets/animatie_blender/24fpsTurquoiseCycles.mkv";
 
 export default function HomeContent() {
     const { theme } = useTheme();
@@ -21,10 +21,10 @@ export default function HomeContent() {
                     <h1
                         className="opacity-0 animate-fadeUp delay-[450ms] 
                     text-[clamp(3rem,9vw,9rem)] leading-[1] tracking-[-0.08em] 
-                    font-bold text-foreground mb-10 font-sans"
+                    font-bold text-foreground mb-10 "
                     >
                         Introducing <br />
-                        <em className="italic font-light text-highlight font-serif">
+                        <em className="italic font-light text-highlight">
                             E-Scraps
                         </em>
                     </h1>
@@ -32,13 +32,16 @@ export default function HomeContent() {
                     <p
                         className="opacity-0 animate-fadeUp delay-[650ms]
                     text-0.9em leading-[1.85] 
-                    font-light text-secondary-foreground max-w-[40ch] mb-16 font-sans"
+                    font-bold text-secondary-foreground max-w-[40ch] mb-16"
                     >
-                        test test test
+                        E-Scraps o unealtă digitală concepută pentru verificarea integrității
+                        corporațiilor și politicienilor. Aceasta extrage date brute și le asamblează
+                        într-un arbore de conexiuni compromițătoare, transformând haosul birocratic 
+                        de a obține date într-o simplă căutare. Go on Stalker.
                     </p>
 
                     <div className="opacity-0 animate-fadeUp delay-[900ms] flex items-center gap-4">
-                        <span className="text-[1rem] tracking-[0.24em] uppercase text-foreground font-mono">
+                        <span className="text-[1rem] tracking-[0.24em] uppercase text-foreground">
                             Scroll
                         </span>
 
@@ -60,13 +63,7 @@ export default function HomeContent() {
 
                 <div className="w-full h-full flex items-center justify-center relative opacity-0 animate-fadeUp delay-1100 z-10 mt-10">
                     <div className="relative w-full max-w-450 max-h-350 rounded-3xl overflow-hidden flex items-center justify-center">
-                        <video
-                            key={currentVideo}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                        >
+                        <video key={currentVideo} autoPlay loop muted playsInline>
                             <source src={currentVideo} type="video/mp4" />
                         </video>
                     </div>
@@ -79,4 +76,3 @@ export default function HomeContent() {
         </>
     );
 }
-

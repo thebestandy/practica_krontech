@@ -59,18 +59,16 @@ export default function FinalNavbar() {
                     <NavbarLogo />
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
-                        {/*
+                        
                         <button
-                            className="inset-0 z-21 h-11 w-30 border duration-100 bg-highlight/10 dark:bg-neutral-800 text-lg  
-                            transition-all ease-in hover:cursor-pointer hover:border-foreground/10 hover:bg-transparent 
-                            text-foreground hover:text-foreground/90 rounded-md"
+                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-black transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
                             onClick={(event: any) => navigate("/dashboard")}
                         >
                             Dashboard
                         </button>
 
-                        */}
-                        <button
+                       
+                        {/* <button
                             className="relative z-10 block overflow-hidden px-6 py-3 text-white bg-transparent rounded-sm
                             border border-zinc-400 bg-white
                
@@ -84,7 +82,7 @@ export default function FinalNavbar() {
                             onClick={(event: any) => navigate("/dashboard")}
                         >
                             Dashboard
-                        </button>
+                        </button> */}
                     </div>
                 </NavBody>
                 <MobileNav isDesktop={isDesktop}>
