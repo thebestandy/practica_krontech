@@ -1,8 +1,10 @@
+# Worker Scrapers
+
 import asyncio
 from asyncio.tasks import as_completed
 
-from scrapers.ani_pdf.ani_pdf_v2 import LegacyScraper
-
+from scrapers.ani_pdf.ani_pdf_v2 import AniScraper
+from scrapers.seap_sicap.seap_sicap import ElicitatieScraper
 
 class Worker:
     def __init__(self, websocket, manager, scan_id, target):
@@ -28,7 +30,8 @@ class Worker:
         queue = [
             asyncio.create_task(SicapScraper().run(self.target)),
             asyncio.create_task(SeapScraper().run(self.target)),
-            asyncio.create_task(asyncio.to_thread(LegacyScraper().search, self.target)),
+            asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(ElicitatieScraper().search, self.target)),
         ]
 
         for finished_task in asyncio.as_completed(queue):

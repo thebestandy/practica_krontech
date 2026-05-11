@@ -1,3 +1,5 @@
+# A.N.I. Scraper
+
 import re
 import json
 import logging
@@ -35,7 +37,7 @@ class PersonResult:
     pdfs: List[DeclarationPDF] = field(default_factory=list)
 
 
-class LegacyScraper:
+class AniScraper:
     BASE_URL = "https://old-declaratii.integritate.eu"
     SEARCH_ENDPOINT = f"{BASE_URL}/index.html"
 
@@ -230,7 +232,7 @@ class LegacyScraper:
 # if __name__ == "__main__":
 #     search_name = input("Enter name to search: ").strip()
 #     if search_name:
-#         scraper = LegacyScraper()
+#         scraper = AniScraper()
 #         data = scraper.search(search_name)
 #
 #         if data:

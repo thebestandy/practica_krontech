@@ -34,7 +34,7 @@ export default function EnterpriseContent() {
                     <div className="pt-8">
                         <a
                             href="#oferte"
-                            className="inline-block px-10 py-4 bg-foreground text-background font-black hover:bg-highlight hover:text-black transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg"
+                            className="rounded-md inline-block px-10 py-4 bg-foreground text-background font-black hover:bg-highlight hover:text-black transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg"
                         >
                             Vezi Ofertele
                         </a>
