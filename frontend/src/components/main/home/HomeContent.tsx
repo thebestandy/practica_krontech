@@ -1,5 +1,5 @@
 import { useTheme } from "../../../components/theme-provider";
-import videoDark from "../../../assets/animatie_blender/Eevee.mkv";
+import videoYellow from "../../../assets/animatie_blender/24fpsYellow.mkv";
 import videoPurple from "../../../assets/animatie_blender/24fpsPurple.mkv";
 import videoTurquoise from "../../../assets/animatie_blender/24fpsTurquoiseCycles.mkv";
 
@@ -7,7 +7,7 @@ export default function HomeContent() {
     const { theme } = useTheme();
 
     const videoMap: Record<string, string> = {
-        dark: videoDark,
+        yellow: videoYellow,
         purple: videoPurple,
         turquoise: videoTurquoise,
     };

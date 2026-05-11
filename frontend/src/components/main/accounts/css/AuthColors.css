@@ -42,6 +42,4 @@
     --auth-radius-md: var(--radius);
 
     --auth-transition: 0.2s ease;
-
-    --auth-backgroundImage: url("../../../../assets/AuthPages/AuthBackground.png");
 }

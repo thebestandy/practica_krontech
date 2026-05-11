@@ -5,9 +5,9 @@ import { useTheme } from "../../theme-provider";
 import AuthLayout from "./components/AuthLayout";
 import AuthButton from "./components/AuthButton";
 
-import mailIconDark from "../../../assets/AuthPages/MailIcon.png";     
-import mailIconPurple from "../../../assets/AuthPages/MailIcon.png";
-import mailIconTurquoise from "../../../assets/AuthPages/MailIcon.png"; 
+import mailIconDark from "../../../assets/AuthPages/YellowMailIcon.png";     
+import mailIconPurple from "../../../assets/AuthPages/PurpleMailIcon.png";
+import mailIconTurquoise from "../../../assets/AuthPages/TurquoiseMailIcon.png"; 
 
 import "./css/CheckEmail.css";
 
