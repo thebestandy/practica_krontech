@@ -8,7 +8,7 @@ import {
 } from "motion/react";
 import { useTheme } from "../theme-provider";
 
-import logoDark from "../../assets/Logos/Yellow.png";     
+import logoYellow from "../../assets/Logos/Yellow.png";     
 import logoTurquoise from "../../assets/Logos/Turquoise.png"; 
 import logoPurple from "../../assets/Logos/Purple.png";
 import React, { useRef, useState } from "react";
@@ -166,12 +166,12 @@ export const NavbarLogo = () => {
     const { theme } = useTheme();
 
     const logoMap: Record<string, string> = {
-        dark: logoDark,
+        yellow: logoYellow,
         purple: logoPurple,
         turquoise: logoTurquoise,
     };
 
-    const currentLogo = logoMap[theme] ?? logoDark;
+    const currentLogo = logoMap[theme] ?? logoPurple;
 
     return (
         <a className="flex items-center px-2 py-1 text-white">

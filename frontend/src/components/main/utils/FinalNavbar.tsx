@@ -61,7 +61,7 @@ export default function FinalNavbar() {
                     <div className="flex items-center gap-4">
                         
                         <button
-                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-black transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
+                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
                             onClick={(event: any) => navigate("/dashboard")}
                         >
                             Dashboard

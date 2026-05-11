@@ -110,21 +110,31 @@
 }
 
 .purple {
-    --background: #f1f0ff;
-    --foreground: #242038;
-    --primary-foreground: #242038;
-    --secondary-foreground: #473f6d;
+    --background: #f6f0ff;
+    --foreground: #2a2038;
+    --primary-foreground: #2b2038;
+    --secondary-foreground: #533f6d;
     --secondary-highlight: #cac4ce;
-    --highlight: #725ac1;
+    --highlight: #875ac1;
     --radius: 0.625rem;
 }
 
 .turquoise {
     --background: #c3fdff;
-    --foreground: #005f7c;
+    --foreground: #03567c;
     --primary-foreground: #028090;
     --secondary-foreground: #05668d;
     --secondary-highlight: #37d1d1;
     --highlight: #02d1d1;
+    --radius: 0.625rem;
+}
+ 
+.yellow {
+    --background: #111111;
+    --foreground: #f6f7e9;
+    --primary-foreground: #F6Be00;
+    --secondary-foreground: #bfc0b3;
+    --secondary-highlight: #656915;
+    --highlight: #F6Be00;
     --radius: 0.625rem;
 }
