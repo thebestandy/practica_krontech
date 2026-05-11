@@ -107,6 +107,8 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
     --radius: 0.625rem;
+
+    --auth-backgroundImage: url("../assets/AuthPages/YellowAuthBackground.png");
 }
 
 .purple {
@@ -117,6 +119,8 @@
     --secondary-highlight: #cac4ce;
     --highlight: #875ac1;
     --radius: 0.625rem;
+
+    --auth-backgroundImage: url("../assets/AuthPages/PurpleAuthBackground.png");
 }
 
 .turquoise {
@@ -127,6 +131,8 @@
     --secondary-highlight: #37d1d1;
     --highlight: #02d1d1;
     --radius: 0.625rem;
+
+    --auth-backgroundImage: url("../assets/AuthPages/TurquoiseAuthBackground.png");
 }
  
 .yellow {
