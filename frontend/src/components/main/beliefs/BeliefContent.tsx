@@ -172,7 +172,11 @@ export default function BeliefContent() {
       <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 2rem" }}>
 
         {/* Header */}
-   
+        <header style={{ paddingTop: "4rem", paddingBottom: "3rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem" }}>
+           
+           
+          </div>
 
           <h1 style={{
             margin: "0 0 1.25rem",
