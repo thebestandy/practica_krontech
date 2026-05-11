@@ -14,6 +14,7 @@ from .serializers import (
     ResendVerificationCodeSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
+    GoogleLoginSerializer,
 )
 
 
@@ -128,5 +129,25 @@ class ResetPasswordView(APIView):
 
         return Response(
             {"detail": "Parola a fost resetată cu succes."},
+            status=status.HTTP_200_OK
+        )
+    
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = GoogleLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        result = serializer.save()
+
+        user = result["user"]
+
+        return Response(
+            {
+                "detail": "Autentificare Google reușită.",
+                "refresh": result["refresh"],
+                "access": result["access"],
+                "user": UserSerializer(user).data,
+            },
             status=status.HTTP_200_OK
         )

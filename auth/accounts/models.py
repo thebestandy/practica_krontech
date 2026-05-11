@@ -8,12 +8,22 @@ class User(AbstractUser):
         ("business", "Business"),
     ]
 
+    AUTH_PROVIDER_CHOICES = [
+        ("email", "Email"),
+        ("google", "Google"),
+    ]
+
     name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     account_type = models.CharField(
         max_length=20,
         choices=ACCOUNT_TYPE_CHOICES,
         default="personal"
+    )
+    auth_provider = models.CharField(
+        max_length=20,
+        choices=AUTH_PROVIDER_CHOICES,
+        default="email"
     )
 
     def __str__(self):

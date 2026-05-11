@@ -17,7 +17,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User, PendingRegistration
-
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 def generate_verification_code(length=6):
     alphabet = string.ascii_uppercase + string.digits
@@ -39,8 +40,19 @@ class RegisterSerializer(serializers.Serializer):
         if data["password"] != data["confirm_password"]:
             raise serializers.ValidationError("Parolele nu coincid.")
 
-        if User.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError("Există deja un cont cu acest email.")
+        existing_user = User.objects.filter(email=data["email"]).first()
+
+        if existing_user:
+            if existing_user.auth_provider == "google":
+                 raise serializers.ValidationError({
+                    "detail": "Există deja un cont cu acest email creat prin Google. Te rugăm să continui cu Google.",
+                    "code": "google_account_exists"
+                 })
+
+            raise serializers.ValidationError({
+            "detail": "Există deja un cont cu acest email.",
+             "code": "email_account_exists"
+             })
 
         if User.objects.filter(username=data["username"]).exists():
             raise serializers.ValidationError("Există deja un cont cu acest username.")
@@ -167,7 +179,7 @@ class ResendVerificationCodeSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "name", "username", "email", "account_type"]
+        fields = ["id", "name", "username", "email", "account_type", "auth_provider"]
 
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -190,7 +202,13 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
                 })
 
             raise serializers.ValidationError("Email sau parola greșită.")
-
+        
+        if user_obj.auth_provider == "google":
+             raise serializers.ValidationError({
+                "detail": "Acest cont folosește autentificare cu Google. Te rugăm să continui cu Google.",
+                "code": "use_google_login",
+                 "email": email,
+            })
         user = authenticate(
             username=user_obj.username,
             password=password
@@ -212,9 +230,16 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
     def validate_email(self, email):
         try:
-            self.user = User.objects.get(email=email)
+             self.user = User.objects.get(email=email)
         except User.DoesNotExist:
-            self.user = None
+             self.user = None
+             return email
+
+        if self.user.auth_provider == "google":
+             raise serializers.ValidationError({
+                "detail": "Acest cont folosește autentificare cu Google. Nu poți reseta parola aici.",
+                "code": "use_google_login"
+            })
 
         return email
 
@@ -268,3 +293,93 @@ class ResetPasswordSerializer(serializers.Serializer):
         user.save(update_fields=["password"])
 
         return user
+
+
+class GoogleLoginSerializer(serializers.Serializer):
+    token = serializers.CharField()
+
+    def validate(self, data):
+        token = data["token"]
+
+        if not settings.GOOGLE_CLIENT_ID:
+            raise serializers.ValidationError({
+                "detail": "Google Client ID is not configured.",
+                "code": "google_not_configured"
+            })
+
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                token,
+                google_requests.Request(),
+                settings.GOOGLE_CLIENT_ID
+            )
+        except ValueError:
+            raise serializers.ValidationError({
+                "detail": "Token Google invalid.",
+                "code": "invalid_google_token"
+            })
+
+        email = idinfo.get("email")
+        name = idinfo.get("name", "")
+        email_verified = idinfo.get("email_verified", False)
+
+        if not email:
+            raise serializers.ValidationError({
+                "detail": "Tokenul Google nu conține email.",
+                "code": "google_email_missing"
+            })
+
+        if not email_verified:
+            raise serializers.ValidationError({
+                "detail": "Emailul Google nu este verificat.",
+                "code": "google_email_not_verified"
+            })
+
+        data["google_user"] = {
+            "email": email,
+            "name": name,
+        }
+
+        return data
+
+    def save(self):
+        google_user = self.validated_data["google_user"]
+
+        email = google_user["email"]
+        name = google_user["name"] or email.split("@")[0]
+
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            # Dacă există deja cont normal cu același email,
+            # îl lăsăm să intre cu Google, dar NU îl convertim în google-only.
+            pass
+        else:
+            base_username = email.split("@")[0].replace(".", "_")
+            username = base_username
+            counter = 1
+
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                name=name,
+                account_type="personal",
+                auth_provider="google",
+            )
+
+            user.set_unusable_password()
+            user.save(update_fields=["password"])
+
+        PendingRegistration.objects.filter(email=email).delete()
+
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            "user": user,
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
