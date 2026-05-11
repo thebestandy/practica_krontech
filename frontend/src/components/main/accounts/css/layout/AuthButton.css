@@ -9,10 +9,10 @@
 
     background: var(--auth-button-bg);
 
-    color: var(--primary-foreground);
+    color: var(--auth-button-text);
 
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
 
     cursor: pointer;
 
@@ -24,10 +24,12 @@
 }
 
 .auth-button:hover {
-    background: transparent;
-
-    border-color: var(--auth-button-hover);
-
-    color: var(--auth-button-hover);
+    background: var(--auth-button-hover-bg);
+    border-color: var(--auth-button-hover-border);
+    color: var(--auth-button-hover-text);
+    transform: translateY(-1px);
 }
 
+.auth-button:active {
+    transform: translateY(0);
+}

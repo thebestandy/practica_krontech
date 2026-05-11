@@ -1,7 +1,11 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../../../theme-provider";
 
-import scrapsLogo from "../../../../assets/Logos/White and Black Modern Initial Logo (2).png";
+
+import logoDark from "../../../../assets/Logos/Yellow.png";     
+import logoTurquoise from "../../../../assets/Logos/Turquoise.png"; 
+import logoPurple from "../../../../assets/Logos/Purple.png";
 
 import "../css/layout/AuthLayout.css";
 
@@ -10,13 +14,24 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+    
+    const { theme } = useTheme();
+
+    const logoMap: Record<string, string> = {
+        dark: logoDark,
+        purple: logoPurple,
+        turquoise: logoTurquoise,
+    };
+
+    const currentLogo = logoMap[theme] ?? logoDark;
+
     return (
         <main className="auth-layout">
             <section className="auth-layout-left">
                 <Link to="/" className="auth-layout-logo-link">
                     <img
-                        src={scrapsLogo}
-                        alt="SCRAPS"
+                        src={currentLogo}
+                        alt="ESCRAPS"
                         className="auth-layout-logo"
                     />
                 </Link>

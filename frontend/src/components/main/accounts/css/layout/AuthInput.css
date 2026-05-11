@@ -38,13 +38,18 @@
 }
 
 .auth-input::placeholder {
-    color: var(--auth-text-muted);
+    color: color-mix(in oklch, var(--auth-text-muted) 50%, transparent);
+    font-weight: 400;
 }
 
 .auth-input:focus {
     border-color: var(--auth-accent);
 
     background: var(--auth-bg-input-focus);
+}
+
+.auth-input:focus::placeholder {
+    color: color-mix(in oklch, var(--auth-text-muted) 30%, transparent);
 }
 
 .auth-input-error {

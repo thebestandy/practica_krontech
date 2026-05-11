@@ -1,35 +1,47 @@
 :root {
-
     --auth-bg-main: var(--background);
-    --auth-bg-panel: var(--card);
+    --auth-bg-panel: var(--background);
 
-    --auth-bg-input: var(--input);
-    --auth-bg-input-focus: var(--accent);
+    --auth-bg-input: color-mix(in oklch, var(--foreground) 4%, var(--background));
+    --auth-bg-input-focus: var(--background);
 
-    --auth-border: var(--border);
-    --auth-border-input: var(--input);
-    --auth-border-hover: var(--ring);
+    --auth-border: color-mix(in oklch, var(--foreground) 12%, transparent);
+    --auth-border-input: color-mix(in oklch, var(--foreground) 15%, transparent);
+    --auth-border-hover: var(--highlight);
 
-    --auth-button-bg: var(--primary);
-    --auth-button-border: var(--primary);
+    --auth-button-bg: var(--highlight);
+    --auth-button-border: var(--highlight);
+    --auth-button-text: var(--background);
 
-    --auth-button-hover: var(--foreground);
+    --auth-button-hover-bg: transparent;
+    --auth-button-hover-border: var(--highlight);
+    --auth-button-hover-text: var(--highlight);
 
-    --auth-toggle-active-bg: var(--secondary);
-    --auth-toggle-active-border: var(--ring);
+    --auth-button-secondary-bg: transparent;
+    --auth-button-secondary-border: var(--auth-border);
+    --auth-button-secondary-text: var(--foreground);
+
+    --auth-button-secondary-hover-bg: color-mix(in oklch, var(--highlight) 8%, transparent);
+    --auth-button-secondary-hover-border: var(--highlight);
+    --auth-button-secondary-hover-text: var(--highlight);
+
+    --auth-toggle-active-bg: color-mix(in oklch, var(--highlight) 12%, transparent);
+    --auth-toggle-active-border: var(--highlight);
 
     --auth-text-primary: var(--foreground);
-    --auth-text-secondary: var(--muted-foreground);
-    --auth-text-muted: var(--muted-foreground);
+    --auth-text-secondary: var(--secondary-foreground);
+    --auth-text-muted: var(--secondary-foreground);
 
-    --auth-accent: var(--primary);
+    --auth-accent: var(--highlight);
     --auth-accent-dark: var(--foreground);
     --auth-accent-hover: var(--secondary-highlight);
 
-    --auth-error: var(--destructive);
-    --auth-error-light: var(--destructive);
+    --auth-error: #e11d48;
+    --auth-error-light: #e11d48;
 
     --auth-radius-md: var(--radius);
 
     --auth-transition: 0.2s ease;
+
+    --auth-backgroundImage: url("../../../../assets/AuthPages/AuthBackground.png");
 }
