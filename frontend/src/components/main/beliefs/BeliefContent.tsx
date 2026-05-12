@@ -297,7 +297,7 @@ export default function BeliefContent() {
         </section>
 
       </div>
-      
+       
       <footer style={{
         borderTop: "1px solid var(--border)",
         background: "var(--card)",
