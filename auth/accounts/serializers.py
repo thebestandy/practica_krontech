@@ -313,32 +313,50 @@ class GoogleLoginSerializer(serializers.Serializer):
                 google_requests.Request(),
                 settings.GOOGLE_CLIENT_ID
             )
+
+            email = idinfo.get("email")
+            name = idinfo.get("name", "")
+            email_verified = idinfo.get("email_verified", False)
+
         except ValueError:
-            raise serializers.ValidationError({
-                "detail": "Token Google invalid.",
-                "code": "invalid_google_token"
-            })
+            import requests
 
-        email = idinfo.get("email")
-        name = idinfo.get("name", "")
-        email_verified = idinfo.get("email_verified", False)
+            response = requests.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={
+                    "Authorization": f"Bearer {token}"
+                },
+                timeout=10,
+            )
 
-        if not email:
-            raise serializers.ValidationError({
-                "detail": "Tokenul Google nu conține email.",
-                "code": "google_email_missing"
-            })
+            if response.status_code != 200:
+                raise serializers.ValidationError({
+                    "detail": "Token Google invalid.",
+                    "code": "invalid_google_token"
+                })
 
-        if not email_verified:
-            raise serializers.ValidationError({
-                "detail": "Emailul Google nu este verificat.",
-                "code": "google_email_not_verified"
-            })
+            google_data = response.json()
 
-        data["google_user"] = {
-            "email": email,
-            "name": name,
-        }
+            email = google_data.get("email")
+            name = google_data.get("name", "")
+            email_verified = google_data.get("email_verified", False)
+
+            if not email:
+                raise serializers.ValidationError({
+                    "detail": "Tokenul Google nu conține email.",
+                    "code": "google_email_missing"
+                })
+
+            if not email_verified:
+                raise serializers.ValidationError({
+                    "detail": "Emailul Google nu este verificat.",
+                    "code": "google_email_not_verified"
+                })
+
+            data["google_user"] = {
+                "email": email,
+                "name": name,
+            }
 
         return data
 

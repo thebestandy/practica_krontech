@@ -8,14 +8,17 @@ import GoogleButton from "./components/GoogleButton";
 import AuthDivider from "./components/AuthDivider";
 
 import "./css/Login.css";
-import { useAuth } from "../utils/authProvider";
+import {
+    getApiErrorCode,
+    getApiErrorEmail,
+    getApiErrorMessage,
+    useAuthActions,
+} from "../utils/useAuthActions";
 
-const MOCK_EMAIL = "test@scraps.com";
-const MOCK_PASSWORD = "123456";
 
 export default function Login() {
     const navigate = useNavigate();
-
+    const { login } = useAuthActions();
     const [showPassword, setShowPassword] = useState(false);
 
     const [email, setEmail] = useState("");
@@ -37,16 +40,10 @@ export default function Login() {
             return;
         }
 
-        // TODO: API call for existing email.
-        if (email !== MOCK_EMAIL) {
-            setEmailError("We couldn't find an account with this email.");
-            return;
-        }
-
         setShowPassword(true);
     }
 
-    function handlePasswordStep() {
+    async function handlePasswordStep() {
         setPasswordError("");
 
         if (!password.trim()) {
@@ -54,47 +51,51 @@ export default function Login() {
             return;
         }
 
-        // TODO: API call for login.
-        if (password !== MOCK_PASSWORD) {
-            setPasswordError("The password you entered is incorrect.");
-            return;
-        }
+        try {
+            await login({
+                email,
+                password,
+            });
 
-        navigate("/dashboard");
+            navigate("/dashboard");
+        } catch (error) {
+            const code = getApiErrorCode(error);
+
+            if (code === "registration_pending") {
+                navigate("/check-email", {
+                    state: {
+                        email: getApiErrorEmail(error) || email,
+                    },
+                });
+                return;
+            }
+
+            if (code === "use_google_login") {
+                setPasswordError(
+                    "This account uses Google. Please continue with Google."
+                );
+                return;
+            }
+
+            setPasswordError(
+                getApiErrorMessage(error, "Email or password is incorrect.")
+            );
+        }
     }
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (showPassword) {
-            handlePasswordStep();
+            await handlePasswordStep();
             return;
         }
 
         handleEmailStep();
     }
 
-    // Alr baieti am facut auth provider-ul, un mic exemplu de login:
-    const { login } = useAuth();
-
-    const handleLogin = async (e) => {
-        e.preventDefault();
-
-        const response = await fetch("http://localhost:8000/api/login/", {
-            method: "POST",
-            headers: {
-                /* headere si asa */
-            },
-            body: JSON.stringify({ email, password }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            login(data.user, data.access, data.refresh);
-        } else {
-            console.log("mna");
-        }
-    };
+    
+    
 
     return (
         <AuthLayout>
