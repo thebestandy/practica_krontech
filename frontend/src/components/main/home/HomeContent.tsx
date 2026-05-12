@@ -58,7 +58,7 @@ const SOURCES = [
             "Sursa primară pentru datele fiscale ale persoanelor juridice din România. Extragem declarații, bilanțuri, datorii restante și istoricul fiscal al oricărei firme înregistrate.",
         dataTypes: ["Declarații fiscale", "Bilanțuri", "Datorii restante", "CUI lookup"],
         icon: "🏛️",
-        records: "4.2M+",
+        records: "42",
         updateFreq: "Zilnic",
     },
     {
@@ -70,7 +70,7 @@ const SOURCES = [
             "Accesăm dosarele instanțelor de judecată din întreaga țară — civile, penale, comerciale. Construim istoricul juridic complet al oricărei entități sau persoane.",
         dataTypes: ["Dosare civile", "Dosare penale", "Sentințe", "Termene"],
         icon: "⚖️",
-        records: "12M+",
+        records: "12",
         updateFreq: "Zilnic",
     },
     {
@@ -82,7 +82,7 @@ const SOURCES = [
             "Monitorizăm licitațiile publice și contractele de achiziție. Detectăm tipare de adjudecare, conexiuni între ofertanți și potențiale conflicte de interese.",
         dataTypes: ["Licitații publice", "Contracte adjudecate", "Ofertanți", "Valori contracte"],
         icon: "📋",
-        records: "800K+",
+        records: "800",
         updateFreq: "Zilnic",
     },
     {
@@ -94,7 +94,7 @@ const SOURCES = [
             "Procesăm declarațiile de avere și interese ale tuturor demnitarilor și funcționarilor publici. Identificăm neconcordanțe și evoluții patrimoniale suspecte.",
         dataTypes: ["Declarații avere", "Declarații interese", "Incompatibilități", "Conflicte interese"],
         icon: "🔍",
-        records: "120K+",
+        records: "120",
         updateFreq: "Anual",
     },
     {
@@ -106,7 +106,7 @@ const SOURCES = [
             "Agregăm și procesăm articole din sute de publicații românești. Corelăm mențiunile din presă cu entitățile din celelalte baze de date pentru context jurnalistic.",
         dataTypes: ["Articole de presă", "Investigații", "Comunicate", "Analize"],
         icon: "📰",
-        records: "50M+",
+        records: "50",
         updateFreq: "Orar",
     },
     {
@@ -118,7 +118,7 @@ const SOURCES = [
             "Monitorizăm profilurile publice de pe platformele sociale ale persoanelor de interes public — politicieni, manageri, demnitari — pentru declarații și conexiuni relevante.",
         dataTypes: ["Facebook", "LinkedIn", "Twitter/X", "Instagram"],
         icon: "👤",
-        records: "35K+",
+        records: "35",
         updateFreq: "Zilnic",
     },
     {
@@ -130,7 +130,7 @@ const SOURCES = [
             "Procesăm prin OCR zeci de mii de documente oficiale publicate de instituții ale statului — hotărâri, ordine, rapoarte — transformând imaginile în date structurate căutabile.",
         dataTypes: ["Hotărâri de guvern", "Ordine de ministru", "Rapoarte publice", "Monitorul Oficial"],
         icon: "📄",
-        records: "128K+",
+        records: "128",
         updateFreq: "Zilnic",
     },
 ];
@@ -316,7 +316,7 @@ export default function HomeContent() {
                         </h1>
                     </div>
                     <p className="text-[23px] text-secondary-foreground/50 max-w-[42ch] leading-relaxed">
-                        Colectăm, procesăm și corelăm informații din sursele publice oficiale ale statului român — automat, zilnic, fără filtre editoriale.
+                        Colectăm, procesăm și corelăm informații din sursele publice oficiale ale statului român - automat, zilnic, fără filtre editoriale.
                     </p>
                 </div>
 
