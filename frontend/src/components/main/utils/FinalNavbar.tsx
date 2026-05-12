@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { redirect, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import {
     Navbar,
     NavBody,
+    NavbarButton,
     NavbarLogo,
     NavItems,
     MobileNav,
@@ -14,112 +15,124 @@ import { useAuth } from "./authProvider";
 
 export default function FinalNavbar() {
     const navItems = [
-        { name: "Home", link: "/" },
-        { name: "Enterprise", link: "/enterprise" },
-        { name: "Our Beliefs", link: "/beliefs" },
-        { name: "About Us", link: "/about" },
+        {
+            name: "Home",
+            link: "/",
+        },
+
+        {
+            name: "Enterprise",
+            link: "/enterprise",
+        },
+
+        {
+            name: "Our Beliefs",
+            link: "/beliefs",
+        },
+
+        {
+            name: "About Us",
+            link: "/about",
+        },
     ];
 
-    const navigate = useNavigate();
+    let navigate = useNavigate();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
+    const navRef = useRef(null);
+
+    useEffect(() => {
+        function handleResize() {
+            // console.log("width " + window.innerWidth);
+            setIsDesktop(window.innerWidth > 760);
+            // console.log("resized: " + isDesktop);
+        }
+
+        window.addEventListener("resize", handleResize);
+
+        handleResize();
+    }, []);
 
     const { isAuthenticated } = useAuth();
 
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 760);
-
-    const navbarRef = useRef<HTMLDivElement>(null);
-    const [menuTop, setMenuTop] = useState<number>(72);
-
-    const measureNavbar = () => {
-        if (navbarRef.current) {
-            const rect = navbarRef.current.getBoundingClientRect();
-            setMenuTop(rect.bottom);
-        }
-    };
-
-    useEffect(() => {
-        if (isMobileMenuOpen) {
-            const t = setTimeout(measureNavbar, 320);
-            return () => clearTimeout(t);
-        }
-    }, [isMobileMenuOpen]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            const desktop = window.innerWidth > 760;
-            setIsDesktop(desktop);
-            if (desktop) setIsMobileMenuOpen(false);
-            measureNavbar();
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const handleNavigation = (path: string) => {
-        setIsMobileMenuOpen(false);
-        navigate(path);
-    };
-
     return (
-        <div className="relative z-[1000]">
-
-            <Navbar ref={navbarRef} isMobileOpen={isMobileMenuOpen}>
-
+        <div className="relative z-1000">
+            <Navbar ref={navRef}>
                 <NavBody isDesktop={isDesktop}>
                     <NavbarLogo />
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
                         <button
-                            className="h-11 w-36 cursor-pointer bg-foreground text-background font-semibold hover:bg-highlight hover:text-foreground transition-all duration-300 tracking-wide text-lg shadow-lg rounded-sm"
-                            onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/login")}
+                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
+                            onClick={(event: any) =>
+                                navigate(
+                                    isAuthenticated ? "/dashboard" : "/login",
+                                )
+                            }
                         >
                             {isAuthenticated ? "Dashboard" : "Get Started"}
                         </button>
+
+                        {/* <button
+                            className="relative z-10 block overflow-hidden px-6 py-3 text-white bg-transparent rounded-sm
+                            border border-zinc-400 bg-white
+               
+                               before:content-[''] before:absolute before:-z-10 before:top-1/2 before:left-full 
+                               before:-mt-[15px] before:ml-[1px] before:w-[30px] before:h-[30px] 
+                               before:rounded-full before:bg-purple-300 
+                               before:origin-[100%_50%] before:[transform:scale3d(1,2,1)] 
+                               before:transition-[transform,opacity] before:duration-300 before:ease-[cubic-bezier(0.7,0,0.9,1)]
+                               
+                               hover:before:[transform:scale3d(9,9,1)] hover:cursor-pointer hover:text-zinc-500 transition-colors duration-400 ease-in"
+                            onClick={(event: any) => navigate("/dashboard")}
+                        >
+                            Dashboard
+                        </button> */}
                     </div>
                 </NavBody>
-
                 <MobileNav isDesktop={isDesktop}>
                     <MobileNavHeader>
                         <NavbarLogo />
                         <MobileNavToggle
                             isOpen={isMobileMenuOpen}
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            onClick={() =>
+                                setIsMobileMenuOpen(!isMobileMenuOpen)
+                            }
                         />
                     </MobileNavHeader>
-                </MobileNav>
 
-            </Navbar>
-
-
-            <MobileNavMenu isOpen={isMobileMenuOpen} topOffset={menuTop}>
-
-                <div className="flex flex-col gap-1 flex-1">
-                    {navItems.map((item, idx) => (
-                        <a
-                            key={`mobile-link-${idx}`}
-                            href={item.link}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="w-full px-4 py-3 text-lg font-semibold text-primary-foreground dark:text-neutral-300 rounded-sm transition-all duration-200 ease-in-out hover:bg-foreground hover:text-background hover:cursor-pointer"
-                            style={{
-                                boxShadow: "0 3px 4px -2px rgba(0,0,0,0.12)",
-                            }}
-                        >
-                            {item.name}
-                        </a>
-                    ))}
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-white/10">
-                    <button
-                        className="w-full h-12 cursor-pointer bg-foreground text-background hover:bg-highlight hover:text-foreground transition-all duration-300 tracking-wide text-lg shadow-lg rounded-sm font-semibold"
-                        onClick={() => handleNavigation(isAuthenticated ? "/dashboard" : "/login")}
+                    <MobileNavMenu
+                        isOpen={isMobileMenuOpen}
+                        onClose={() => setIsMobileMenuOpen(false)}
                     >
-                        {isAuthenticated ? "Dashboard" : "Get Started"}
-                    </button>
-                </div>
-
-            </MobileNavMenu>
-
+                        {navItems.map((item, idx) => (
+                            <a
+                                key={`mobile-link-${idx}`}
+                                href={item.link}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="relative px-4 py-2 text-lg text-primary-foreground dark:text-neutral-300 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-foreground hover:text-background font-black uppercase tracking-[0.2em] rounded-md shadow-md"
+                            >
+                                <span className="block">{item.name}</span>
+                            </a>
+                        ))}
+                        <div className="mt-4 flex w-full flex-col">
+                            <button
+                                className="inset-0 z-21 h-11 hover:cursor-pointer bg-foreground text-background hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
+                                onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    navigate(
+                                        isAuthenticated
+                                            ? "/dashboard"
+                                            : "/login",
+                                    );
+                                }}
+                            >
+                                {isAuthenticated ? "Dashboard" : "Get Started"}
+                            </button>
+                        </div>
+                    </MobileNavMenu>
+                </MobileNav>
+            </Navbar>
         </div>
     );
 }
