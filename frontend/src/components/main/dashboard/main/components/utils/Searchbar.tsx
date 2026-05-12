@@ -4,7 +4,8 @@ import { useWebSocket } from "../../../utils/WebsocketProvider";
 
 export default function Search() {
     const [searchTarget, setSearchTarget] = useState("");
-    const { startScan, connectionStatus } = useWebSocket();
+    const { startScan } = useWebSocket();
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -18,36 +19,17 @@ export default function Search() {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            handleSearch(e);
-        }
-    };
-
-    const [isOpen, setIsOpen] = useState(false);
-
     return (
-        <div
-            className={`relative w-full h-10 bg-primary rounded-md transition-all duration-500 ease-in-out ${
+        <form
+            onSubmit={handleSearch}
+            className={`flex items-center w-full h-10 bg-primary rounded-md overflow-hidden transition-all duration-500 ease-in-out ${
                 isOpen ? "max-w-[350px]" : "max-w-[60px]"
             }`}
         >
-            <input
-                type="text"
-                onChange={(e) => setSearchTarget(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e)}
-                value={searchTarget}
-                placeholder="Search..."
-                className={`relative w-full h-full text-base font-normal text-primary-foreground bg-transparent border-none rounded-md outline-none transition-all duration-500 ease-in-out ${
-                    isOpen ? "pl-[65px] pr-[15px]" : "px-[15px]"
-                }`}
-            />
-
-            <span
+            <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`absolute top-0 left-0 w-[60px] h-full flex justify-center items-center bg-secondary cursor-pointer ${
-                    isOpen ? "rounded-l-md" : "rounded-md"
-                }`}
+                className="flex shrink-0 justify-center items-center w-[60px] h-full bg-black cursor-pointer"
             >
                 <div className="relative flex items-center justify-center w-6 h-6">
                     <SearchIcon
@@ -66,7 +48,16 @@ export default function Search() {
                         }`}
                     />
                 </div>
-            </span>
-        </div>
+            </button>
+
+            <input
+                type="text"
+                onChange={(e) => setSearchTarget(e.target.value)}
+                value={searchTarget}
+                placeholder="Search..."
+                tabIndex={isOpen ? 0 : -1}
+                className="flex-grow min-w-0 h-full px-[15px] text-base font-normal text-primary-foreground bg-transparent border-2 outline-none border-black"
+            />
+        </form>
     );
 }
