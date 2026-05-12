@@ -107,8 +107,6 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
     --radius: 0.625rem;
-
-    --auth-backgroundImage: url("../assets/AuthPages/YellowAuthBackground.png");
 }
 
 .purple {
@@ -143,4 +141,6 @@
     --secondary-highlight: #656915;
     --highlight: #F6Be00;
     --radius: 0.625rem;
+
+    --auth-backgroundImage: url("../assets/AuthPages/YellowAuthBackground.png");
 }
