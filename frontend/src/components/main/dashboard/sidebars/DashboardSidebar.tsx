@@ -10,31 +10,18 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "../../../ui/lib/utils";
 
 export default function DashboardSidebar() {
-    const data = [
+    const links = [
         {
-            title: "Search",
-            link: "/search",
-            icon: Search,
+            title: "Projects",
+            subprojects: ["Project Alpha", "Project Beta"],
         },
         {
-            title: "jobs",
-            link: "/jobs",
-            icon: ExpandIcon,
+            title: "Investigations",
+            subprojects: ["Investigation 1", "Investigation 2"],
         },
         {
-            title: "Chat to agent",
-            link: "/agent",
-            icon: Download,
-        },
-        {
-            title: "export data",
-            link: "/export",
-            icon: Download,
-        },
-        {
-            title: "settings",
+            title: "Settings",
             link: "/settings",
-            icon: Settings,
         },
     ];
 
@@ -106,10 +93,10 @@ export default function DashboardSidebar() {
                         </span>
                     </div>
 
-                    <SidebarLinks data={data} />
+                    <SidebarLinks data={links} />
                 </ResizablePanel>
 
-                <ResizableHandle />
+                <ResizableHandle className="bg-slate-900" />
 
                 <ResizablePanel>
                     <div className="h-full overflow-hidden">

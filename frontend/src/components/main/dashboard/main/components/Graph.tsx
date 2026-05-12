@@ -20,8 +20,58 @@ export default function Graph() {
 
     const { incomingNode } = useGraphSelection();
 
+    // kinda getting crowded over here
+    const [contextMenu, setContextMenu] = useState(null);
+    const [connectingNode, setConnectingNode] = useState(null);
+    const [mousePos, setMousePos] = useState(null);
+    const fgRef = useRef(null);
+
+    const [pendingC, setPendingC] = useState(null);
+    const [label, setLabel] = useState("");
+
+    const handleMouseMove = (e) => {
+        if (!connectingNode || !containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePos({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
+    };
+
+    let sourceScreenPos = null;
+    if (connectingNode && fgRef.current) {
+        sourceScreenPos = fgRef.current.graph2ScreenCoords(
+            connectingNode.x,
+            connectingNode.y,
+        );
+    }
+
+    const finishC = () => {
+        if (label.trim() && pendingC) {
+            setGraphData((prev) => ({
+                ...prev,
+                links: [
+                    ...prev.links,
+                    {
+                        source: pendingC.source.id,
+                        target: pendingC.target.id,
+                        label: label.trim(),
+                    },
+                ],
+            }));
+        }
+        cancelConnection();
+    };
+
+    const cancelConnection = () => {
+        setPendingC(null);
+        setLabel("");
+        setConnectingNode(null);
+        setMousePos(null);
+    };
+
     useEffect(() => {
-        if (!incomingNode) return; // shutup the linter
+        if (!incomingNode) return;
         setGraphData((prev) => {
             const nodeExists = prev.nodes.some((n) => n.id === incomingNode.id);
 
@@ -141,11 +191,13 @@ export default function Graph() {
         <>
             <div className="relative w-full h-full">
                 <div
-                    className="flex-1 relative bg-secondary/40 w-full h-full"
+                    className="flex-1 relative bg-secondary/40 w-full h-full cursor-pointer active:cursor-all-scroll"
                     ref={containerRef}
+                    onMouseMoveCapture={handleMouseMove}
                 >
                     <ForceGraph2D
                         width={dimensions.width}
+                        ref={fgRef}
                         height={dimensions.height}
                         graphData={graphData}
                         nodeLabel="label"
@@ -153,7 +205,44 @@ export default function Graph() {
                         nodeRelSize={6}
                         linkColor={() => "#cbd5e1"}
                         linkWidth={2}
-                        onNodeClick={(node) => setSelectedNode(node)}
+                        onNodeClick={(node) => {
+                            if (connectingNode) {
+                                if (node.id !== connectingNode.id) {
+                                    setPendingC({
+                                        source: connectingNode,
+                                        target: node,
+                                    });
+                                    setLabel("");
+                                } else {
+                                    cancelConnection();
+                                }
+                                setConnectingNode(null);
+                                setMousePos(null);
+                            } else {
+                                setSelectedNode(node);
+                            }
+                        }}
+                        onNodeRightClick={(node, event) => {
+                            event.stopImmediatePropagation();
+                            event.preventDefault();
+
+                            setConnectingNode(null);
+                            setMousePos(null);
+                            setPendingC(null);
+
+                            setContextMenu({
+                                x: event.clientX,
+                                y: event.clientY,
+                                node: node,
+                            });
+                        }}
+                        onBackgroundClick={() => {
+                            setContextMenu(null);
+                            if (connectingNode) {
+                                setConnectingNode(null);
+                                setMousePos(null);
+                            }
+                        }}
                         linkCanvasObjectMode={() => "after"}
                         linkCanvasObject={(link, ctx) => {
                             const MAX_FONT_SIZE = 4;
@@ -180,8 +269,77 @@ export default function Graph() {
                             ctx.fillText(link.label, textPos.x, textPos.y);
                         }}
                     />
+                    {connectingNode &&
+                        sourceScreenPos &&
+                        mousePos &&
+                        !pendingC && (
+                            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+                                <line
+                                    x1={sourceScreenPos.x}
+                                    y1={sourceScreenPos.y}
+                                    x2={mousePos.x}
+                                    y2={mousePos.y}
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeDasharray="5,5"
+                                />
+                            </svg>
+                        )}
+                    {/* should move this tf outta here but it'll do for now */}
+                    {pendingC && (
+                        <div className="absolute top-1/2 left-1/2  bg-slate-800 border border-slate-600 shadow-2xl rounded-sm p-5 z-20 w-72">
+                            <h3 className="text-slate-200 mb-3 text-sm font-medium">
+                                Put yo connection in here:
+                            </h3>
+                            <input
+                                autoFocus
+                                type="text"
+                                value={label}
+                                onChange={(e) => setLabel(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") finishC();
+                                    if (e.key === "Escape") cancelConnection();
+                                }}
+                                className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-500"
+                                placeholder="idk"
+                            />
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => cancelConnection()}
+                                    className="px-3 py-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors hover:cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={finishC}
+                                    className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors hover:cursor-pointer"
+                                >
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {/* stupid ahh right click menu */}
+            {contextMenu && (
+                <div
+                    className="fixed z-50 min-w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                >
+                    <button
+                        className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setConnectingNode(contextMenu.node);
+                            setContextMenu(null);
+                        }}
+                    >
+                        Connect
+                    </button>
+                </div>
+            )}
 
             {selectedNode && (
                 <Datasheet

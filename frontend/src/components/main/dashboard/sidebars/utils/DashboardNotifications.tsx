@@ -26,8 +26,8 @@ function Notifications({ data }: { data: DashboardEntry[] }) {
                         <Tooltip.Root>
                             <Tooltip.Trigger asChild>
                                 <button
-                                    className="relative flex h-6 w-6 items-center justify-center rounded-full hover:bg-slate-100 mt-[-3px]
-                                focus:outline-none dark:hover:bg-slate-800 transition-colors"
+                                    className="relative flex h-6 w-6 items-center justify-center rounded-full mt-[-5px]
+                                focus:outline-none dark:hover:bg-slate-800 transition-colors hover:cursor-progress"
                                 >
                                     <span
                                         className={cn(

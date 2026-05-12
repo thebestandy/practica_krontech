@@ -10,7 +10,7 @@ import { WebSocketProvider } from "./utils/WebsocketProvider";
 export default function Dashboard() {
     return (
         <WebSocketProvider>
-            <div className="w-full h-screen">
+            <div className="w-full h-screen font-sans">
                 <ResizablePanelGroup orientation="horizontal">
                     <ResizablePanel
                         defaultSize="25%"
@@ -19,7 +19,7 @@ export default function Dashboard() {
                     >
                         <DashboardSidebar />
                     </ResizablePanel>
-                    <ResizableHandle />
+                    <ResizableHandle className="bg-slate-900" />
 
                     <ResizablePanel defaultSize="75%">
                         <DashboardMain />

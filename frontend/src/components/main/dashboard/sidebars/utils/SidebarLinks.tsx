@@ -1,16 +1,19 @@
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "../../../../ui/lib/utils";
 
 interface linkEntry {
-    icon: React.ElementType;
     title: string;
-    link: string;
+    icon?: React.ElementType;
+    link?: string;
+    subprojects?: string[];
 }
 
-// I should genuinely change the effect because it looks horrid
+// hard coded some colors cuz fuck it we ball aint got time for ts
 export const SidebarLinks = ({ data }: { data: linkEntry[] }) => {
     const [hovered, setHovered] = useState<number | null>(null);
+
+    const [expandedFolders, setExpandedFolders] = useState<number[]>([]);
 
     const [isCompact, setIsCompact] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -29,6 +32,12 @@ export const SidebarLinks = ({ data }: { data: linkEntry[] }) => {
         return () => observer.disconnect();
     }, []);
 
+    const toggleFolder = (idx: number) => {
+        setExpandedFolders((prev) =>
+            prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+        );
+    };
+
     return (
         <motion.div
             ref={containerRef}
@@ -39,37 +48,109 @@ export const SidebarLinks = ({ data }: { data: linkEntry[] }) => {
         >
             {data.map((item, idx) => {
                 const Icon = item.icon;
+                const isFolder =
+                    item.subprojects && item.subprojects.length > 0;
+                const isOpen = expandedFolders.includes(idx);
 
                 return (
-                    <a
-                        onMouseEnter={() => setHovered(idx)}
-                        onClick={() => console.log("nothing atm")} // sth with item.link
-                        className={cn(
-                            "relative flex flex-row gap-3 hover:cursor-pointer items-center px-4 py-2 transition delay-100 duration-100 ease-in hover:text-highlight",
-                            isCompact ? "justify-center" : "justify-start",
-                        )}
-                        key={`link-${idx}`}
+                    <div
+                        key={`link-container-${idx}`}
+                        className="flex flex-col"
                     >
-                        {hovered === idx && (
-                            <motion.div
-                                layoutId="hovered"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 h-full w-full rounded-md bg-neutral-800/30" // motion
-                            />
-                        )}
-                        <Icon className="relative z-20 size-4 shrink-0" />
-                        <span
+                        <a
+                            onMouseEnter={() => setHovered(idx)}
+                            onClick={() => {
+                                if (isFolder) {
+                                    toggleFolder(idx);
+                                } else if (item.link) {
+                                    console.log("navigate to", item.link);
+                                }
+                            }}
                             className={cn(
-                                isCompact
-                                    ? "hidden"
-                                    : "relative z-20 whitespace-nowrap overflow-hidden text-ellipsis",
+                                "relative flex flex-row gap-3 hover:cursor-pointer items-center px-4 py-2 transition delay-100 duration-100 ease-in hover:text-highlight",
+                                isCompact ? "justify-center" : "justify-start",
                             )}
                         >
-                            {item.title}
-                        </span>
-                    </a>
+                            {hovered === idx && (
+                                <motion.div
+                                    layoutId="hovered"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 h-full w-full rounded-md bg-neutral-800/30"
+                                />
+                            )}
+
+                            {Icon && (
+                                <Icon className="relative z-20 size-4 shrink-0" />
+                            )}
+
+                            <span
+                                className={cn(
+                                    isCompact
+                                        ? "hidden"
+                                        : "relative z-20 whitespace-nowrap overflow-hidden text-ellipsis flex-1 flex justify-between items-center",
+                                )}
+                            >
+                                {item.title}
+
+                                {isFolder && (
+                                    <svg
+                                        className={cn(
+                                            "size-4 opacity-50 transition-transform duration-200",
+                                            isOpen ? "rotate-180" : "",
+                                        )}
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                )}
+                            </span>
+                        </a>
+
+                        {isFolder && !isCompact && (
+                            <AnimatePresence initial={false}>
+                                {isOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{
+                                            duration: 0.2,
+                                            ease: "easeInOut",
+                                        }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex flex-col ml-[2.25rem] mt-1 gap-1 border-l border-neutral-800 pl-3">
+                                            {item.subprojects!.map(
+                                                (sub, subIdx) => (
+                                                    <a
+                                                        key={`sub-${idx}-${subIdx}`}
+                                                        onClick={() =>
+                                                            console.log(
+                                                                "navigate to subproject:",
+                                                                sub,
+                                                            )
+                                                        }
+                                                        className="hover:cursor-pointer block py-1.5 text-neutral-400 hover:text-highlight transition-colors duration-150"
+                                                    >
+                                                        {sub}
+                                                    </a>
+                                                ),
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        )}
+                    </div>
                 );
             })}
         </motion.div>

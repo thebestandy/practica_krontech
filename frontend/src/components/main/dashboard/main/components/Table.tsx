@@ -130,7 +130,7 @@ export default function Table() {
 
     return (
         <>
-            <div className="h-full w-full overflow-hidden flex flex-col border">
+            <div className="h-full w-full overflow-hidden flex flex-col border border-slate-800 dark:border-slate-800">
                 <div className="overflow-auto flex-1">
                     <table className="w-full text-left border-collapse">
                         <thead className="sticky top-0 z-10 backdrop-blur-md dark:bg-slate-900/90">
@@ -149,7 +149,7 @@ export default function Table() {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y dark:divide-slate-900">
+                        <tbody className="divide-y divide-slate-900">
                             {nodes.length === 0 ? (
                                 <tr>
                                     <td
@@ -163,7 +163,7 @@ export default function Table() {
                                 nodes.map((node) => (
                                     <tr
                                         key={node.id}
-                                        className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all hover:cursor-pointer hover:backdrop-blur-2xl"
+                                        className="group transition-all hover:cursor-pointer hover:backdrop-blur-2xl transition-all duration-150 ease-in-out hover:bg-zinc-700"
                                         onClick={() => setSelectedRow(node)}
                                         onContextMenu={(e) => {
                                             e.preventDefault();
