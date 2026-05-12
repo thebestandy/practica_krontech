@@ -8,7 +8,8 @@ from scrapers.ani_pdf.ani_pdf_v2 import AniScraper
 from scrapers.seap_sicap.seap_sicap_nou import ElicitatieScraper
 # from scrapers.anaf_portjust.anaf import AnafScraper
 from scrapers.anaf_portjust.anaf_nou import AnafScraper
-from scrapers.anaf_portjust.portal_just import PortalJustScraper
+# from scrapers.anaf_portjust.portal_just import PortalJustScraper
+from scrapers.anaf_portjust.portal_just_nou import PortalJustScraper
 
 
 class Worker:
@@ -35,10 +36,8 @@ class Worker:
         queue = [
             asyncio.create_task(SicapScraper().run(self.target)),
             asyncio.create_task(SeapScraper().run(self.target)),
-            asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
-            # asyncio.create_task(
-            #     asyncio.to_thread(ElicitatieScraper().search, self.target)
-            # ),
+            # asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(ElicitatieScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(PortalJustScraper().search, self.target)),
         ]
