@@ -4,8 +4,10 @@ import asyncio
 from asyncio.tasks import as_completed
 
 from scrapers.ani_pdf.ani_pdf_v2 import AniScraper
-from scrapers.seap_sicap.seap_sicap import ElicitatieScraper
-from scrapers.anaf_portjust.anaf import AnafScraper
+# from scrapers.seap_sicap.seap_sicap import ElicitatieScraper
+from scrapers.seap_sicap.seap_sicap_nou import ElicitatieScraper
+# from scrapers.anaf_portjust.anaf import AnafScraper
+from scrapers.anaf_portjust.anaf_nou import AnafScraper
 from scrapers.anaf_portjust.portal_just import PortalJustScraper
 
 
