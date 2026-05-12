@@ -5,7 +5,7 @@ import { useTheme } from "../../theme-provider";
 import AuthLayout from "./components/AuthLayout";
 import AuthButton from "./components/AuthButton";
 
-import mailIconDark from "../../../assets/AuthPages/YellowMailIcon.png";     
+import mailIconYellow from "../../../assets/AuthPages/YellowMailIcon.png";     
 import mailIconPurple from "../../../assets/AuthPages/PurpleMailIcon.png";
 import mailIconTurquoise from "../../../assets/AuthPages/TurquoiseMailIcon.png"; 
 
@@ -18,12 +18,12 @@ export default function CheckEmail() {
     const { theme } = useTheme();
 
     const mailIconMap: Record<string, string> = {
-        dark: mailIconDark,
+        yellow: mailIconYellow,
         purple: mailIconPurple,
         turquoise: mailIconTurquoise,
     };
 
-    const currentMailIcon = mailIconMap[theme] ?? mailIconDark;
+    const currentMailIcon = mailIconMap[theme] ?? mailIconYellow;
 
     const navigate = useNavigate();
     const location = useLocation();
