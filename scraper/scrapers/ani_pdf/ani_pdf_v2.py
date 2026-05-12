@@ -195,6 +195,40 @@ class AniScraper:
                 "source": "ANI Legacy Portal",
                 "count": len(graph_nodes),
             },
+
+        #     "metadata": {
+        #     "timestamp": datetime.now().isoformat(),
+        #     "source": "ANI Legacy Portal",
+
+        #     "query": {
+        #         "name": name
+        #     },
+
+        #     "stats": {
+        #         "persons_found": len(results),
+        #         "documents_found": sum(len(p.pdfs) for p in results),
+        #     },
+
+        #     "distribution": {
+        #         "avere": sum(1 for p in results for d in p.pdfs if d.type == "avere"),
+        #         "interese": sum(1 for p in results for d in p.pdfs if d.type == "interese"),
+        #     },
+
+        #     "institutions": list(set(p.institution for p in results if p.institution)),
+
+        #     "uids_count": len(set(
+        #         pdf.unique_id
+        #         for p in results
+        #         for pdf in p.pdfs
+        #     )),
+
+        #     "scrape_info": {
+        #         "base_url": self.BASE_URL,
+        #         "endpoint": self.SEARCH_ENDPOINT,
+        #         "parser": "legacy_html_table",
+        #     }
+        # }
+
             "nodes": graph_nodes,
         }
 

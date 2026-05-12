@@ -273,7 +273,7 @@ class ElicitatieScraper:
         if cui_curat.isdigit():
             return cui_curat
 
-        print(f"[SEAP] Target non-numeric, caut CUI dupa nume: {target}")
+        print(f"Target non-numeric, caut CUI dupa nume: {target}")
         try:
             r = self.session.get(
                 f"https://demoanaf.ro/api/search?q={target}",
@@ -285,12 +285,12 @@ class ElicitatieScraper:
             if isinstance(firme, list) and firme:
                 cui = str(firme[0].get("cui", firme[0].get("CUI", "")))
                 if cui:
-                    print(f"[SEAP] Gasit CUI {cui} pentru \"{target}\"")
+                    print(f"Gasit CUI {cui} pentru \"{target}\"")
                     return cui
         except Exception as e:
-            print(f"[SEAP] Rezolvare CUI dupa nume esuata: {e}")
+            print(f"Rezolvare CUI dupa nume esuata: {e}")
 
-        print(f"[SEAP] Nu s-a gasit niciun CUI pentru \"{target}\"")
+        print(f"Nu s-a gasit niciun CUI pentru \"{target}\"")
         return None
 
     def search_by_cui(self, cui: str, date_start: str = "2022-01-01") -> List[Contract]:
@@ -354,12 +354,12 @@ class ElicitatieScraper:
 
         if not cui:
             return {
-                "source": "seap scraper",
+                "source": "seap/sicap scraper",
                 "type": "document",
                 "certainty": "0",
                 "metadata": {
                     "timestamp": datetime.now().isoformat(),
-                    "source": "SEAP / e-licitatie.ro",
+                    "source": "SEAP/SICAP / e-licitatie.ro",
                     "count": 0,
                 },
                 "nodes": [],
@@ -395,16 +395,59 @@ class ElicitatieScraper:
             })
 
         return {
-            "source": "seap scraper",
+            "source": "SEAP/SICAP scraper",
             "type": "document",
             "certainty": "0",
             "metadata": {
                 "timestamp": datetime.now().isoformat(),
-                "source": "SEAP / e-licitatie.ro",
+                "source": "SEAP / e-licitatie.ro + SICAP AI",
                 "count": len(graph_nodes),
             },
             "nodes": graph_nodes,
         }
+    
+        # return {
+        #     "source": "SEAP/SICAP scraper",
+        #     "type": "document",
+        #     "certainty": "0",
+
+        #     "nodes": graph_nodes,
+
+        #     "metadata": {
+        #         "timestamp": datetime.now().isoformat(),
+        #         "source": "SEAP / e-licitatie.ro + SICAP AI",
+        #         "count": len(graph_nodes),
+
+        #         "company_summary": {
+        #             "cui": cui,
+        #             "contracts_found": len(contracts),
+        #         },
+
+        #         "aggregates": {
+        #             "total_contracts": len(contracts),
+        #             "total_value": sum(c.contract_value for c in contracts),
+        #             "currency": "RON",
+        #         },
+
+        #         "contracts": [
+        #             {
+        #                 "id": c.contract_id,
+        #                 "title": c.title,
+        #                 "authority": c.contracting_authority,
+        #                 "supplier": c.supplier,
+        #                 "value": c.contract_value,
+        #                 "currency": c.currency,
+        #                 "date": c.contract_date,
+        #                 "procedure": c.procedure_type,
+        #                 "cpv": c.cpv_code,
+        #                 "status": c.status,
+        #                 "description": c.description,
+        #                 "url": c.source_url,
+        #             }
+        #             for c in contracts
+        #         ],
+        #     },
+        # }
 
 # le-am lasat comentate
 # def main():

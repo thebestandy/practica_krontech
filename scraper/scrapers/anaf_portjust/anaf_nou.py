@@ -170,6 +170,37 @@ class AnafScraper:
             },
             "nodes": graph_nodes,
         }
+    
+        # return {
+        #     "source": "anaf scraper",
+        #     "type": "document",
+        #     "certainty": "0",
+
+        #     "metadata": {
+        #         "timestamp": datetime.now().isoformat(),
+        #         "source": "ANAF / demoanaf.ro",
+        #         "count": len(graph_nodes),
+
+        #         "anaf_details": {
+        #             "date_generale": dg,
+        #             "adresa_completa": adresa,
+        #             "tva": tva,
+        #             "stare_inactiv": inactiv,
+        #         },
+
+        #         "company_details": company_data.get("data", {}),
+
+        #         "financials_raw": financials.get("data", []),
+
+        #         "raw_responses": {
+        #             "anaf": anaf_data,
+        #             "company": company_data,
+        #             "financials": financials,
+        #         },
+        #     },
+
+        #     "nodes": graph_nodes,
+        # }
 
 # le-am lasat comentate
 # if __name__ == "__main__":

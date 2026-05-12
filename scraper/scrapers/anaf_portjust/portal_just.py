@@ -212,6 +212,60 @@ class PortalJustScraper:
             'nodes': nodes,
         }
     
+        # return {
+        #     'source': 'portal just scraper',
+        #     'type': 'document',
+        #     'certainty': '0',
+
+        #     'nodes': nodes,
+
+        #     'metadata': {
+        #         'timestamp': datetime.now().isoformat(),
+        #         'source': 'portal.just.ro',
+        #         'count': len(nodes),
+
+        #         'query': target,
+        #         'raw_stats': {
+        #             'total_cases_found': len(dosare_brute),
+        #             'relevant_cases': len(dosare_filtrate),
+        #         },
+
+        #         'cases': [
+        #             {
+        #                 'numar': d['numar'],
+        #                 'data': d['data'],
+        #                 'status': d['status'],
+        #                 'instanta': d['instanta'],
+        #                 'sectie': d['sectie'],
+        #                 'obiect': d['obiect'],
+
+        #                 'parties': d['parti'],
+
+        #                 'hearings': d['sedinte'],
+
+        #                 'last_hearing': (
+        #                     sorted(d['sedinte'], key=lambda s: s['data'])[-1]
+        #                     if d['sedinte'] else None
+        #                 ),
+
+        #                 'hearings_count': len(d['sedinte']),
+        #                 'parties_count': len(d['parti']),
+        #             }
+        #             for d in dosare_filtrate
+        #         ],
+
+        #         'aggregates': {
+        #             'total_cases': len(dosare_filtrate),
+        #             'unique_parties': len(set(
+        #                 p['nume']
+        #                 for d in dosare_filtrate
+        #                 for p in d['parti']
+        #             )),
+        #             'statuses': list(set(d['status'] for d in dosare_filtrate)),
+        #         },
+        #     },
+        # }
+    
 # le-am lasat comentate
 # def export_to_json(results: List[PersonResult], filename: str):
 #     output = {
