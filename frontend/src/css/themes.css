@@ -124,7 +124,7 @@
 }
 
 .turquoise {
-    --background: #c3fdff;
+    --background: #e6fbfc;
     --foreground: #03567c;
     --primary-foreground: #028090;
     --secondary-foreground: #05668d;
@@ -149,17 +149,4 @@
     --auth-backgroundImage: url("../assets/AuthPages/YellowAuthBackground.png");
 
     --glow: #f6bd0056;
-}
-
-
-.yellow {
-    
-}
-
-.turquoise {
-    
-}
-
-.purple {
-    
 }

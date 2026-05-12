@@ -222,3 +222,25 @@ export const NavbarButton = ({
         </Tag>
     );
 };
+
+export const ThemeCycleButton = ({ onClick, currentTheme }: { onClick: () => void; currentTheme: string }) => {
+    const themeIcons: Record<string, string> = {
+        // yellow: "🟡",
+        // purple: "🟣",
+        // turquoise: "🔵",
+        yellow: "💛",
+        purple: "💜",
+        turquoise: "🩵",
+    };
+
+    return (
+        <motion.button
+            onClick={onClick}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-md bg-foreground text-background font-black shadow-lg flex items-center justify-center transition-colors duration-300 hover:bg-highlight hover:text-foreground"
+        >
+            <span className="text-xl">{themeIcons[currentTheme] ?? "🎨"}</span>
+        </motion.button>
+    );
+};

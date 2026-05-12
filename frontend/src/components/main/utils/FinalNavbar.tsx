@@ -1,5 +1,6 @@
 import { redirect, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { useTheme } from "../../theme-provider";
 import {
     Navbar,
     NavBody,
@@ -10,10 +11,22 @@ import {
     MobileNavHeader,
     MobileNavMenu,
     MobileNavToggle,
+    ThemeCycleButton,
 } from "../../ui/navbar";
 import { useAuth } from "./authProvider";
 
 export default function FinalNavbar() {
+
+    const { theme, setTheme } = useTheme();
+
+const themes = ["yellow", "purple", "turquoise"];
+
+const cycleTheme = () => {
+    const currentIndex = themes.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+};
+
     const navItems = [
         {
             name: "Home",
@@ -133,6 +146,7 @@ export default function FinalNavbar() {
                     </MobileNavMenu>
                 </MobileNav>
             </Navbar>
+            <ThemeCycleButton onClick={cycleTheme} currentTheme={theme} />
         </div>
     );
 }

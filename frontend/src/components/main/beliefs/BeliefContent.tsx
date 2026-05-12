@@ -284,7 +284,7 @@ export default function BeliefContent() {
             Automatizăm accesul la informații publice din România. Datele există iar noi le facem utilizabile.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "6px", marginTop: "0.5rem" }}>
-            {["ANAF", "portal.just.ro", "SEAP/SICAP", "ANI", "presă", "SM profiles", "PDF-uri oficiale"].map((s) => (
+            {["ANAF", "portal.just.ro", "SEAP", "ANI", "presă", "SM profiles", "PDF-uri oficiale"].map((s) => (
               <span key={s} style={{
                 fontSize: "11px", padding: "5px 12px", borderRadius: "999px",
                 background: "var(--secondary)", border: `1px solid var(--border)`,
@@ -324,7 +324,7 @@ export default function BeliefContent() {
                 Surse
               </h5>
               <div style={{ display: "flex", flexDirection: "row" as const, gap: "40px", fontFamily: "'JetBrains Mono', monospace"  }}>
-                {["ANAF ", "portal.just.ro", "SEAP / SICAP", "ANI", "Presă"].map((s) => (
+                {["ANAF ", "portal.just.ro", "SEAP", "ANI", "Presă"].map((s) => (
                   <span key={s} style={{ fontSize: "13px", color: "var(--muted-foreground)", cursor: "pointer" }}>{s}</span>
                 ))}
               </div>

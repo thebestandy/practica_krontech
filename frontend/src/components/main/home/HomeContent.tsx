@@ -75,7 +75,7 @@ const SOURCES = [
     },
     {
         id: "seap",
-        name: "SEAP / SICAP",
+        name: "SEAP",
         fullName: "Sistemul Electronic de Achiziții Publice",
         url: "https://e-licitatie.ro",
         description:
@@ -370,7 +370,7 @@ export default function HomeContent() {
                                 Surse
                             </p>
                             <div  className="flex flex-row gap-10">
-                                {["ANAF", "portal.just.ro", "SEAP / SICAP", "ANI", "Presă"].map((s) => (
+                                {["ANAF", "portal.just.ro", "SEAP", "ANI", "Presă"].map((s) => (
                                     <span
                                         key={s}
                                         className="text-[13px] font-mono text-secondary-foreground/40 hover:text-secondary-foreground/70 cursor-pointer transition-colors"

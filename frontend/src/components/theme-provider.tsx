@@ -152,29 +152,29 @@ export function ThemeProvider({
         };
     }, [theme, applyTheme]);
 
-    React.useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.repeat || event.metaKey || event.ctrlKey || event.altKey)
-                return;
-            if (isEditableTarget(event.target)) return;
-            if (event.key.toLowerCase() !== "d") return;
+    // React.useEffect(() => {
+    //     const handleKeyDown = (event: KeyboardEvent) => {
+    //         if (event.repeat || event.metaKey || event.ctrlKey || event.altKey)
+    //             return;
+    //         if (isEditableTarget(event.target)) return;
+    //         if (event.key.toLowerCase() !== "d") return;
 
-            setThemeState((currentTheme) => {
-                console.log("hello");
-                const currentIndex = THEME_VALUES.indexOf(currentTheme);
-                const nextIndex = (currentIndex + 1) % THEME_VALUES.length;
-                const nextTheme = THEME_VALUES[nextIndex];
-                localStorage.setItem(storageKey, nextTheme);
-                return nextTheme;
-            });
-        };
+    //         setThemeState((currentTheme) => {
+    //             console.log("hello");
+    //             const currentIndex = THEME_VALUES.indexOf(currentTheme);
+    //             const nextIndex = (currentIndex + 1) % THEME_VALUES.length;
+    //             const nextTheme = THEME_VALUES[nextIndex];
+    //             localStorage.setItem(storageKey, nextTheme);
+    //             return nextTheme;
+    //         });
+    //     };
 
-        window.addEventListener("keydown", handleKeyDown);
+    //     window.addEventListener("keydown", handleKeyDown);
 
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [storageKey]);
+    //     return () => {
+    //         window.removeEventListener("keydown", handleKeyDown);
+    //     };
+    // }, [storageKey]);
 
     React.useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {

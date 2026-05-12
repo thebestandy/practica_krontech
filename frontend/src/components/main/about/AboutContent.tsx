@@ -11,17 +11,17 @@ const TIMELINE = [
     {
         year: "Idee",
         label: "Punctul Zero",
-        text: "Unul dintre noi descoperă că datele de pe SEAP sunt publicate într-un format care descurajează analiza. Se naște primul scraper rudimentar.",
+        text: "Unul dintre noi descoperă că datele de pe SEAP sunt publicate într-un format care descurajează analiza. Se naște ideea.",
     },
     {
         year: "Scrapers",
-        label: "Formarea Grupului",
-        text: "Cei 7 studenți (AIA + Mate-Info) își unesc forțele. Automatizarea AIA întâlnește rigoarea matematică. Centralizăm primele 3 surse majore.",
+        label: "Colectarea Datelor",
+        text: "Surse sunt centralizate și mapate într-o structură relațională. Documentele opace devin date structurate prin procesare automată. Începe extracția.",
     },
     {
         year: "Design",
-        label: "Viziunea e-Scraps",
-        text: "Platforma devine unelte pentru jurnaliști și investigatori. Obiectivul: transformarea haosului birocratic în dovezi digitale incontestabile.",
+        label: "Afișarea Datelor",
+        text: "Legăturile dintre entități devin vizibile pe pagini moderne prin grafuri interactive și analize de date structurate. Apare platforma.",
     },
 ];
 
@@ -124,7 +124,7 @@ export default function AboutContent() {
     const [activeTimeline, setActiveTimeline] = useState(TIMELINE.length - 1);
 
     return (
-        <div style={{ minHeight: "100vh", width:"1100px",marginLeft: "auto", marginRight: "auto", background: "var(--background)", position: "relative", overflow: "hidden" }}>
+        <div style={{ minHeight: "100vh", maxWidth:"1100px",marginLeft: "auto", marginRight: "auto", background: "var(--background)", position: "relative", overflow: "hidden" }}>
         <div style={{
             minHeight: "100vh",
             background: "var(--background)",
@@ -179,7 +179,7 @@ export default function AboutContent() {
                         fontSize: "18px", lineHeight: 1.75,
                         color: "var(--muted-foreground)", fontWeight: 500,
                     }}>
-                        Suntem un grup de 7 studenți de la Automatică și Mate-Info care au decis că 
+                        Suntem un grup de 4 studenți de la Automatică și 3 de la Mate-Info care au decis că 
                         transparența nu trebuie să fie o favoare, ci o certitudine matematică. 
                         Am centralizat datele pentru ca tu să poți pune întrebările care contează.
                     </p>
@@ -395,30 +395,61 @@ export default function AboutContent() {
 
             {/* ── FOOTER ── */}
             <footer style={{
-                borderTop: "1px solid var(--border)",
-                background: "var(--card)",
-                padding: "2rem 2.5rem",
-                display: "flex", justifyContent: "space-between",
-                alignItems: "center", flexWrap: "wrap" as const, gap: "1rem",
-            }}>
-                <span style={{
-                    fontSize: "12px", color: "var(--muted-foreground)",
-                    fontFamily: "'JetBrains Mono', monospace",
-                }}>
-                    © 2026 e-Scraps. Construit de studenți pentru transparență.
+        borderTop: "1px solid var(--border)",
+        background: "var(--card)",
+      }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "4rem 2rem 2rem" }}>
+
+         
+          <div style={{ display: "flex", gap: "4rem", flexWrap: "wrap" as const, marginBottom: "4rem" }}>
+
+            <div style={{ flex: "1 1 280px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "1rem" }}>
+                
+                <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.01em" }}>
+                  e-Scraps
                 </span>
-                <span style={{
-                    fontSize: "12px", color: "var(--muted-foreground)",
-                    fontFamily: "'JetBrains Mono', monospace",
-                    display: "flex", alignItems: "center", gap: "6px" as const,
-                }}>
-                    <span style={{
-                        width: "6px", height: "6px", borderRadius: "50%",
-                        background: "var(--highlight)", display: "inline-block",
-                    }} />
-                    Sursă Deschisă
-                </span>
-            </footer>
+              </div>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--muted-foreground)", lineHeight: 1.7, maxWidth: "300px" }}>
+                Platformă de agregare și analiză a datelor publice din România. Transparență prin tehnologie.
+              </p>
+            </div>
+
+            <div style={{ flex: "1 1 180px" }}>
+              <h5 style={{ margin: "0 0 1rem", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
+                Surse
+              </h5>
+              <div style={{ display: "flex", flexDirection: "row" as const, gap: "40px", fontFamily: "'JetBrains Mono', monospace"  }}>
+                {["ANAF ", "portal.just.ro", "SEAP", "ANI", "Presă"].map((s) => (
+                  <span key={s} style={{ fontSize: "13px", color: "var(--muted-foreground)", cursor: "pointer" }}>{s}</span>
+                ))}
+              </div>
+            </div>
+
+
+          </div>
+
+         
+          <div style={{
+            paddingTop: "1.5rem",
+            borderTop: "1px solid var(--border)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap" as const,
+            gap: "1rem",
+          }}>
+            <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
+              © 2026 e-Scraps. Date publice, analiză deschisă.
+            </span>
+            <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--highlight)", display: "inline-block" }} />
+              Date actualizate zilnic
+            </span>
+          </div>
+
+        </div>
+      </footer>
         </div>
         </div>
     );
