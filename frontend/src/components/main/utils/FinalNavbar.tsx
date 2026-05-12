@@ -11,6 +11,7 @@ import {
     MobileNavMenu,
     MobileNavToggle,
 } from "../../ui/navbar";
+import { useAuth } from "./authProvider";
 
 export default function FinalNavbar() {
     const navItems = [
@@ -52,8 +53,7 @@ export default function FinalNavbar() {
         handleResize();
     }, []);
 
-    // TO BE MODIFIED WITH ACTUALLY LOCALSTORAGE TOKEN FUNCTION.
-    const isLoggedIn = false;
+    const { isAuthenticated } = useAuth();
 
     return (
         <div className="relative z-1000">
@@ -62,15 +62,17 @@ export default function FinalNavbar() {
                     <NavbarLogo />
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
-                        
                         <button
                             className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
-                            onClick={(event: any) => navigate(isLoggedIn ? "/dashboard" : "/login")}
+                            onClick={(event: any) =>
+                                navigate(
+                                    isAuthenticated ? "/dashboard" : "/login",
+                                )
+                            }
                         >
-                            {isLoggedIn ? "Dashboard" : "Get Started"}
+                            {isAuthenticated ? "Dashboard" : "Get Started"}
                         </button>
 
-                       
                         {/* <button
                             className="relative z-10 block overflow-hidden px-6 py-3 text-white bg-transparent rounded-sm
                             border border-zinc-400 bg-white
@@ -108,19 +110,24 @@ export default function FinalNavbar() {
                                 key={`mobile-link-${idx}`}
                                 href={item.link}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="relative px-4 py-2 text-lg text-primary-foreground dark:text-neutral-300 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-foreground hover:text-background font-black uppercase tracking-[0.2em] rounded-md shadow-md"                            >
+                                className="relative px-4 py-2 text-lg text-primary-foreground dark:text-neutral-300 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-foreground hover:text-background font-black uppercase tracking-[0.2em] rounded-md shadow-md"
+                            >
                                 <span className="block">{item.name}</span>
                             </a>
                         ))}
                         <div className="mt-4 flex w-full flex-col">
                             <button
-                                className="inset-0 z-21 h-11 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
+                                className="inset-0 z-21 h-11 hover:cursor-pointer bg-foreground text-background hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
                                 onClick={() => {
                                     setIsMobileMenuOpen(false);
-                                    navigate(isLoggedIn ? "/dashboard" : "/login");
+                                    navigate(
+                                        isAuthenticated
+                                            ? "/dashboard"
+                                            : "/login",
+                                    );
                                 }}
                             >
-                                {isLoggedIn ? "Dashboard" : "Get Started"}
+                                {isAuthenticated ? "Dashboard" : "Get Started"}
                             </button>
                         </div>
                     </MobileNavMenu>
