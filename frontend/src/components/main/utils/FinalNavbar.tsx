@@ -31,7 +31,7 @@ export default function FinalNavbar() {
         },
 
         {
-            name: "About us",
+            name: "About Us",
             link: "/about",
         },
     ];
