@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../../../theme-provider";
 
 
-import logoDark from "../../../../assets/Logos/Yellow.png";     
+import logoYellow from "../../../../assets/Logos/Yellow.png";     
 import logoTurquoise from "../../../../assets/Logos/Turquoise.png"; 
 import logoPurple from "../../../../assets/Logos/Purple.png";
 
@@ -18,12 +18,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     const { theme } = useTheme();
 
     const logoMap: Record<string, string> = {
-        dark: logoDark,
+        yellow: logoYellow,
         purple: logoPurple,
         turquoise: logoTurquoise,
     };
 
-    const currentLogo = logoMap[theme] ?? logoDark;
+    const currentLogo = logoMap[theme] ?? logoYellow;
 
     return (
         <main className="auth-layout">
