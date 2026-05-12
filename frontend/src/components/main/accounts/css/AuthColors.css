@@ -9,13 +9,13 @@
     --auth-border-input: color-mix(in oklch, var(--foreground) 15%, transparent);
     --auth-border-hover: var(--highlight);
 
-    --auth-button-bg: var(--highlight);
-    --auth-button-border: var(--highlight);
-    --auth-button-text: var(--background);
+    --auth-button-bg: var(--foreground);          
+    --auth-button-border: var(--foreground);      
+    --auth-button-text: var(--background);         
 
-    --auth-button-hover-bg: transparent;
+    --auth-button-hover-bg: var(--highlight);
     --auth-button-hover-border: var(--highlight);
-    --auth-button-hover-text: var(--highlight);
+    --auth-button-hover-text: var(--foreground);
 
     --auth-button-secondary-bg: transparent;
     --auth-button-secondary-border: var(--auth-border);

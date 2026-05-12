@@ -27,9 +27,4 @@
     background: var(--auth-button-hover-bg);
     border-color: var(--auth-button-hover-border);
     color: var(--auth-button-hover-text);
-    transform: translateY(-1px);
-}
-
-.auth-button:active {
-    transform: translateY(0);
 }
