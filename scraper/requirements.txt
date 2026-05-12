@@ -6,3 +6,4 @@ motor
 requests
 beautifulsoup4
 lxml
+httpx
