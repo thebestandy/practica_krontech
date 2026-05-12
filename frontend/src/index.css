@@ -7,7 +7,7 @@
 
 @theme inline {
     --font-heading: var(--font-mono);
-    --font-mono: 'JetBrains Mono Variable', monospace;
+    --font-mono: 'Amita', monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-highlight: var(--highlight);
     --color-secondary-highlight: var(--secondary-highlight);

@@ -199,7 +199,7 @@ export default function BeliefContent() {
               { label: "date actualizate", val: "zilnic" },
             ].map((s) => (
               <div key={s.label}>
-                <div style={{ fontSize: "22px", fontWeight: 700, color: "var(--highlight)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "-0.02em" }}>
+                <div style={{ fontSize: "22px", fontWeight: 700, color: "var(--highlight)", letterSpacing: "-0.02em" }}>
                   {s.val}
                 </div>
                 <div style={{ fontSize: "12px", color: "var(--muted-foreground)", marginTop: "2px" }}>{s.label}</div>

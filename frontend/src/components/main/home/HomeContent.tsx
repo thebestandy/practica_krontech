@@ -15,16 +15,17 @@ export default function HomeContent() {
     const currentVideo = videoMap[theme] ?? videoPurple;
 
     return (
-        <>
+        <><br></br><br></br><br></br>
             <section className="h-screen w-full flex flex-row items-center justify-around px-10 relative overflow-hidden py-20 gap-10">
                 <div className="w-1/2 md:w-1/2 flex flex-col justify-center relative z-10 mt-20">
+                    
                     <h1
                         className="opacity-0 animate-fadeUp delay-[450ms] 
                     text-[clamp(3rem,9vw,9rem)] leading-[1] tracking-[-0.08em] 
                     font-bold text-foreground mb-10 "
                     >
                         Introducing <br />
-                        <em className="italic font-light text-highlight">
+                        <em className="italic text-highlight">
                             E-Scraps
                         </em>
                     </h1>
