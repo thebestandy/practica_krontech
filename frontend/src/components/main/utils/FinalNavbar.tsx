@@ -52,6 +52,9 @@ export default function FinalNavbar() {
         handleResize();
     }, []);
 
+    // TO BE MODIFIED WITH ACTUALLY LOCALSTORAGE TOKEN FUNCTION.
+    const isLoggedIn = false;
+
     return (
         <div className="relative z-1000">
             <Navbar ref={navRef}>
@@ -62,9 +65,9 @@ export default function FinalNavbar() {
                         
                         <button
                             className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
-                            onClick={(event: any) => navigate("/dashboard")}
+                            onClick={(event: any) => navigate(isLoggedIn ? "/dashboard" : "/login")}
                         >
-                            Dashboard
+                            {isLoggedIn ? "Dashboard" : "Get Started"}
                         </button>
 
                        
