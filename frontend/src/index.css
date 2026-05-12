@@ -7,7 +7,7 @@
 
 @theme inline {
     --font-heading: var(--font-mono);
-    --font-mono: 'Amita', monospace;
+    --font-mono: 'Times New Roman', Times, series;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-highlight: var(--highlight);
     --color-secondary-highlight: var(--secondary-highlight);
