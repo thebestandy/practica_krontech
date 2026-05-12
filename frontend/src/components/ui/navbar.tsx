@@ -8,12 +8,9 @@ import logoTurquoise from "../../assets/Logos/Turquoise.png";
 import logoPurple from "../../assets/Logos/Purple.png";
 import React, { useState, forwardRef } from "react";
 
-// Single source of truth for mobile surface appearance.
-// Both MobileNav (header) and MobileNavMenu (panel) use these — guaranteed identical.
 const MOBILE_BG = "color-mix(in srgb, var(--secondary-highlight) 55%, transparent)";
 const MOBILE_BLUR = "blur(10px)";
 
-// ─── Navbar wrapper ────────────────────────────────────────────────────────────
 export const Navbar = forwardRef<HTMLDivElement, any>(
     ({ children, className, isMobileOpen }, ref) => {
         const { scrollY } = useScroll();
@@ -27,7 +24,6 @@ export const Navbar = forwardRef<HTMLDivElement, any>(
 
         return (
             <>
-                {/* Global glow */}
                 <div style={{
                     position: "fixed",
                     top: "-30%",
@@ -40,7 +36,6 @@ export const Navbar = forwardRef<HTMLDivElement, any>(
                     zIndex: 0,
                 }} />
 
-                {/* Outer wrapper: pill geometry + background when menu open */}
                 <motion.div
                     ref={ref}
                     className={cn("fixed inset-x-0 top-0 z-50 w-full", className)}
@@ -68,8 +63,6 @@ export const Navbar = forwardRef<HTMLDivElement, any>(
 );
 Navbar.displayName = "Navbar";
 
-// ─── NavBody (DESKTOP) ────────────────────────────────────────────────────────
-// Untouched from working version — animates width/blur/shadow/bg on scroll.
 export const NavBody = ({ children, className, visible, isDesktop }: any) => (
     <motion.div
         animate={{
@@ -94,7 +87,6 @@ export const NavBody = ({ children, className, visible, isDesktop }: any) => (
     </motion.div>
 );
 
-// ─── NavItems (DESKTOP) ───────────────────────────────────────────────────────
 export const NavItems = ({ items, className, onItemClick }: any) => {
     const [hovered, setHovered] = useState<number | null>(null);
 
@@ -124,10 +116,6 @@ export const NavItems = ({ items, className, onItemClick }: any) => {
     );
 };
 
-// ─── MobileNav ────────────────────────────────────────────────────────────────
-// When menu is closed + scrolled: shows MOBILE_BG surface (pill navbar).
-// When menu is open: goes transparent — MobileNavMenu directly below uses the
-// same MOBILE_BG, so together they read as one seamless surface.
 export const MobileNav = ({ children, className, isDesktop, visible, isMobileOpen }: any) => (
     <div
         style={{
@@ -157,8 +145,6 @@ export const MobileNavHeader = ({ children, className }: any) => (
     </div>
 );
 
-// ─── MobileNavMenu ────────────────────────────────────────────────────────────
-// Uses exact same MOBILE_BG + MOBILE_BLUR constants — no drift possible.
 export const MobileNavMenu = ({ children, isOpen, topOffset }: any) => (
     <AnimatePresence>
         {isOpen && (
@@ -186,14 +172,12 @@ export const MobileNavMenu = ({ children, isOpen, topOffset }: any) => (
     </AnimatePresence>
 );
 
-// ─── MobileNavToggle ──────────────────────────────────────────────────────────
 export const MobileNavToggle = ({ isOpen, onClick }: any) => (
     <button onClick={onClick} className="text-foreground p-2">
         {isOpen ? <IconX size={28} /> : <IconMenu2 size={28} />}
     </button>
 );
 
-// ─── NavbarLogo ───────────────────────────────────────────────────────────────
 export const NavbarLogo = () => {
     const { theme } = useTheme();
     const logoMap: Record<string, string> = {

@@ -26,7 +26,6 @@ export default function FinalNavbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 760);
 
-    // Used to position the mobile menu panel just below the navbar pill
     const navbarRef = useRef<HTMLDivElement>(null);
     const [menuTop, setMenuTop] = useState<number>(72);
 
@@ -37,7 +36,6 @@ export default function FinalNavbar() {
         }
     };
 
-    // Re-measure after the open animation settles (~320 ms)
     useEffect(() => {
         if (isMobileMenuOpen) {
             const t = setTimeout(measureNavbar, 320);
@@ -66,7 +64,6 @@ export default function FinalNavbar() {
 
             <Navbar ref={navbarRef} isMobileOpen={isMobileMenuOpen}>
 
-                {/* ── DESKTOP (team style) ─────────────────────────────────── */}
                 <NavBody isDesktop={isDesktop}>
                     <NavbarLogo />
                     <NavItems items={navItems} />
@@ -82,7 +79,6 @@ export default function FinalNavbar() {
                     </div>
                 </NavBody>
 
-                {/* ── MOBILE header (your design) ──────────────────────────── */}
                 <MobileNav isDesktop={isDesktop}>
                     <MobileNavHeader>
                         <NavbarLogo />
@@ -95,7 +91,6 @@ export default function FinalNavbar() {
 
             </Navbar>
 
-            {/* ── MOBILE full-screen menu (your design) ───────────────────── */}
             <MobileNavMenu isOpen={isMobileMenuOpen} topOffset={menuTop}>
 
                 <div className="flex flex-col gap-1 flex-1">
