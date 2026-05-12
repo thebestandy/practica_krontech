@@ -329,9 +329,9 @@ export default function HomeContent() {
                 <div className="max-w-6xl mx-auto mt-16 grid grid-cols-2 sm:grid-cols-4 gap-px border border-white/5 rounded-2xl overflow-hidden">
                     {[
                         { label: "Surse monitorizate", value: "7" },
-                        { label: "Documente procesate", value: "128K+" },
+                        { label: "Documente procesate", value: "128" },
                         { label: "Actualizări", value: "Zilnic" },
-                        { label: "Entități indexate", value: "50M+" },
+                        { label: "Entități indexate", value: "50" },
                     ].map((stat, i) => (
                         <div
                             key={stat.label}
