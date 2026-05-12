@@ -26,7 +26,7 @@ export default function HomeContent() {
                     >
                         Introducing <br />
                         <em className="italic text-highlight">
-                            E-Scraps
+                            e-Scraps
                         </em>
                     </h1>
 

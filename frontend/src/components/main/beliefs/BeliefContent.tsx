@@ -161,58 +161,93 @@ export default function BeliefContent() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--background)", position: "relative", overflow: "hidden" }}>
 
-      {/* Glow ambient din culoarea temei */}
-      <div style={{
-        position: "fixed", top: "-30%", left: "50%", transform: "translateX(-50%)",
-        width: "900px", height: "600px",
-        background: "radial-gradient(ellipse, color-mix(in oklch, var(--highlight) 8%, transparent) 0%, transparent 70%)",
-        pointerEvents: "none", zIndex: 0,
-      }} />
+      
+      <section style={{
+        position: "relative",
+        minHeight: "92vh",
+        display: "flex",
+        flexDirection: "column" as const,
+        justifyContent: "flex-end",
+        overflow: "hidden",
+      }}>
+       
+      
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 2rem" }}>
+      
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to bottom, transparent 30%, var(--background) 100%)",
+          zIndex: 1,
+        }} />
+        
+        <div style={{ position: "relative", zIndex: 2, maxWidth: "1100px", margin: "0 auto", padding: "0 2rem 6rem", width: "100%" }}>
 
-        {/* Header */}
-        <header style={{ paddingTop: "4rem", paddingBottom: "3rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem" }}>
-           
-           
+          {/* Badge */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: "8px",
+            padding: "6px 14px", borderRadius: "999px",
+            border: "1px solid var(--border)",
+            background: "color-mix(in oklch, var(--background) 60%, transparent)",
+            backdropFilter: "blur(8px)",
+            marginBottom: "2rem",
+          }}>
+            
           </div>
 
           <h1 style={{
-            margin: "0 0 1.25rem",
-            fontSize: "clamp(2rem, 5vw, 3.5rem)",
-            fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.1,
+            margin: "0 0 1.5rem",
+            fontSize: "clamp(2.5rem, 7vw, 5rem)",
+            fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.05,
             color: "var(--foreground)",
+            maxWidth: "700px",
           }}>
             Ce credem noi<br />despre informație
           </h1>
 
-          <p style={{ margin: 0, fontSize: "16px", color: "var(--muted-foreground)", maxWidth: "560px", lineHeight: 1.7 }}>
+          <p style={{
+            margin: "0 0 3rem",
+            fontSize: "18px", color: "var(--muted-foreground)",
+            maxWidth: "520px", lineHeight: 1.7,
+          }}>
             e-Scraps nu este doar un motor de căutare ci este o platformă cu un punct de vedere.
             Iată principiile care ghidează ce informații culegem, cum și de ce.
           </p>
 
-          <div style={{ display: "flex", gap: "2rem", marginTop: "2rem", paddingTop: "2rem", borderTop: `1px solid var(--border)`, flexWrap: "wrap" as const }}>
+         
+          <div style={{ display: "flex", gap: "3rem", flexWrap: "wrap" as const }}>
             {[
               { label: "surse monitorizate", val: "7" },
               { label: "principii fundamentale", val: "6" },
               { label: "date actualizate", val: "zilnic" },
             ].map((s) => (
-              <div key={s.label}>
-                <div style={{ fontSize: "22px", fontWeight: 700, color: "var(--highlight)", letterSpacing: "-0.02em" }}>
+              <div key={s.label} style={{ display: "flex", flexDirection: "column" as const, gap: "4px" }}>
+                <span style={{ fontSize: "28px", fontWeight: 800, color: "var(--highlight)", letterSpacing: "-0.03em", lineHeight: 1 }}>
                   {s.val}
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--muted-foreground)", marginTop: "2px" }}>{s.label}</div>
+                </span>
+                <span style={{ fontSize: "12px", color: "var(--muted-foreground)", letterSpacing: "0.04em" }}>
+                  {s.label}
+                </span>
               </div>
             ))}
           </div>
-        </header>
+        </div>
+      </section>
 
-        <div style={{ height: "1px", background: `linear-gradient(90deg, transparent, var(--border), transparent)`, marginBottom: "3rem" }} />
+      
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "1100px", margin: "0 auto", padding: "0 2rem" }}>
 
-        {/* Grid */}
-        <section>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1rem", marginBottom: "4rem" }}>
+        {/* Section label */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "3rem" }}>
+          <div style={{ height: "1px", flex: 1, background: "var(--border)" }} />
+          <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" as const }}>
+            Cele 6 principii
+          </span>
+          <div style={{ height: "1px", flex: 1, background: "var(--border)" }} />
+        </div>
+
+        
+        <section style={{ marginBottom: "8rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.25rem" }}>
             {beliefs.map((belief, i) => (
               <BeliefCard
                 key={belief.id}
@@ -225,35 +260,102 @@ export default function BeliefContent() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer style={{ borderTop: `1px solid var(--border)`, paddingTop: "2.5rem", paddingBottom: "4rem", display: "flex", gap: "3rem", flexWrap: "wrap" as const }}>
-          <div style={{ flex: 1, minWidth: "260px" }}>
-            <h4 style={{ margin: "0 0 0.75rem", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
-              Misiune
-            </h4>
-            <p style={{ margin: 0, fontSize: "14px", color: "var(--muted-foreground)", lineHeight: 1.7, maxWidth: "380px" }}>
-              Automatizăm accesul la informații publice din România. Datele există iar noi le facem utilizabile.
-            </p>
+        
+        <section style={{
+          marginBottom: "2rem",
+          padding: "3rem",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          background: "var(--card)",
+          display: "flex",
+          flexDirection: "column" as const,
+          gap: "1.5rem",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: "2px",
+            background: "linear-gradient(90deg, transparent, var(--highlight), transparent)",
+          }} />
+          <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "var(--highlight)", fontFamily: "'JetBrains Mono', monospace" }}>
+            Misiune
+          </span>
+          <p style={{ margin: 0, fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", color: "var(--foreground)", lineHeight: 1.6, fontWeight: 500, maxWidth: "700px" }}>
+            Automatizăm accesul la informații publice din România. Datele există iar noi le facem utilizabile.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "6px", marginTop: "0.5rem" }}>
+            {["ANAF", "portal.just.ro", "SEAP/SICAP", "ANI", "presă", "SM profiles", "PDF-uri oficiale"].map((s) => (
+              <span key={s} style={{
+                fontSize: "11px", padding: "5px 12px", borderRadius: "999px",
+                background: "var(--secondary)", border: `1px solid var(--border)`,
+                color: "var(--secondary-foreground)", fontFamily: "'JetBrains Mono', monospace",
+              }}>
+                {s}
+              </span>
+            ))}
           </div>
-          <div>
-            <h4 style={{ margin: "0 0 0.75rem", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
-              Surse active
-            </h4>
-            <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "6px" }}>
-              {["ANAF", "portal.just.ro", "SEAP/SICAP", "ANI", "presă", "SM profiles", "PDF-uri oficiale"].map((s) => (
-                <span key={s} style={{
-                  fontSize: "11px", padding: "4px 10px", borderRadius: "6px",
-                  background: "var(--secondary)", border: `1px solid var(--border)`,
-                  color: "var(--secondary-foreground)", fontFamily: "'JetBrains Mono', monospace",
-                }}>
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-        </footer>
+        </section>
 
       </div>
+      
+      <footer style={{
+        borderTop: "1px solid var(--border)",
+        background: "var(--card)",
+      }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "4rem 2rem 2rem" }}>
+
+         
+          <div style={{ display: "flex", gap: "4rem", flexWrap: "wrap" as const, marginBottom: "4rem" }}>
+
+            <div style={{ flex: "1 1 280px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "1rem" }}>
+                
+                <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.01em" }}>
+                  e-Scraps
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--muted-foreground)", lineHeight: 1.7, maxWidth: "300px" }}>
+                Platformă de agregare și analiză a datelor publice din România. Transparență prin tehnologie.
+              </p>
+            </div>
+
+            {/* Surse */}
+            <div style={{ flex: "1 1 180px" }}>
+              <h5 style={{ margin: "0 0 1rem", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
+                Surse
+              </h5>
+              <div style={{ display: "flex", flexDirection: "row" as const, gap: "40px", fontFamily: "'JetBrains Mono', monospace"  }}>
+                {["ANAF ", "portal.just.ro", "SEAP / SICAP", "ANI", "Presă"].map((s) => (
+                  <span key={s} style={{ fontSize: "13px", color: "var(--muted-foreground)", cursor: "pointer" }}>{s}</span>
+                ))}
+              </div>
+            </div>
+
+
+          </div>
+
+         
+          <div style={{
+            paddingTop: "1.5rem",
+            borderTop: "1px solid var(--border)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap" as const,
+            gap: "1rem",
+          }}>
+            <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
+              © 2025 e-Scraps. Date publice, analiză deschisă.
+            </span>
+            <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--highlight)", display: "inline-block" }} />
+              Date actualizate zilnic
+            </span>
+          </div>
+
+        </div>
+      </footer>
+
     </div>
   );
 }

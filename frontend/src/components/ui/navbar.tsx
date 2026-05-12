@@ -28,23 +28,32 @@ export const Navbar = ({ children, className }: any) => {
         } else {
             setVisible(false);
         }
-        
     });
 
     return (
-        <motion.div
-            ref={ref}
-            className={cn("fixed inset-x-0 top-5 z-50 w-full", className)}
-        >
-            {React.Children.map(children, (child) =>
-                React.isValidElement(child)
-                    ? React.cloneElement(
-                          child as React.ReactElement<{ visible?: boolean }>,
-                          { visible },
-                      )
-                    : child,
-            )}
-        </motion.div>
+        <>
+            {/* Glow global — apare pe toate paginile */}
+            <div style={{
+           position: "fixed", top: "-30%", left: "50%", transform: "translateX(-50%)",
+        width: "900px", height: "600px",
+        background: "radial-gradient(ellipse, var(--glow) 0%, transparent 70%)",
+        pointerEvents: "none", zIndex: 0,
+        }} />
+
+            <motion.div
+                ref={ref}
+                className={cn("fixed inset-x-0 top-5 z-50 w-full", className)}
+            >
+                {React.Children.map(children, (child) =>
+                    React.isValidElement(child)
+                        ? React.cloneElement(
+                              child as React.ReactElement<{ visible?: boolean }>,
+                              { visible },
+                          )
+                        : child,
+                )}
+            </motion.div>
+        </>
     );
 };
 
@@ -158,11 +167,6 @@ export const MobileNavToggle = ({ isOpen, onClick }: any) =>
     );
 
 export const NavbarLogo = () => {
-    // <a className="flex items-center px-2 py-1 text-white">
-    //     <span className="font-medium text-highlight">
-    //         <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
-    //     </span>
-    // </a>
     const { theme } = useTheme();
 
     const logoMap: Record<string, string> = {

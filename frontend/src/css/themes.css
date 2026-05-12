@@ -119,6 +119,8 @@
     --radius: 0.625rem;
 
     --auth-backgroundImage: url("../assets/AuthPages/PurpleAuthBackground.png");
+
+    --glow: #875ac18c;
 }
 
 .turquoise {
@@ -131,6 +133,8 @@
     --radius: 0.625rem;
 
     --auth-backgroundImage: url("../assets/AuthPages/TurquoiseAuthBackground.png");
+
+    --glow: #02d1d188;
 }
  
 .yellow {
@@ -143,4 +147,19 @@
     --radius: 0.625rem;
 
     --auth-backgroundImage: url("../assets/AuthPages/YellowAuthBackground.png");
+
+    --glow: #f6bd0056;
+}
+
+
+.yellow {
+    
+}
+
+.turquoise {
+    
+}
+
+.purple {
+    
 }

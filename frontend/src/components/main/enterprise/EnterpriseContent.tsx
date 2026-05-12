@@ -22,7 +22,7 @@ export default function EnterpriseContent() {
                         </p>
                         <p className="leading-relaxed">
                             <span className="text-foreground font-bold text-highlight/90">
-                                E-scraps
+                                e-Scraps
                             </span>{" "}
                             este aplicația perfectă pentru tine dacă ești un
                             jurnalist, un analist financiar sau oricine
@@ -68,7 +68,7 @@ export default function EnterpriseContent() {
                 <div className="max-w-7xl mx-auto space-y-8">
                     <div className="flex flex-col md:flex-row items-end justify-between gap-4">
                         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">
-                            Simulează un proiect E-scraps
+                            Simulează un proiect e-Scraps
                         </h2>
                         <div className="flex items-center gap-3 text-[10px] font-bold tracking-[0.1em] text-highlight">
                             <span className="w-2 h-2 rounded-full bg-highlight animate-ping"></span>
@@ -226,7 +226,7 @@ export default function EnterpriseContent() {
             {/* FOOTER */}
             <footer className="w-full py-12 border-t border-border bg-background text-center">
                 <p className="text-[10px] tracking-[0.5em] text-muted-foreground uppercase">
-                    ©Copyright E-scraps 2026
+                    ©Copyright e-Scraps 2026
                 </p>
             </footer>
         </>
