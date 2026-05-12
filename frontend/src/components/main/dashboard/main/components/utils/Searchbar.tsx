@@ -56,7 +56,7 @@ export default function Search() {
                 value={searchTarget}
                 placeholder="Search..."
                 tabIndex={isOpen ? 0 : -1}
-                className="flex-grow min-w-0 h-full px-[15px] text-base font-normal text-primary-foreground bg-transparent border-2 outline-none border-black"
+                className="grow min-w-0 h-full px-[15px] text-base font-normal text-primary-foreground bg-transparent border-2 outline-none border-black"
             />
         </form>
     );

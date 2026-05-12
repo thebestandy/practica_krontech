@@ -8,21 +8,22 @@ import GoogleButton from "./components/GoogleButton";
 import AuthDivider from "./components/AuthDivider";
 
 import "./css/Login.css";
+import { useAuth } from "../utils/authProvider";
 
 const MOCK_EMAIL = "test@scraps.com";
 const MOCK_PASSWORD = "123456";
 
 export default function Login() {
     const navigate = useNavigate();
-    
+
     const [showPassword, setShowPassword] = useState(false);
-    
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    
+
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
-    
+
     function handleEmailStep() {
         setEmailError("");
 
@@ -72,6 +73,28 @@ export default function Login() {
 
         handleEmailStep();
     }
+
+    // Alr baieti am facut auth provider-ul, un mic exemplu de login:
+    const { login } = useAuth();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch("http://localhost:8000/api/login/", {
+            method: "POST",
+            headers: {
+                /* headere si asa */
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            login(data.user, data.access, data.refresh);
+        } else {
+            console.log("mna");
+        }
+    };
 
     return (
         <AuthLayout>
@@ -126,9 +149,9 @@ export default function Login() {
             </form>
 
             <p className="login-register-text">
-                Don&apos;t have an account?{" "}
-                <Link to="/register">Sign up</Link>
+                Don&apos;t have an account? <Link to="/register">Sign up</Link>
             </p>
         </AuthLayout>
     );
 }
+
