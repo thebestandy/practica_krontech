@@ -332,7 +332,7 @@ export default function HomeContent() {
                         { label: "Documente procesate", value: "128" },
                         { label: "Actualizări", value: "Zilnic" },
                         { label: "Entități indexate", value: "50" },
-                    ].map((stat, i) => (
+                    ].map((stat) => (
                         <div
                             key={stat.label}
                             className="flex flex-col gap-1.5 px-6 py-5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
@@ -348,12 +348,12 @@ export default function HomeContent() {
                 </div>
             </section>
 
-            <footer className="border-t border-white/8">
+           <footer className="border-t border-white/8">
                 <div className="max-w-6xl mx-auto px-10 pt-16 pb-8">
-
-                    <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 mb-12">
-
-                        <div className="flex flex-col gap-4 max-w-xs">
+ 
+                    <div className="flex gap-16 flex-wrap mb-12">
+ 
+                        <div className="flex flex-col gap-4 max-w-xs flex-[1_1_280px]">
                             <div className="flex items-center gap-2">
                                 <span className={`inline-block w-2 h-2 rounded-full ${accent.highlight.replace("text-", "bg-")}`} />
                                 <span className={`text-[15px] font-bold tracking-tight font-mono ${accent.highlight}`}>
@@ -364,12 +364,12 @@ export default function HomeContent() {
                                 Platformă de agregare și analiză a datelor publice din România. Transparență prin tehnologie.
                             </p>
                         </div>
-
-                        <div className="flex flex-col gap-4">
-                            <p className={`text-[10px] font-mono font-semibold uppercase tracking-[0.18em] ${accent.highlight}`}>
+ 
+                        <div className="flex flex-col gap-4 ml-auto">
+                            <p className={`text-[10px] font-mono font-semibold uppercase tracking-[0.20em] ${accent.highlight}`}>
                                 Surse
                             </p>
-                            <div className="flex flex-col gap-2">
+                            <div  className="flex flex-row gap-10">
                                 {["ANAF", "portal.just.ro", "SEAP / SICAP", "ANI", "Presă"].map((s) => (
                                     <span
                                         key={s}
@@ -381,10 +381,10 @@ export default function HomeContent() {
                             </div>
                         </div>
                     </div>
-
+ 
                     <div className="pt-6 border-t border-white/5 flex items-center justify-between gap-4 flex-wrap">
                         <span className="text-[11px] font-mono text-secondary-foreground/30">
-                            © 2025 e-Scraps. Date publice, analiză deschisă.
+                            © 2026 e-Scraps. Date publice, analiză deschisă.
                         </span>
                         <div className="flex items-center gap-2">
                             <span className={`inline-block w-1.5 h-1.5 rounded-full ${accent.highlight.replace("text-", "bg-")}`} />

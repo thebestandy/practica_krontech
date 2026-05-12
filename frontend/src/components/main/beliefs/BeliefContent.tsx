@@ -319,7 +319,6 @@ export default function BeliefContent() {
               </p>
             </div>
 
-            {/* Surse */}
             <div style={{ flex: "1 1 180px" }}>
               <h5 style={{ margin: "0 0 1rem", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
                 Surse
@@ -345,7 +344,7 @@ export default function BeliefContent() {
             gap: "1rem",
           }}>
             <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace" }}>
-              © 2025 e-Scraps. Date publice, analiză deschisă.
+              © 2026 e-Scraps. Date publice, analiză deschisă.
             </span>
             <span style={{ fontSize: "12px", color: "var(--muted-foreground)", fontFamily: "'JetBrains Mono', monospace", display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--highlight)", display: "inline-block" }} />
