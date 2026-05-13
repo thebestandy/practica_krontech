@@ -7,16 +7,21 @@ import AuthButton from "./components/AuthButton";
 
 import "./css/ForgotPassword.css";
 
-const MOCK_EMAIL = "test@scraps.com";
+import {
+    getApiErrorCode,
+    getApiErrorMessage,
+    useAuthActions,
+} from "../utils/useAuthActions";
+
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
-
+    const { forgotPassword } = useAuthActions();
     const [emailError, setEmailError] = useState("");
     const [successMessage, setSuccessMessage] =
         useState("");
 
-    function handleSubmit(
+    async function handleSubmit(
         event: React.FormEvent<HTMLFormElement>
     ) {
         event.preventDefault();
@@ -38,18 +43,26 @@ export default function ForgotPassword() {
             return;
         }
 
-        // TODO: API call for forgot password email verification.
-        if (email !== MOCK_EMAIL) {
-            setEmailError(
-                "We couldn't find an account with this email."
-            );
-            return;
-        }
+       try {
+            const response = await forgotPassword(email);
 
-        // TODO: API call for sending password reset email.
-        setSuccessMessage(
-            "We've sent a password reset link to your email."
-        );
+            setSuccessMessage(
+                response.detail || "We've sent a password reset link to your email."
+            );
+        } catch (error) {
+            const code = getApiErrorCode(error);
+
+            if (code === "use_google_login") {
+                setEmailError(
+                    "This account uses Google. Please continue with Google."
+                );
+                return;
+            }
+
+            setEmailError(
+                getApiErrorMessage(error, "Could not send reset link.")
+            );
+        }
     }
 
     return (

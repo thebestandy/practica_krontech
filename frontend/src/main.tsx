@@ -5,6 +5,7 @@ import "./css/themes.css";
 import App from "./App.tsx";
 import { ThemeProvider, useTheme} from "./components/theme-provider.tsx";
 import { AuthProvider } from "./components/main/utils/authProvider.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import logoYellow from "./assets/Logos/Yellow.png";
 import logoTurquoise from "./assets/Logos/Turquoise.png";
@@ -31,11 +32,12 @@ function FaviconManager() {
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <ThemeProvider>
-            <FaviconManager />
-            <AuthProvider>
-                <App />
-            </AuthProvider>
-        </ThemeProvider>
-    </StrictMode>,
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <ThemeProvider>
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
+            </ThemeProvider>
+        </GoogleOAuthProvider>
+    </StrictMode>
 );

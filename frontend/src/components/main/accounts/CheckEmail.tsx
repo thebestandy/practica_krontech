@@ -10,9 +10,12 @@ import mailIconPurple from "../../../assets/AuthPages/PurpleMailIcon.png";
 import mailIconTurquoise from "../../../assets/AuthPages/TurquoiseMailIcon.png"; 
 
 import "./css/CheckEmail.css";
-
+import {
+    getApiErrorMessage,
+    useAuthActions,
+} from "../utils/useAuthActions";
 const CODE_LENGTH = 6;
-const MOCK_CONFIRMATION_CODE = "A1B2C3";
+
 
 export default function CheckEmail() {
     const { theme } = useTheme();
@@ -27,18 +30,22 @@ export default function CheckEmail() {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const email = location.state?.email || "example@mail.com";
+    const { verifyEmail, resendVerificationCode } = useAuthActions();
+    const email = location.state?.email || "";
 
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
     const [code, setCode] = useState<string[]>(
         Array(CODE_LENGTH).fill("")
     );
-
     const [codeError, setCodeError] = useState("");
     const [resendMessage, setResendMessage] = useState("");
 
+    if (!email) {
+        navigate("/register");
+        return null;
+    }
+        
     function handleCodeChange(value: string, index: number) {
         const cleanValue = value
             .replace(/[^a-zA-Z0-9]/g, "")
@@ -100,41 +107,46 @@ export default function CheckEmail() {
         inputRefs.current[nextIndex]?.focus();
     }
 
-    function handleResendCode() {
+    async function handleResendCode() {
         setCode(Array(CODE_LENGTH).fill(""));
         setCodeError("");
+        setResendMessage("");
 
-        // TODO: API call for resend confirmation code.
-        setResendMessage(
-            "A new confirmation code has been sent."
-        );
+        try {
+            const response = await resendVerificationCode(email);
+
+            setResendMessage(
+                response.detail || "A new confirmation code has been sent."
+            );
+        } catch (error) {
+            setCodeError(
+                getApiErrorMessage(error, "Could not resend confirmation code.")
+            );
+        }
     }
 
-    function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>
-    ) {
+   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         const confirmationCode = code.join("");
 
         if (confirmationCode.length !== CODE_LENGTH) {
-            setCodeError(
-                "Please enter the confirmation code."
-            );
+            setCodeError("Please enter the confirmation code.");
             return;
         }
 
-        // TODO: API call for confirmation code verification.
-        if (
-            confirmationCode !== MOCK_CONFIRMATION_CODE
-        ) {
-            setCodeError(
-                "The confirmation code is incorrect."
-            );
-            return;
-        }
+        try {
+            await verifyEmail({
+                email,
+                code: confirmationCode,
+            });
 
-        navigate("/dashboard");
+            navigate("/dashboard");
+        } catch (error) {
+            setCodeError(
+                getApiErrorMessage(error, "The confirmation code is incorrect.")
+            );
+        }
     }
 
     return (

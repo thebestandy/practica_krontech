@@ -8,24 +8,31 @@ import GoogleButton from "./components/GoogleButton";
 import AuthDivider from "./components/AuthDivider";
 
 import "./css/Register.css";
+import {
+    getApiErrorCode,
+    getApiErrorMessage,
+    useAuthActions,
+} from "../utils/useAuthActions";
 
-const MOCK_EXISTING_EMAIL = "test@scraps.com";
+
+
 
 export default function Register() {
     const navigate = useNavigate();
+    const { register } = useAuthActions();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [accountType, setAccountType] = useState<"personal" | "company">(
-        "personal"
+    const [accountType, setAccountType] = useState<"personal" | "business">(
+    "personal"
     );
 
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setEmailError("");
@@ -42,12 +49,7 @@ export default function Register() {
             return;
         }
 
-        // TODO: API call for checking if email already exists.
-        if (email === MOCK_EXISTING_EMAIL) {
-            setEmailError("An account with this email already exists.");
-            return;
-        }
-
+        
         if (!password.trim()) {
             setPasswordError("Please enter your password.");
             return;
@@ -68,13 +70,33 @@ export default function Register() {
             return;
         }
 
-        // TODO: API call for register/create account. ({ email, password, accountType });
-
-        navigate("/check-email", {
-            state: {
+        try {
+            const response = await register({
                 email,
-            },
-        });
+                password,
+                confirmPassword,
+                accountType,
+            });
+
+            navigate("/check-email", {
+                state: {
+                    email: response.email,
+                },
+            });
+        } catch (error) {
+            const code = getApiErrorCode(error);
+
+            if (code === "google_account_exists") {
+                setEmailError(
+                    "This email is already connected with Google. Please continue with Google."
+                );
+                return;
+            }
+
+            setEmailError(
+                getApiErrorMessage(error, "Could not create account.")
+            );
+        }
     }
 
     return (
@@ -142,9 +164,9 @@ export default function Register() {
                         <button
                             type="button"
                             className={`register-account-type-option ${
-                                accountType === "company" ? "active" : ""
+                                accountType === "business" ? "active" : ""
                             }`}
-                            onClick={() => setAccountType("company")}
+                            onClick={() => setAccountType("business")}
                         >
                             Company
                         </button>

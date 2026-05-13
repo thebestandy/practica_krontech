@@ -1,4 +1,4 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 
 import AuthLayout from "./components/AuthLayout";
@@ -6,13 +6,18 @@ import AuthInput from "./components/AuthInput";
 import AuthButton from "./components/AuthButton";
 
 import "./css/ResetPassword.css";
+import {
+    getApiErrorMessage,
+    useAuthActions,
+} from "../utils/useAuthActions";
+
 
 export default function ResetPassword() {
     const navigate = useNavigate();
 
-    const [searchParams] = useSearchParams();
+    const { uid, token } = useParams();
 
-    const token = searchParams.get("token");
+    const { resetPassword } = useAuthActions();
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] =
@@ -27,7 +32,7 @@ export default function ResetPassword() {
     const [successMessage, setSuccessMessage] =
         useState("");
 
-    if (!token) {
+    if (!uid || !token) {
         return (
             <AuthLayout>
                 <div className="reset-password-invalid">
@@ -48,7 +53,7 @@ export default function ResetPassword() {
         );
     }
 
-    function handleSubmit(
+    async function handleSubmit(
         event: React.FormEvent<HTMLFormElement>
     ) {
         event.preventDefault();
@@ -85,17 +90,26 @@ export default function ResetPassword() {
             return;
         }
 
-        // TODO: API call for reset token validation.
+        try {
+            const response = await resetPassword({
+                uid,
+                token,
+                password,
+                confirmPassword,
+            });
 
-        // TODO: API call for password reset.
+            setSuccessMessage(
+                response.detail || "Password updated successfully."
+            );
 
-        setSuccessMessage(
-            "Password updated successfully."
-        );
-
-        setTimeout(() => {
-            navigate("/login");
-        }, 1200);
+            setTimeout(() => {
+                navigate("/login");
+            }, 1200);
+          }catch (error) {
+            setConfirmPasswordError(
+                getApiErrorMessage(error, "Could not reset password.")
+            );
+        }
     }
 
     return (
