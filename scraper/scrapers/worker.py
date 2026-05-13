@@ -16,6 +16,9 @@ from scrapers.news.digi24_nou import Digi24Scraper
 from scrapers.news.g4media_nou import G4MediaScraper
 from scrapers.news.hotnews_nou import HotNewsScraper
 
+from scrapers.journalism.recorder_nou import RecorderScraper
+from scrapers.journalism.riseproject_nou import RiseProjectScraper
+from scrapers.journalism.zf_nou import ZFScraper
 
 class Worker:
     def __init__(self, websocket, manager, scan_id, target):
@@ -50,6 +53,10 @@ class Worker:
             # asyncio.create_task(asyncio.to_thread(Digi24Scraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(G4MediaScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
+
+            # asyncio.create_task(asyncio.to_thread(RecorderScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(RiseProjectScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
         ]
 
         for finished_task in asyncio.as_completed(queue):
