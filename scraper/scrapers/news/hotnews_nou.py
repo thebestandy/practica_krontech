@@ -3,17 +3,16 @@
 import re
 import time
 import hashlib
-import httpx
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from email.utils import parsedate_to_datetime
 from urllib.parse import quote_plus, urljoin, urlparse
-from datetime import datetime
 
 import httpx
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://www.hotnews.ro"
+BASE_URL = "https://hotnews.ro"
 SOURCE_NAME = "HotNews"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -25,14 +24,17 @@ MAX_WORKERS = 5
 
 class HotNewsScraper:
 
-    def __init__(self):
-        self.session = httpx.Client(headers = HEADERS, timeout = TIMEOUT, follow_redirects = True)
-
     def request_get(self, url: str, **kwargs) -> httpx.Response | None:
         for attempt in range(RETRIES):
             try:
                 time.sleep(REQUEST_DELAY)
-                response = self.session.get(url, **kwargs)
+                response = httpx.get(
+                    url,
+                    headers = HEADERS,
+                    timeout = TIMEOUT,
+                    follow_redirects = True,
+                    **kwargs,
+                )
                 response.raise_for_status()
                 return response
             except httpx.HTTPError:
@@ -55,16 +57,11 @@ class HotNewsScraper:
             tag.decompose()
 
         unwanted_fragments = [
-            "Citește și",
-            "Urmărește-ne pe",
-            "Abonează-te",
-            "Newsletter",
-            "Facebook",
-            "Twitter",
-            "WhatsApp",
-            "Publicitate",
-            "Comentarii",
-            "Politică de confidențialitate",
+            "HotNews.ro utilizează cookie-uri",
+            "Continuarea navigării implică acceptarea",
+            "Urmărește HotNews.ro",
+            "Citește și:",
+            "Accesați Modifică Setările",
             "Politica de confidențialitate",
             "Cookie",
         ]
@@ -86,6 +83,8 @@ class HotNewsScraper:
 
     def normalize_date(self, value: str | None) -> str | None:
         value = self.clean_text(value or "")
+        value = value.replace("Publicat:", "").replace("Actualizat:", "").strip()
+
         if not value:
             return None
 
@@ -136,9 +135,7 @@ class HotNewsScraper:
             parsed = parsedate_to_datetime(value)
             return parsed.strftime("%Y-%m-%d %H:%M")
         except Exception:
-            pass
-
-        return None
+            return None
 
     def is_sponsored_article(self, html: str) -> bool:
         markers = [
@@ -153,27 +150,15 @@ class HotNewsScraper:
     def is_valid_article_url(self, url: str) -> bool:
         parsed = urlparse(url)
 
-        if "hotnews.ro" not in parsed.netloc:
+        if parsed.netloc not in ["hotnews.ro", "www.hotnews.ro"]:
             return False
 
-        invalid_parts = [
-            "/cautare",
-            "/tag/",
-            "/video/",
-            "/autor/",
-            "/politica-confidentialitate",
-            "/termeni",
-            "/contact",
-        ]
+        invalid_parts = ["/c/", "/tag/", "/video/", "#"]
 
-        if any(part in parsed.path for part in invalid_parts):
-            return False
-
-        # HotNews URLs: /stiri/NNNNN-titlu.htm
-        return bool(re.search(r"/stiri/\d+", parsed.path))
+        return not any(part in parsed.path for part in invalid_parts)
 
     def build_search_url(self, query: str) -> str:
-        return f"{BASE_URL}/cautare/?q={quote_plus(query)}"
+        return f"{BASE_URL}/?s={quote_plus(query)}"
 
     def extract_article_links(self, soup: BeautifulSoup) -> list[dict]:
         articles = []
@@ -181,20 +166,15 @@ class HotNewsScraper:
 
         for link in soup.find_all("a", href = True):
             url = urljoin(BASE_URL, link["href"])
+            title = self.clean_text(link.get_text(" ", strip = True))
+
+            if not title or len(title) < 20:
+                continue
 
             if not self.is_valid_article_url(url):
                 continue
 
             if url in seen_urls:
-                continue
-
-            title = self.clean_text(link.get_text(" ", strip = True))
-
-            if len(title) < 20:
-                parent = link.find_parent()
-                title = self.clean_text(parent.get_text(" ", strip = True)) if parent else title
-
-            if len(title) < 20:
                 continue
 
             seen_urls.add(url)
@@ -211,21 +191,16 @@ class HotNewsScraper:
         soup = BeautifulSoup(html, "lxml")
 
         title_tag = soup.find("h1")
-        date = None
-
         time_tag = soup.find("time")
-        if time_tag:
-            date = time_tag.get("datetime") or time_tag.get_text(" ", strip = True)
+
+        date = time_tag.get_text(" ", strip = True) if time_tag else None
 
         if not date:
-            meta_date = soup.find("meta", {"property": "article:published_time"})
-            if meta_date and meta_date.get("content"):
-                date = meta_date["content"]
-
-        if not date:
-            meta_og = soup.find("meta", {"property": "og:updated_time"})
-            if meta_og and meta_og.get("content"):
-                date = meta_og["content"]
+            for page_text in soup.stripped_strings:
+                text = self.clean_text(page_text)
+                if text.startswith("Publicat:"):
+                    date = text
+                    break
 
         return {
             "title": self.clean_text(title_tag.get_text(" ", strip = True)) if title_tag else None,
@@ -235,13 +210,23 @@ class HotNewsScraper:
         }
 
     def search(self, target: str, limit: int = 5) -> dict:
-        article_links = []
-
         html = self.fetch_html(self.build_search_url(target))
 
-        if html:
-            soup = BeautifulSoup(html, "lxml")
-            article_links = self.extract_article_links(soup)
+        if not html:
+            return {
+                "source": "hotnews scraper",
+                "type": "document",
+                "certainty": "0",
+                "metadata": {
+                    "timestamp": datetime.now().isoformat(),
+                    "source": SOURCE_NAME,
+                    "count": 0,
+                },
+                "nodes": [],
+            }
+
+        soup = BeautifulSoup(html, "lxml")
+        article_links = self.extract_article_links(soup)
 
         graph_nodes = []
 

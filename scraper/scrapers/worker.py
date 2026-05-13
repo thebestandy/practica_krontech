@@ -9,8 +9,8 @@ from scrapers.seap_sicap.seap_sicap_nou import ElicitatieScraper
 # from scrapers.anaf_portjust.anaf import AnafScraper
 from scrapers.anaf_portjust.anaf_nou import AnafScraper
 # from scrapers.anaf_portjust.portal_just import PortalJustScraper
-
 from scrapers.anaf_portjust.portal_just_nou import PortalJustScraper
+
 from scrapers.news.adevarul_nou import AdevarulScraper
 from scrapers.news.digi24_nou import Digi24Scraper
 from scrapers.news.g4media_nou import G4MediaScraper
@@ -48,8 +48,8 @@ class Worker:
             
             # asyncio.create_task(asyncio.to_thread(AdevarulScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(Digi24Scraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(G4MediaScraper().search, self.target)),
+            # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
         ]
 
         for finished_task in asyncio.as_completed(queue):
