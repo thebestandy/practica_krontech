@@ -11,9 +11,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
-class AnafScraper:
 
-    ANAF_URL  = "https://webservicesp.anaf.ro/api/PlatitorTvaRest/v9/tva"
+class AnafScraper:
+    ANAF_URL = "https://webservicesp.anaf.ro/api/PlatitorTvaRest/v9/tva"
     DEMO_BASE = "https://demoanaf.ro/api"
 
     def __init__(self):
@@ -26,10 +26,10 @@ class AnafScraper:
         try:
             r = self.session.post(
                 self.ANAF_URL,
-                json = payload,
-                headers = {**HEADERS, "Content-Type": "application/json"},
-                timeout = 15,
-                verify = False,
+                json=payload,
+                headers={**HEADERS, "Content-Type": "application/json"},
+                timeout=15,
+                verify=False,
             )
             r.raise_for_status()
             return r.json()
@@ -40,21 +40,32 @@ class AnafScraper:
     def get_cu_retry(self, url: str, incercari: int = 3, timeout: int = 30) -> dict:
         for i in range(incercari):
             try:
-                r = self.session.get(url, timeout = timeout)
+                r = self.session.get(url, timeout=timeout)
                 r.raise_for_status()
                 return r.json()
             except requests.exceptions.Timeout:
-                print(f"Timeout - incerc din nou ({i+1}/{incercari})...")
+                print(f"Timeout - incerc din nou ({i + 1}/{incercari})...")
                 sleep(2)
             except Exception as e:
                 print(f"Eroare: {e}")
                 break
         return {}
 
-    def get_company(self, cui):    return self.get_cu_retry(f"{self.DEMO_BASE}/company/{cui}")
-    def get_financials(self, cui): return self.get_cu_retry(f"{self.DEMO_BASE}/company/{cui}/financials", timeout = 45)
-    def get_balance(self, cui, an): return self.get_cu_retry(f"{self.DEMO_BASE}/company/{cui}/balance/{an}", timeout = 45)
-    def search_company(self, q):   return self.get_cu_retry(f"{self.DEMO_BASE}/search?q={q}")
+    def get_company(self, cui):
+        return self.get_cu_retry(f"{self.DEMO_BASE}/company/{cui}")
+
+    def get_financials(self, cui):
+        return self.get_cu_retry(
+            f"{self.DEMO_BASE}/company/{cui}/financials", timeout=45
+        )
+
+    def get_balance(self, cui, an):
+        return self.get_cu_retry(
+            f"{self.DEMO_BASE}/company/{cui}/balance/{an}", timeout=45
+        )
+
+    def search_company(self, q):
+        return self.get_cu_retry(f"{self.DEMO_BASE}/search?q={q}")
 
     def _resolve_cui(self, target: str):
         cui_curat = target.upper().replace("RO", "").strip()
@@ -67,10 +78,10 @@ class AnafScraper:
         if isinstance(firme, list) and firme:
             cui = str(firme[0].get("cui", firme[0].get("CUI", "")))
             if cui:
-                print(f"[ANAF] Gasit CUI {cui} pentru \"{target}\"")
+                print(f'[ANAF] Gasit CUI {cui} pentru "{target}"')
                 return cui
 
-        print(f"[ANAF] Nu s-a gasit niciun CUI pentru \"{target}\"")
+        print(f'[ANAF] Nu s-a gasit niciun CUI pentru "{target}"')
         return None
 
     def search(self, target: str):
@@ -95,28 +106,37 @@ class AnafScraper:
         print("Interoghez financials (poate dura 30-45 sec)...")
         financials = self.get_financials(cui)
 
-        firma  = anaf_data.get("found", [{}])[0] if anaf_data.get("found") else {}
+        firma = anaf_data.get("found", [{}])[0] if anaf_data.get("found") else {}
         dg = firma.get("date_generale", {})
         adresa = firma.get("adresa_sediu_social", {})
         tva = firma.get("inregistrare_scop_Tva", {})
         inactiv = firma.get("stare_inactiv", {})
 
         denumire = dg.get("denumire", "")
-        stare    = dg.get("stare_inregistrare", "")
-        judet    = adresa.get("sdenumire_Judet", "")
+        stare = dg.get("stare_inregistrare", "")
+        judet = adresa.get("sdenumire_Judet", "")
         localitate = adresa.get("sdenumire_Localitate", "")
         adresa_str = f"{judet}, {localitate}" if judet or localitate else "N/A"
 
         graph_nodes = []
 
         person_id = hashlib.md5(f"{cui}_{denumire}".encode()).hexdigest()
-        graph_nodes.append({
-            "id": f"person_{person_id}",
-            "type": "Person",
-            "label": denumire or f"CUI {cui}",
-            "summary": f"{stare} — {adresa_str}",
-            "url": f"https://www.anaf.ro/anaf/internet/RO/cautare-dupa-cui?cui={cui}",
-        })
+        graph_nodes.append(
+            {
+                "id": f"person_{person_id}",
+                "type": "Person",
+                "label": denumire or f"CUI {cui}",
+                "summary": f"{stare} — {adresa_str}",
+                "url": f"https://www.anaf.ro/anaf/internet/RO/cautare-dupa-cui?cui={cui}",
+                "metadata": {
+                    "anaf_date_generale": dg,
+                    "anaf_adresa": adresa,
+                    "anaf_tva_status": tva,
+                    "anaf_inactiv_status": inactiv,
+                    "company_data_raw": company_data.get("data", {}),
+                },
+            }
+        )
 
         data = company_data.get("data", {})
         admini = data.get("administrators", [])
@@ -126,17 +146,20 @@ class AnafScraper:
             if not admin_name:
                 continue
             admin_id = hashlib.md5(f"{admin_name}_{cui}".encode()).hexdigest()
-            graph_nodes.append({
-                "id": f"person_{admin_id}",
-                "type": "Person",
-                "label": admin_name,
-                "summary": f"{admin_role} la {denumire or cui}",
-                "url": "N/A",
-            })
+            graph_nodes.append(
+                {
+                    "id": f"person_{admin_id}",
+                    "type": "Person",
+                    "label": admin_name,
+                    "summary": f"{admin_role} la {denumire or cui}",
+                    "url": "N/A",
+                    "metadata": {"raw_admin_data": a},
+                }
+            )
 
         fin_data = financials.get("data", [])
         for an_fin in fin_data:
-            an  = an_fin.get("year", "?")
+            an = an_fin.get("year", "?")
             eur = an_fin.get("eurRate", 1) or 1
             ind_map = {i["code"]: i["value"] for i in an_fin.get("indicators", [])}
 
@@ -147,17 +170,25 @@ class AnafScraper:
             rezultat_net = profit_net if profit_net else -pierdere_neta
 
             fin_id = hashlib.md5(f"{cui}_{an}".encode()).hexdigest()
-            graph_nodes.append({
-                "id": f"doc_{fin_id}",
-                "type": "Document",
-                "label": f"Situatie financiara {an} — {denumire or cui}",
-                "summary": (
-                    f"CA: {int(cifra_afaceri):,} RON"
-                    f" | Rezultat net: {int(rezultat_net):,} RON"
-                    f" | Angajati: {int(angajati)}"
-                ),
-                "url": f"https://mfinante.gov.ro/ro/web/efin/rezultate-bilant?cui={cui}",
-            })
+            graph_nodes.append(
+                {
+                    "id": f"doc_{fin_id}",
+                    "type": "Document",
+                    "label": f"Situatie financiara {an} — {denumire or cui}",
+                    "summary": (
+                        f"CA: {int(cifra_afaceri):,} RON"
+                        f" | Rezultat net: {int(rezultat_net):,} RON"
+                        f" | Angajati: {int(angajati)}"
+                    ),
+                    "url": f"https://mfinante.gov.ro/ro/web/efin/rezultate-bilant?cui={cui}",
+                    "metadata": {
+                        "year": an,
+                        "eur_exchange_rate": eur,
+                        "all_indicators_mapped": ind_map,
+                        "raw_financial_statement": an_fin,
+                    },
+                }
+            )
 
         return {
             "source": "anaf scraper",
@@ -170,7 +201,7 @@ class AnafScraper:
             },
             "nodes": graph_nodes,
         }
-    
+
         # return {
         #     "source": "anaf scraper",
         #     "type": "document",
@@ -201,6 +232,7 @@ class AnafScraper:
 
         #     "nodes": graph_nodes,
         # }
+
 
 # le-am lasat comentate
 # if __name__ == "__main__":
@@ -239,3 +271,4 @@ class AnafScraper:
 #         if raspuns != "da":
 #             print("La revedere!")
 #             break
+
