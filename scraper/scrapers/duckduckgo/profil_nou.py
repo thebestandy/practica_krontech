@@ -66,7 +66,7 @@ PLATFORMS = {
     },
 }
 
-OUTPUT_DIR = Path("./scraper/scrapers/duckduckgo")
+OUTPUT_DIR = Path("./scraper/scrapers/duckduckgo/downloads")
 OUTPUT_DIR.mkdir(parents = True, exist_ok = True)
 
 DDG_URL = "https://duckduckgo.com/"

@@ -73,7 +73,7 @@ USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
 ]
 
-OUTPUT_DIR = Path("./scraper/scrapers/duckduckgo")
+OUTPUT_DIR = Path("./scraper/scrapers/duckduckgo/downloads")
 OUTPUT_DIR.mkdir(exist_ok = True)
 
 
