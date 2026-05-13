@@ -65,3 +65,11 @@
         display: none;
     }
 }
+
+/* shouldn't hae put this here but it's ok for now */
+@keyframes dotsBounce {
+    100% { transform: translateY(-14px); }
+}
+.animate-dots-bounce {
+    animation: dotsBounce 0.6s infinite alternate;
+}
