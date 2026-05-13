@@ -1,4 +1,4 @@
-# A.N.I. Scraper
+# A.N.I. Scraper - Functional Dashboard
 
 import re
 import json

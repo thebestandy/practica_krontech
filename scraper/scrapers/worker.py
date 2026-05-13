@@ -20,6 +20,8 @@ from scrapers.journalism.recorder_nou import RecorderScraper
 from scrapers.journalism.riseproject_nou import RiseProjectScraper
 from scrapers.journalism.zf_nou import ZFScraper
 
+from scrapers.duckduckgo.profil_nou import ProfileScraper
+
 class Worker:
     def __init__(self, websocket, manager, scan_id, target):
         self.target = target
@@ -57,6 +59,8 @@ class Worker:
             # asyncio.create_task(asyncio.to_thread(RecorderScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(RiseProjectScraper().search, self.target)),
             # asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
+
+            # asyncio.create_task(asyncio.to_thread(ProfileScraper().search, self.target)),
         ]
 
         for finished_task in asyncio.as_completed(queue):
