@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 @dataclass
 class Contract:
     contract_id: str
@@ -29,6 +30,7 @@ class Contract:
     description: str
     source_url: str
 
+
 @dataclass
 class CompanyInfo:
     cui: str
@@ -38,6 +40,7 @@ class CompanyInfo:
     total_value: float
     first_contract_date: str
     last_contract_date: str
+
 
 class ElicitatieScraper:
     BASE_URL = "http://e-licitatie.ro"
@@ -49,30 +52,34 @@ class ElicitatieScraper:
         self.sicap_api_key = os.getenv("SICAP_API_KEY", "").strip()
 
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'ro-RO,ro;q=0.9',
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "Content-Type": "application/json;charset=UTF-8",
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Language": "ro-RO,ro;q=0.9",
+            }
+        )
 
         if self.sicap_api_key:
             print(f"API key loaded ({self.sicap_api_key[:8]}...)")
         else:
             print("No API key — will use e-licitatie.ro directly")
 
-    def _get(self, url: str, params: Dict = None, use_key: bool = False) -> requests.Response:
+    def _get(
+        self, url: str, params: Dict = None, use_key: bool = False
+    ) -> requests.Response:
         time.sleep(self.delay)
         headers = {}
         if use_key and self.sicap_api_key:
             headers["Authorization"] = f"Bearer {self.sicap_api_key}"
-        response = self.session.get(url, params = params, headers = headers, timeout = 30)
+        response = self.session.get(url, params=params, headers=headers, timeout=30)
         response.raise_for_status()
         return response
 
     def _post(self, url: str, body: Dict) -> requests.Response:
         time.sleep(self.delay)
-        response = self.session.post(url, json = body, timeout = 30)
+        response = self.session.post(url, json=body, timeout=30)
         response.raise_for_status()
         return response
 
@@ -82,7 +89,7 @@ class ElicitatieScraper:
             return False
         try:
             url = f"{self.SICAP_AI_BASE}/cui/{cif}/exists"
-            response = self._get(url, use_key = True)
+            response = self._get(url, use_key=True)
             data = response.json()
             print(f"CUI check response: {data}")
             return data.get("exists", False)
@@ -98,11 +105,17 @@ class ElicitatieScraper:
         url = f"{self.SICAP_AI_BASE}/ac/{cif}/contracts"
         contracts = []
         try:
-            response = self._get(url, use_key = True)
+            response = self._get(url, use_key=True)
             data = response.json()
-            print(f"ac/contracts raw response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
+            print(
+                f"ac/contracts raw response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}"
+            )
 
-            items = data if isinstance(data, list) else data.get("items", data.get("data", data.get("contracts", [])))
+            items = (
+                data
+                if isinstance(data, list)
+                else data.get("items", data.get("data", data.get("contracts", [])))
+            )
 
             for item in items:
                 c = self._parse_sicap_ai_contract(item)
@@ -121,11 +134,17 @@ class ElicitatieScraper:
         url = f"{self.SICAP_AI_BASE}/ac/{cif}/contracts/latest"
         contracts = []
         try:
-            response = self._get(url, use_key = True)
+            response = self._get(url, use_key=True)
             data = response.json()
-            print(f"ac/contracts/latest raw response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
+            print(
+                f"ac/contracts/latest raw response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}"
+            )
 
-            items = data if isinstance(data, list) else data.get("items", data.get("data", data.get("contracts", [])))
+            items = (
+                data
+                if isinstance(data, list)
+                else data.get("items", data.get("data", data.get("contracts", [])))
+            )
 
             for item in items:
                 c = self._parse_sicap_ai_contract(item)
@@ -144,11 +163,17 @@ class ElicitatieScraper:
         url = f"{self.SICAP_AI_BASE}/contracts/daily/{target_date}"
         contracts = []
         try:
-            response = self._get(url, use_key = True)
+            response = self._get(url, use_key=True)
             data = response.json()
-            print(f"daily/{target_date} response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
+            print(
+                f"daily/{target_date} response keys: {list(data.keys()) if isinstance(data, dict) else type(data)}"
+            )
 
-            items = data if isinstance(data, list) else data.get("items", data.get("data", []))
+            items = (
+                data
+                if isinstance(data, list)
+                else data.get("items", data.get("data", []))
+            )
 
             for item in items:
                 c = self._parse_sicap_ai_contract(item)
@@ -166,7 +191,7 @@ class ElicitatieScraper:
 
         url = f"{self.SICAP_AI_BASE}/contracts/{source}/{contract_id}"
         try:
-            response = self._get(url, use_key = True)
+            response = self._get(url, use_key=True)
             data = response.json()
             return self._parse_sicap_ai_contract(data)
         except Exception as e:
@@ -178,24 +203,41 @@ class ElicitatieScraper:
             return None
         try:
             return Contract(
-                contract_id = str(item.get("id", item.get("contractId", ""))),
-                title = item.get("name", item.get("title", item.get("contractTitle", ""))),
-                contracting_authority = item.get("contractingAuthority", item.get("authority", item.get("caName", ""))),
-                supplier = item.get("supplier", item.get("winner", item.get("supplierName", ""))),
-                contract_value = self._parse_value(str(item.get("value", item.get("closingValue", item.get("amount", 0))))),
-                currency = item.get("currency", "RON"),
-                contract_date = item.get("date", item.get("contractDate", item.get("publicationDate", ""))),
-                procedure_type = item.get("procedureType", item.get("type", "")),
-                cpv_code = item.get("cpvCode", item.get("cpv", "")),
-                status = item.get("status", ""),
-                description = item.get("description", ""),
-                source_url = item.get("url", item.get("sourceUrl", ""))
+                contract_id=str(item.get("id", item.get("contractId", ""))),
+                title=item.get(
+                    "name", item.get("title", item.get("contractTitle", ""))
+                ),
+                contracting_authority=item.get(
+                    "contractingAuthority",
+                    item.get("authority", item.get("caName", "")),
+                ),
+                supplier=item.get(
+                    "supplier", item.get("winner", item.get("supplierName", ""))
+                ),
+                contract_value=self._parse_value(
+                    str(
+                        item.get(
+                            "value", item.get("closingValue", item.get("amount", 0))
+                        )
+                    )
+                ),
+                currency=item.get("currency", "RON"),
+                contract_date=item.get(
+                    "date", item.get("contractDate", item.get("publicationDate", ""))
+                ),
+                procedure_type=item.get("procedureType", item.get("type", "")),
+                cpv_code=item.get("cpvCode", item.get("cpv", "")),
+                status=item.get("status", ""),
+                description=item.get("description", ""),
+                source_url=item.get("url", item.get("sourceUrl", "")),
             )
         except Exception as e:
             print(f"Error parsing sicap.ai contract: {e}")
             return None
 
-    def search_elicitatie_by_cui(self, cui: str, date_start: str = "2022-01-01") -> List[Contract]:
+    def search_elicitatie_by_cui(
+        self, cui: str, date_start: str = "2022-01-01"
+    ) -> List[Contract]:
         print(f"Searching e-licitatie.ro for CUI: {cui} (from {date_start})")
         url = f"{self.API_BASE}/DirectAcquisitionCommon/GetDirectAcquisitionList/"
 
@@ -229,8 +271,13 @@ class ElicitatieScraper:
 
             matched = 0
             for item in items:
-                supplier_cui = str(item.get("supplierId", "") or item.get("winnerFiscalNumber", ""))
-                authority_cui = str(item.get("contractingAuthorityId", "") or item.get("cAFiscalNumber", ""))
+                supplier_cui = str(
+                    item.get("supplierId", "") or item.get("winnerFiscalNumber", "")
+                )
+                authority_cui = str(
+                    item.get("contractingAuthorityId", "")
+                    or item.get("cAFiscalNumber", "")
+                )
 
                 if cui in supplier_cui or cui in authority_cui:
                     contract = self._parse_direct_acquisition(item)
@@ -240,7 +287,9 @@ class ElicitatieScraper:
 
             total = data.get("total", 0)
             fetched = (page + 1) * body["pageSize"]
-            print(f"  Page {page}: {len(items)} items scanned, {matched} matched (total available: {total})")
+            print(
+                f"  Page {page}: {len(items)} items scanned, {matched} matched (total available: {total})"
+            )
 
             if fetched >= total or len(items) < body["pageSize"]:
                 break
@@ -251,25 +300,31 @@ class ElicitatieScraper:
     def _parse_direct_acquisition(self, item: Dict) -> Optional[Contract]:
         try:
             return Contract(
-                contract_id = str(item.get("directAcquisitionId", item.get("id", ""))),
-                title = item.get("directAcquisitionName", item.get("name", "")),
-                contracting_authority = item.get("contractingAuthorityName", ""),
-                supplier = item.get("supplierName", item.get("winnerName", "")),
-                contract_value = self._parse_value(str(item.get("closingValue", item.get("totalAmount", 0)))),
-                currency = item.get("currency", "RON"),
-                contract_date = item.get("finalizationDate", item.get("publicationDate", "")),
-                procedure_type = "Achizitie directa",
-                cpv_code = item.get("cpvCode", item.get("cpvCodeAndName", "")),
-                status = item.get("sysDirectAcquisitionState", {}).get("text", "") if isinstance(item.get("sysDirectAcquisitionState"), dict) else "",
-                description = item.get("description", ""),
-                source_url = f"{self.BASE_URL}/pub/direct-acquisition/view/{item.get('directAcquisitionId', '')}"
+                contract_id=str(item.get("directAcquisitionId", item.get("id", ""))),
+                title=item.get("directAcquisitionName", item.get("name", "")),
+                contracting_authority=item.get("contractingAuthorityName", ""),
+                supplier=item.get("supplierName", item.get("winnerName", "")),
+                contract_value=self._parse_value(
+                    str(item.get("closingValue", item.get("totalAmount", 0)))
+                ),
+                currency=item.get("currency", "RON"),
+                contract_date=item.get(
+                    "finalizationDate", item.get("publicationDate", "")
+                ),
+                procedure_type="Achizitie directa",
+                cpv_code=item.get("cpvCode", item.get("cpvCodeAndName", "")),
+                status=item.get("sysDirectAcquisitionState", {}).get("text", "")
+                if isinstance(item.get("sysDirectAcquisitionState"), dict)
+                else "",
+                description=item.get("description", ""),
+                source_url=f"{self.BASE_URL}/pub/direct-acquisition/view/{item.get('directAcquisitionId', '')}",
             )
         except Exception as e:
             print(f"Error parsing contract: {e}")
             return None
 
     def _resolve_cui(self, target: str) -> Optional[str]:
-        cui_curat = target.upper().replace('RO', '').strip()
+        cui_curat = target.upper().replace("RO", "").strip()
         if cui_curat.isdigit():
             return cui_curat
 
@@ -277,7 +332,7 @@ class ElicitatieScraper:
         try:
             r = self.session.get(
                 f"https://demoanaf.ro/api/search?q={target}",
-                timeout = 15,
+                timeout=15,
             )
             r.raise_for_status()
             rezultate = r.json()
@@ -285,12 +340,12 @@ class ElicitatieScraper:
             if isinstance(firme, list) and firme:
                 cui = str(firme[0].get("cui", firme[0].get("CUI", "")))
                 if cui:
-                    print(f"Gasit CUI {cui} pentru \"{target}\"")
+                    print(f'Gasit CUI {cui} pentru "{target}"')
                     return cui
         except Exception as e:
             print(f"Rezolvare CUI dupa nume esuata: {e}")
 
-        print(f"Nu s-a gasit niciun CUI pentru \"{target}\"")
+        print(f'Nu s-a gasit niciun CUI pentru "{target}"')
         return None
 
     def search_by_cui(self, cui: str, date_start: str = "2022-01-01") -> List[Contract]:
@@ -308,10 +363,12 @@ class ElicitatieScraper:
 
             if not contracts:
                 print(f"\nNote: /ac/ endpoints cauta firma ca AUTORITATE CONTRACTANTA.")
-                print(f"Daca firma e FURNIZOR, /v1/supplier/:cif/contracts e Enterprise (2000 credite).")
+                print(
+                    f"Daca firma e FURNIZOR, /v1/supplier/:cif/contracts e Enterprise (2000 credite)."
+                )
 
         print(f"\n[3/3] Searching e-licitatie.ro directly (free, no key needed)...")
-        elicitatie_contracts = self.search_elicitatie_by_cui(cui, date_start = date_start)
+        elicitatie_contracts = self.search_elicitatie_by_cui(cui, date_start=date_start)
         print(f"Found {len(elicitatie_contracts)} contracts on e-licitatie.ro")
 
         seen_ids = {c.contract_id for c in contracts}
@@ -325,25 +382,33 @@ class ElicitatieScraper:
     def get_company_summary(self, cui: str) -> CompanyInfo:
         contracts = self.search_by_cui(cui)
         if not contracts:
-            return CompanyInfo(cui = cui, name = '', address = '',
-                               total_contracts = 0, total_value = 0.0,
-                               first_contract_date = '', last_contract_date = '')
+            return CompanyInfo(
+                cui=cui,
+                name="",
+                address="",
+                total_contracts=0,
+                total_value=0.0,
+                first_contract_date="",
+                last_contract_date="",
+            )
 
         total_value = sum(c.contract_value for c in contracts)
         dates = sorted([c.contract_date for c in contracts if c.contract_date])
-        name = next((c.supplier or c.contracting_authority for c in contracts), '')
+        name = next((c.supplier or c.contracting_authority for c in contracts), "")
 
         return CompanyInfo(
-            cui = cui, name = name, address = '',
-            total_contracts = len(contracts),
-            total_value = total_value,
-            first_contract_date = dates[0] if dates else '',
-            last_contract_date = dates[-1] if dates else ''
+            cui=cui,
+            name=name,
+            address="",
+            total_contracts=len(contracts),
+            total_value=total_value,
+            first_contract_date=dates[0] if dates else "",
+            last_contract_date=dates[-1] if dates else "",
         )
 
     def _parse_value(self, value_str: str) -> float:
-        cleaned = re.sub(r'[^\d.,]', '', str(value_str))
-        cleaned = cleaned.replace('.', '').replace(',', '.')
+        cleaned = re.sub(r"[^\d.,]", "", str(value_str))
+        cleaned = cleaned.replace(".", "").replace(",", ".")
         try:
             return float(cleaned)
         except ValueError:
@@ -365,7 +430,7 @@ class ElicitatieScraper:
                 "nodes": [],
             }
 
-        contracts = self.search_by_cui(cui, date_start = date_start)
+        contracts = self.search_by_cui(cui, date_start=date_start)
 
         graph_nodes = []
         seen_suppliers = set()
@@ -378,21 +443,27 @@ class ElicitatieScraper:
                     f"{supplier_key}_{contract.contracting_authority}".encode()
                 ).hexdigest()
 
-                graph_nodes.append({
-                    "id": f"person_{supplier_id}",
-                    "type": "Person",
-                    "label": supplier_key,
-                    "summary": f"Furnizor la {contract.contracting_authority}" if contract.contracting_authority else "Furnizor",
-                    "url": "N/A",
-                })
+                graph_nodes.append(
+                    {
+                        "id": f"person_{supplier_id}",
+                        "type": "Person",
+                        "label": supplier_key,
+                        "summary": f"Furnizor la {contract.contracting_authority}"
+                        if contract.contracting_authority
+                        else "Furnizor",
+                        "url": "N/A",
+                    }
+                )
 
-            graph_nodes.append({
-                "id": f"contract_{contract.contract_id}",
-                "type": "Document",
-                "label": contract.title or f"Contract {contract.contract_id}",
-                "summary": f"{contract.procedure_type} • {contract.contract_value:,.2f} {contract.currency} • {contract.contract_date}",
-                "url": contract.source_url,
-            })
+            graph_nodes.append(
+                {
+                    "id": f"contract_{contract.contract_id}",
+                    "type": "Document",
+                    "label": contract.title or f"Contract {contract.contract_id}",
+                    "summary": f"{contract.procedure_type} • {contract.contract_value:,.2f} {contract.currency} • {contract.contract_date}",
+                    "url": contract.source_url,
+                }
+            )
 
         return {
             "source": "SEAP/SICAP scraper",
@@ -405,7 +476,7 @@ class ElicitatieScraper:
             },
             "nodes": graph_nodes,
         }
-    
+
         # return {
         #     "source": "SEAP/SICAP scraper",
         #     "type": "document",
@@ -449,6 +520,7 @@ class ElicitatieScraper:
         #     },
         # }
 
+
 # le-am lasat comentate
 # def main():
 #     scraper = ElicitatieScraper(delay = 2.0)
@@ -485,3 +557,4 @@ class ElicitatieScraper:
 #
 # if __name__ == "__main__":
 #     main()
+

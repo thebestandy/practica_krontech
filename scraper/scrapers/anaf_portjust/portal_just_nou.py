@@ -13,13 +13,12 @@ HEADERS = {
     "Content-Type": "text/xml; charset=utf-8",
     "SOAPAction": "portalquery.just.ro/CautareDosare",
     "User-Agent": "Mozilla/5.0",
-    "Accept": "text/xml"
+    "Accept": "text/xml",
 }
 NS = "portalquery.just.ro"
 
 
 class PortalJustScraper:
-
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Mozilla/5.0"})
@@ -41,7 +40,9 @@ class PortalJustScraper:
 </soap:Envelope>"""
 
         try:
-            r = self.session.post(SOAP_URL, data = body.encode("utf-8"), headers = HEADERS, timeout = 30)
+            r = self.session.post(
+                SOAP_URL, data=body.encode("utf-8"), headers=HEADERS, timeout=30
+            )
             print(f"HTTP status: {r.status_code}")
             r.raise_for_status()
             return self.parseaza_raspuns(r.text)
@@ -57,53 +58,70 @@ class PortalJustScraper:
             items = root.findall(f".//{{{NS}}}Dosar")
 
             for dosar in items:
+
                 def g(tag):
                     el = dosar.find(f"{{{NS}}}{tag}")
                     return el.text.strip() if el is not None and el.text else "N/A"
 
                 parti = []
                 for parte in dosar.findall(f".//{{{NS}}}DosarParte"):
-                    if parte.get("{http://www.w3.org/2001/XMLSchema-instance}nil") == "true":
+                    if (
+                        parte.get("{http://www.w3.org/2001/XMLSchema-instance}nil")
+                        == "true"
+                    ):
                         continue
                     nume_el = parte.find(f"{{{NS}}}nume")
-                    cal_el  = parte.find(f"{{{NS}}}calitateParte")
+                    cal_el = parte.find(f"{{{NS}}}calitateParte")
                     if nume_el is not None and nume_el.text:
-                        parti.append({
-                            "nume": nume_el.text.strip(),
-                            "calitate": cal_el.text.strip() if cal_el is not None and cal_el.text else "N/A"
-                        })
+                        parti.append(
+                            {
+                                "nume": nume_el.text.strip(),
+                                "calitate": cal_el.text.strip()
+                                if cal_el is not None and cal_el.text
+                                else "N/A",
+                            }
+                        )
 
                 sedinte = []
                 for sedinta in dosar.findall(f".//{{{NS}}}DosarSedinta"):
-                    if sedinta.get("{http://www.w3.org/2001/XMLSchema-instance}nil") == "true":
+                    if (
+                        sedinta.get("{http://www.w3.org/2001/XMLSchema-instance}nil")
+                        == "true"
+                    ):
                         continue
+
                     def gs(tag):
                         el = sedinta.find(f"{{{NS}}}{tag}")
                         return el.text.strip() if el is not None and el.text else "N/A"
-                    sedinte.append({
-                        "data": gs("data"),
-                        "ora": gs("ora"),
-                        "complet": gs("complet"),
-                        "solutie": gs("solutie"),
-                    })
+
+                    sedinte.append(
+                        {
+                            "data": gs("data"),
+                            "ora": gs("ora"),
+                            "complet": gs("complet"),
+                            "solutie": gs("solutie"),
+                        }
+                    )
 
                 data_dosar = "N/A"
                 if sedinte:
                     try:
-                        data_dosar = sorted(sedinte, key = lambda s: s["data"])[0]["data"]
+                        data_dosar = sorted(sedinte, key=lambda s: s["data"])[0]["data"]
                     except Exception:
                         pass
 
-                dosare.append({
-                    "numar": g("numar"),
-                    "data": data_dosar,
-                    "status": g("stadiuProcesualNume"),
-                    "instanta": g("institutie"),
-                    "sectie": g("sectie"),
-                    "obiect": g("obiect"),
-                    "parti": parti,
-                    "sedinte": sedinte,
-                })
+                dosare.append(
+                    {
+                        "numar": g("numar"),
+                        "data": data_dosar,
+                        "status": g("stadiuProcesualNume"),
+                        "instanta": g("institutie"),
+                        "sectie": g("sectie"),
+                        "obiect": g("obiect"),
+                        "parti": parti,
+                        "sedinte": sedinte,
+                    }
+                )
 
         except ET.ParseError as e:
             print(f"Eroare: {e}")
@@ -134,17 +152,19 @@ class PortalJustScraper:
     def search(self, target: str):
         print(f"[PortalJust] Search: {target}")
 
-        dosare_brute    = self.cauta_dosare(nume_parte = target)
+        dosare_brute = self.cauta_dosare(nume_parte=target)
         dosare_filtrate = self._filtreaza_relevante(dosare_brute, target)
 
-        print(f"[PortalJust] {len(dosare_brute)} dosare brute, {len(dosare_filtrate)} relevante pentru \"{target}\"")
+        print(
+            f'[PortalJust] {len(dosare_brute)} dosare brute, {len(dosare_filtrate)} relevante pentru "{target}"'
+        )
 
         graph_nodes = []
-        seen_parti  = set()
+        seen_parti = set()
         seen_dosare = set()
 
         for dosar in dosare_filtrate:
-            numar  = dosar["numar"]
+            numar = dosar["numar"]
             obiect = dosar["obiect"]
 
             # Noduri parti
@@ -153,24 +173,39 @@ class PortalJustScraper:
                 if nume_parte not in seen_parti:
                     seen_parti.add(nume_parte)
                     parte_id = hashlib.md5(nume_parte.encode()).hexdigest()
-                    graph_nodes.append({
-                        "id": f"person_{parte_id}",
-                        "type": "Person",
-                        "label": nume_parte,
-                        "summary": f"{parte['calitate']} in dosare judiciare",
-                        "url": "N/A",
-                    })
+                    graph_nodes.append(
+                        {
+                            "id": f"person_{parte_id}",
+                            "type": "Person",
+                            "label": nume_parte,
+                            "summary": f"{parte['calitate']} in dosare judiciare",
+                            "url": "N/A",
+                        }
+                    )
 
             if numar not in seen_dosare:
                 seen_dosare.add(numar)
                 dosar_id = hashlib.md5(numar.encode()).hexdigest()
-                graph_nodes.append({
-                    "id": f"doc_{dosar_id}",
-                    "type": "Document",
-                    "label": f"Dosar {numar}",
-                    "summary": f"{obiect} — {dosar['instanta']} | Status: {dosar['status']}",
-                    "url": self._build_url(numar),
-                })
+                graph_nodes.append(
+                    {
+                        "id": f"doc_{dosar_id}",
+                        "type": "Document",
+                        "label": f"Dosar {numar}",
+                        "summary": f"{obiect} — {dosar['instanta']} | Status: {dosar['status']}",
+                        "url": self._build_url(numar),
+                        "metadata": {
+                            "source": "Portal Just",  # bad practise but whatevs
+                            "numar": numar,
+                            "data": dosar["data"],
+                            "status": dosar["status"],
+                            "instanta": dosar["instanta"],
+                            "sectie": dosar["sectie"],
+                            "obiect": obiect,
+                            "parti": dosar["parti"],
+                            "sedinte": dosar["sedinte"],
+                        },
+                    }
+                )
 
         return {
             "source": "portal just scraper",
@@ -181,41 +216,36 @@ class PortalJustScraper:
                 "source": "portal.just.ro",
                 "count": len(graph_nodes),
             },
-
-            # "metadata": {
-            #     "timestamp": datetime.now().isoformat(),
-            #     "source": "portal.just.ro",
-
-            #     "query": {
-            #         "target": target
-            #     },
-
-            #     "stats": {
-            #         "nodes": len(graph_nodes),
-            #         "raw_cases": len(dosare_brute),
-            #         "filtered_cases": len(dosare_filtrate)
-            #     },
-
-            #     "distribution": {
-            #         "persons": len(seen_parti),
-            #         "documents": len(seen_dosare)
-            #     },
-
-            #     "institutions": list(set(
-            #         d.get("instanta", "") for d in dosare_filtrate if d.get("instanta")
-            #     )),
-
-            #     "uids_count": len(seen_dosare),
-
-            #     "scrape_info": {
-            #         "base_url": SOAP_URL,
-            #         "parser": "soap_xml_portal_just",
-            #         "method": "CautareDosare"
-            #     }
-            # }
-
+            "metadata": {
+                "timestamp": datetime.now().isoformat(),
+                "source": "portal.just.ro",
+                "query": {"target": target},
+                "stats": {
+                    "nodes": len(graph_nodes),
+                    "raw_cases": len(dosare_brute),
+                    "filtered_cases": len(dosare_filtrate),
+                },
+                "distribution": {
+                    "persons": len(seen_parti),
+                    "documents": len(seen_dosare),
+                },
+                "institutions": list(
+                    set(
+                        d.get("instanta", "")
+                        for d in dosare_filtrate
+                        if d.get("instanta")
+                    )
+                ),
+                "uids_count": len(seen_dosare),
+                "scrape_info": {
+                    "base_url": SOAP_URL,
+                    "parser": "soap_xml_portal_just",
+                    "method": "CautareDosare",
+                },
+            },
             "nodes": graph_nodes,
         }
+
 
 # le-am lasat comentate
 # if __name__ == "__main__":
@@ -246,3 +276,4 @@ class PortalJustScraper:
 #         if raspuns != "da":
 #             print("La revedere!")
 #             break
+

@@ -11,27 +11,26 @@ import ForgotPassword from "./components/main/accounts/ForgotPassword";
 import CheckEmail from "./components/main/accounts/CheckEmail";
 import ResetPassword from "./components/main/accounts/ResetPassword";
 import ProtectedRoute from "./components/main/utils/ProtectedRoute";
+import Logout from "./components/main/accounts/Logout";
 
 function App() {
+    // scos protected route de la dashboard ca imi tot da sign out
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/enterprise" element={<Enterprise />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/beliefs" element={<Beliefs />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
+                <Route
+                    path="/reset-password/:uid/:token"
+                    element={<ResetPassword />}
+                />
                 <Route path="/register" element={<Register />} />
+                <Route path="/logout" element={<Logout />} />
                 <Route path="/check-email" element={<CheckEmail />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

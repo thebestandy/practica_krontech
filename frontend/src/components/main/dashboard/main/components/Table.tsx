@@ -5,12 +5,173 @@ import { cn } from "../../../../ui/lib/utils";
 import Datasheet from "./utils/Datasheet";
 import { useGraphSelection } from "./utils/NodeProvider";
 
-interface GraphNode {
+export interface GraphNode {
     id: string;
     type: string;
     label: string;
     summary?: string;
     url?: string;
+    metadata?: string;
+}
+
+interface TableProps {
+    nodes: GraphNode[];
+}
+
+export default function Table({ nodes }: TableProps) {
+    const [selectedRow, setSelectedRow] = useState<GraphNode | null>(null);
+    const [contextMenu, setContextMenu] = useState<{
+        x: number;
+        y: number;
+        node: GraphNode;
+    } | null>(null);
+
+    const { sendNodeToGraph } = useGraphSelection();
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        document.addEventListener("click", handleClick);
+        return () => {
+            document.removeEventListener("click", handleClick);
+        };
+    }, []);
+
+    const handleSendToGraph = (node: GraphNode) => {
+        console.log("Sending node to graph: ", node);
+        sendNodeToGraph(node);
+        setContextMenu(null);
+    };
+
+    const getTypeStyles = (type: string) => {
+        const styles: Record<string, string> = {
+            Person: "text-blue-600 bg-blue-50 border-blue-200",
+            Company: "text-amber-600 bg-amber-50 border-amber-200",
+            CourtCase: "text-red-600 bg-red-50 border-red-200",
+            Document: "text-emerald-600 bg-emerald-50 border-emerald-200",
+            SocialProfile: "text-fuchsia-600 bg-fuchsia-50 border-fuchsia-200",
+            Media: "text-indigo-600 bg-indigo-50 border-indigo-200",
+        };
+        return styles[type] || "text-slate-600 bg-slate-50 border-slate-200";
+    };
+
+    return (
+        <>
+            <div className="h-full w-full overflow-hidden flex flex-col">
+                <div className="overflow-auto flex-1">
+                    <table className="w-full text-left border border-highlight/30">
+                        <thead className="sticky top-0 z-10 backdrop-blur-md">
+                            <tr className="border-b border-highlight/30">
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-foreground">
+                                    Type
+                                </th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-foreground">
+                                    Label
+                                </th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-foreground">
+                                    Summary
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-foreground">
+                                    Link
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-highlight/30">
+                            {nodes.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={4}
+                                        className="px-4 py-12 text-center text-sm italic"
+                                    >
+                                        <Dots />
+                                    </td>
+                                </tr>
+                            ) : (
+                                nodes.map((node) => (
+                                    <tr
+                                        key={node.id}
+                                        className="group transition-all hover:cursor-pointer duration-150 ease-in-out hover:bg-highlight/10"
+                                        onClick={() => setSelectedRow(node)}
+                                        onContextMenu={(e) => {
+                                            e.preventDefault();
+                                            setContextMenu({
+                                                x: e.clientX,
+                                                y: e.clientY,
+                                                node: node,
+                                            });
+                                        }}
+                                    >
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <span
+                                                className={cn(
+                                                    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+                                                    getTypeStyles(node.type),
+                                                )}
+                                            >
+                                                {node.type}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm font-semibold text-foreground">
+                                            {node.label}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-foreground/80 leading-relaxed max-w-md">
+                                            <p className="line-clamp-2">
+                                                {node.summary || "-"}
+                                            </p>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            {node.url && node.url !== "N/A" ? (
+                                                <a
+                                                    href={node.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-highlight/50 hover:text-highlight transition-all duration-100"
+                                                >
+                                                    Source{" "}
+                                                    <ExternalLink size={12} />
+                                                </a>
+                                            ) : (
+                                                <span className="text-foreground/30">
+                                                    -
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {contextMenu && (
+                <div
+                    className="fixed z-50 min-w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                >
+                    <button
+                        className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-crosshair"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleSendToGraph(contextMenu.node);
+                        }}
+                    >
+                        Send node to graph
+                    </button>
+                </div>
+            )}
+
+            {selectedRow && (
+                <Datasheet
+                    data={selectedRow}
+                    isOpen={selectedRow !== null}
+                    onClose={() => setSelectedRow(null)}
+                />
+            )}
+        </>
+    );
 }
 
 function Dots() {
@@ -54,193 +215,5 @@ function Dots() {
                 </span>
             </span>
         </span>
-    );
-}
-
-export default function Table() {
-    const { scans } = useWebSocket();
-    const [nodes, setNodes] = useState<GraphNode[]>([]);
-    const scanEntries = Object.entries(scans);
-
-    const [selectedRow, setSelectedRow] = useState(null);
-
-    useEffect(() => {
-        setNodes((prev) => {
-            console.log("update works in table");
-            let currentNodes = [...prev];
-            let hasChanges = false;
-
-            scanEntries.forEach(([_, updates]) => {
-                updates.forEach((update) => {
-                    if (!update.data || !update.data.nodes) return;
-
-                    const existingNodeIds = new Set(
-                        currentNodes.map((n) => n.id),
-                    );
-                    const nodesToAdd = update.data.nodes.filter(
-                        (n: GraphNode) => !existingNodeIds.has(n.id),
-                    );
-
-                    if (nodesToAdd.length > 0) {
-                        currentNodes = [...currentNodes, ...nodesToAdd];
-                        hasChanges = true;
-                    }
-                });
-            });
-
-            return hasChanges ? currentNodes : prev;
-        });
-    }, [scans]);
-
-    const [contextMenu, setContextMenu] = useState<{
-        x: number;
-        y: number;
-        node: GraphNode;
-    } | null>(null);
-
-    useEffect(() => {
-        const handleClick = () => setContextMenu(null);
-        document.addEventListener("click", handleClick);
-        return () => {
-            document.removeEventListener("click", handleClick);
-        };
-    }, []);
-
-    const { sendNodeToGraph } = useGraphSelection();
-
-    const handleSendToGraph = (node: GraphNode) => {
-        console.log("send that son of a gun ", node);
-
-        sendNodeToGraph(node);
-
-        setContextMenu(null);
-    };
-
-    const getTypeStyles = (type: string) => {
-        const styles: Record<string, string> = {
-            Person: "text-blue-600 bg-blue-50 border-blue-200",
-            Company: "text-amber-600 bg-amber-50 border-amber-200",
-            CourtCase: "text-red-600 bg-red-50 border-red-200",
-            Document: "text-emerald-600 bg-emerald-50 border-emerald-200",
-            SocialProfile: "text-fuchsia-600 bg-fuchsia-50 border-fuchsia-200",
-            Media: "text-indigo-600 bg-indigo-50 border-indigo-200",
-        };
-        return styles[type] || "text-slate-600 bg-slate-50 border-slate-200";
-    };
-
-    return (
-        <>
-            <div className="h-full w-full overflow-hidden flex flex-col border border-slate-800 dark:border-slate-800">
-                <div className="overflow-auto flex-1">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 z-10 backdrop-blur-md dark:bg-slate-900/90">
-                            <tr className="border-b border-slate-800">
-                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                    Type
-                                </th>
-                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                    Label
-                                </th>
-                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                    Summary
-                                </th>
-                                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                    Link
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-900">
-                            {nodes.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colSpan={4}
-                                        className="px-4 py-12 text-center text-sm italic"
-                                    >
-                                        <Dots />
-                                    </td>
-                                </tr>
-                            ) : (
-                                nodes.map((node) => (
-                                    <tr
-                                        key={node.id}
-                                        className="group transition-all hover:cursor-pointer hover:backdrop-blur-2xl transition-all duration-150 ease-in-out hover:bg-zinc-700"
-                                        onClick={() => setSelectedRow(node)}
-                                        onContextMenu={(e) => {
-                                            e.preventDefault();
-                                            setContextMenu({
-                                                x: e.clientX,
-                                                y: e.clientY,
-                                                node: node,
-                                            });
-                                        }}
-                                    >
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span
-                                                className={cn(
-                                                    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
-                                                    getTypeStyles(node.type),
-                                                )}
-                                            >
-                                                {node.type}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">
-                                            {node.label}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-slate-400 leading-relaxed max-w-md">
-                                            <p className="line-clamp-2">
-                                                {node.summary || "-"}
-                                            </p>
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            {node.url && node.url !== "N/A" ? (
-                                                <a
-                                                    href={node.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 transition-all"
-                                                >
-                                                    Source{" "}
-                                                    <ExternalLink size={12} />
-                                                </a>
-                                            ) : (
-                                                <span className="text-slate-700">
-                                                    -
-                                                </span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {contextMenu && (
-                <div
-                    className="fixed z-50 min-w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1"
-                    style={{ top: contextMenu.y, left: contextMenu.x }}
-                >
-                    <button
-                        className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-crosshair"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleSendToGraph(contextMenu.node);
-                        }}
-                    >
-                        Send node to graph
-                    </button>
-                </div>
-            )}
-
-            {selectedRow && (
-                <Datasheet
-                    data={selectedRow}
-                    isOpen={selectedRow ? true : false}
-                    onClose={() => setSelectedRow(null)}
-                />
-            )}
-        </>
     );
 }

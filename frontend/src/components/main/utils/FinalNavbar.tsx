@@ -76,7 +76,7 @@ const cycleTheme = () => {
                     <NavItems items={navItems} />
                     <div className="flex items-center gap-4">
                         <button
-                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background font-black hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
+                            className="inset-0 z-21 h-11 w-36 hover:cursor-pointer bg-foreground text-background hover:bg-highlight hover:text-foreground transition-all duration-300 uppercase tracking-[0.2em] text-sm shadow-lg rounded-md"
                             onClick={(event: any) =>
                                 navigate(
                                     isAuthenticated ? "/dashboard" : "/login",
@@ -123,7 +123,7 @@ const cycleTheme = () => {
                                 key={`mobile-link-${idx}`}
                                 href={item.link}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="relative px-4 py-2 text-lg text-primary-foreground dark:text-neutral-300 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-foreground hover:text-background font-black uppercase tracking-[0.2em] rounded-md shadow-md"
+                                className="relative px-4 py-2 text-lg text-primary-foreground dark:text-neutral-300 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-foreground hover:text-background uppercase tracking-[0.2em] rounded-md shadow-md"
                             >
                                 <span className="block">{item.name}</span>
                             </a>

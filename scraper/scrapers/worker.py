@@ -4,10 +4,13 @@ import asyncio
 from asyncio.tasks import as_completed
 
 from scrapers.ani_pdf.ani_pdf_v2 import AniScraper
+
 # from scrapers.seap_sicap.seap_sicap import ElicitatieScraper
 from scrapers.seap_sicap.seap_sicap_nou import ElicitatieScraper
+
 # from scrapers.anaf_portjust.anaf import AnafScraper
 from scrapers.anaf_portjust.anaf_nou import AnafScraper
+
 # from scrapers.anaf_portjust.portal_just import PortalJustScraper
 from scrapers.anaf_portjust.portal_just_nou import PortalJustScraper
 
@@ -20,10 +23,9 @@ from scrapers.journalism.recorder_nou import RecorderScraper
 from scrapers.journalism.riseproject_nou import RiseProjectScraper
 from scrapers.journalism.zf_nou import ZFScraper
 
-from scrapers.duckduckgo.profil_nou import ProfileScraper
 
 class Worker:
-    def __init__(self, websocket, manager, scan_id, target):
+    def __init__(self, websocket, manager, scan_id, target, searchType):
         self.target = target
         self.ws = websocket
         self.scan_id = scan_id
@@ -31,6 +33,7 @@ class Worker:
         self.scrapers = []
         self.timeout = []
         self.insinuations = []
+        self.searchType = searchType
 
     async def execute(self):
         await self.manager.send_update(
@@ -43,25 +46,60 @@ class Worker:
             },
         )
 
-        queue = [
-            asyncio.create_task(SicapScraper().run(self.target)),
-            asyncio.create_task(SeapScraper().run(self.target)),
-            # asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(ElicitatieScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(PortalJustScraper().search, self.target)),
-            
-            # asyncio.create_task(asyncio.to_thread(AdevarulScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(Digi24Scraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(G4MediaScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
-
-            # asyncio.create_task(asyncio.to_thread(RecorderScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(RiseProjectScraper().search, self.target)),
-            # asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
-
-            # asyncio.create_task(asyncio.to_thread(ProfileScraper().search, self.target)),
-        ]
+        if self.searchType == "company":
+            queue = [
+                asyncio.create_task(SicapScraper().run(self.target)),
+                asyncio.create_task(SeapScraper().run(self.target)),
+                asyncio.create_task(
+                    asyncio.to_thread(AniScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(PortalJustScraper().search, self.target)
+                ),
+                # asyncio.create_task(
+                #     asyncio.to_thread(ElicitatieScraper().search, self.target)
+                # ),
+                # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(AdevarulScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(Digi24Scraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(G4MediaScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(RecorderScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(RiseProjectScraper().search, self.target)),
+                # asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
+            ]
+        else:
+            queue = [
+                # asyncio.create_task(SicapScraper().run(self.target)),
+                # asyncio.create_task(SeapScraper().run(self.target)),
+                # asyncio.create_task(asyncio.to_thread(AniScraper().search, self.target)),
+                # asyncio.create_task(
+                #     asyncio.to_thread(PortalJustScraper().search, self.target)
+                # ),
+                asyncio.create_task(
+                    asyncio.to_thread(ElicitatieScraper().search, self.target)
+                ),
+                # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
+                asyncio.create_task(
+                    asyncio.to_thread(AdevarulScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(Digi24Scraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(G4MediaScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(HotNewsScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(RecorderScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(RiseProjectScraper().search, self.target)
+                ),
+                asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
+            ]
 
         for finished_task in asyncio.as_completed(queue):
             try:

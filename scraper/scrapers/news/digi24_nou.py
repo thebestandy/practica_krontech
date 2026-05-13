@@ -19,20 +19,19 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 TIMEOUT = 10
 RETRIES = 3
 REQUEST_DELAY = 0.25
-MAX_WORKERS = 5
+MAX_WORKERS = 20
 
 
 class Digi24Scraper:
-
     def request_get(self, url: str, **kwargs) -> httpx.Response | None:
         for attempt in range(RETRIES):
             try:
                 time.sleep(REQUEST_DELAY)
                 response = httpx.get(
                     url,
-                    headers = HEADERS,
-                    timeout = TIMEOUT,
-                    follow_redirects = True,
+                    headers=HEADERS,
+                    timeout=TIMEOUT,
+                    follow_redirects=True,
                     **kwargs,
                 )
                 response.raise_for_status()
@@ -69,7 +68,7 @@ class Digi24Scraper:
         paragraphs = []
 
         for paragraph in soup.find_all("p"):
-            text = self.clean_text(paragraph.get_text(" ", strip = True))
+            text = self.clean_text(paragraph.get_text(" ", strip=True))
 
             if len(text) < 40:
                 continue
@@ -89,18 +88,44 @@ class Digi24Scraper:
             return None
 
         months = {
-            "ianuarie": "01", "ian": "01", "january": "01", "jan": "01",
-            "februarie": "02", "feb": "02", "february": "02",
-            "martie": "03", "mar": "03", "march": "03",
-            "aprilie": "04", "apr": "04", "april": "04",
-            "mai": "05", "may": "05",
-            "iunie": "06", "iun": "06", "june": "06", "jun": "06",
-            "iulie": "07", "iul": "07", "july": "07", "jul": "07",
-            "august": "08", "aug": "08",
-            "septembrie": "09", "sep": "09", "sept": "09", "september": "09",
-            "octombrie": "10", "oct": "10", "october": "10",
-            "noiembrie": "11", "nov": "11", "november": "11",
-            "decembrie": "12", "dec": "12", "december": "12",
+            "ianuarie": "01",
+            "ian": "01",
+            "january": "01",
+            "jan": "01",
+            "februarie": "02",
+            "feb": "02",
+            "february": "02",
+            "martie": "03",
+            "mar": "03",
+            "march": "03",
+            "aprilie": "04",
+            "apr": "04",
+            "april": "04",
+            "mai": "05",
+            "may": "05",
+            "iunie": "06",
+            "iun": "06",
+            "june": "06",
+            "jun": "06",
+            "iulie": "07",
+            "iul": "07",
+            "july": "07",
+            "jul": "07",
+            "august": "08",
+            "aug": "08",
+            "septembrie": "09",
+            "sep": "09",
+            "sept": "09",
+            "september": "09",
+            "octombrie": "10",
+            "oct": "10",
+            "october": "10",
+            "noiembrie": "11",
+            "nov": "11",
+            "november": "11",
+            "decembrie": "12",
+            "dec": "12",
+            "december": "12",
         }
 
         iso_match = re.search(r"\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2})?", value)
@@ -115,13 +140,15 @@ class Digi24Scraper:
         if numeric_match:
             day, month, year, hour, minute = numeric_match.groups()
             if hour and minute:
-                return f"{year}-{int(month):02d}-{int(day):02d} {int(hour):02d}:{minute}"
+                return (
+                    f"{year}-{int(month):02d}-{int(day):02d} {int(hour):02d}:{minute}"
+                )
             return f"{year}-{int(month):02d}-{int(day):02d}"
 
         named_month_match = re.search(
             r"(\d{1,2})\s+([A-Za-zĂÂÎȘȚăâîșț]+)\s+(\d{4})(?:\D+(\d{1,2}):(\d{2}))?",
             value,
-            flags = re.IGNORECASE,
+            flags=re.IGNORECASE,
         )
         if named_month_match:
             day, month_name, year, hour, minute = named_month_match.groups()
@@ -150,7 +177,9 @@ class Digi24Scraper:
 
     def is_valid_article_url(self, url: str) -> bool:
         parsed = urlparse(url)
-        return parsed.netloc in ["www.digi24.ro", "digi24.ro"] and "/stiri/" in parsed.path
+        return (
+            parsed.netloc in ["www.digi24.ro", "digi24.ro"] and "/stiri/" in parsed.path
+        )
 
     def build_search_url(self, query: str) -> str:
         return f"{BASE_URL}/cautare?q={quote_plus(query)}"
@@ -159,9 +188,9 @@ class Digi24Scraper:
         articles = []
         seen_urls = set()
 
-        for link in soup.find_all("a", href = True):
+        for link in soup.find_all("a", href=True):
             url = urljoin(BASE_URL, link["href"])
-            title = self.clean_text(link.get_text(" ", strip = True))
+            title = self.clean_text(link.get_text(" ", strip=True))
 
             if not title or len(title) < 20:
                 continue
@@ -189,8 +218,12 @@ class Digi24Scraper:
         date_tag = soup.find("time")
 
         return {
-            "title": self.clean_text(title_tag.get_text(" ", strip = True)) if title_tag else None,
-            "date": self.normalize_date(date_tag.get_text(" ", strip = True) if date_tag else None),
+            "title": self.clean_text(title_tag.get_text(" ", strip=True))
+            if title_tag
+            else None,
+            "date": self.normalize_date(
+                date_tag.get_text(" ", strip=True) if date_tag else None
+            ),
             "text": self.clean_html_content(html),
             "is_sponsored": self.is_sponsored_article(html),
         }
@@ -216,23 +249,30 @@ class Digi24Scraper:
 
         graph_nodes = []
 
-        with ThreadPoolExecutor(max_workers = min(MAX_WORKERS, max(1, len(article_links)))) as executor:
+        with ThreadPoolExecutor(
+            max_workers=min(MAX_WORKERS, max(1, len(article_links)))
+        ) as executor:
             for article_link, details in zip(
                 article_links,
-                executor.map(lambda item: self.extract_article_details(item["url"]), article_links),
+                executor.map(
+                    lambda item: self.extract_article_details(item["url"]),
+                    article_links,
+                ),
             ):
                 if not details["text"] or details["is_sponsored"]:
                     continue
 
                 article_id = hashlib.md5(article_link["url"].encode()).hexdigest()
-                graph_nodes.append({
-                    "id": f"doc_{article_id}",
-                    "type": "Document",
-                    "label": details["title"] or article_link["title"],
-                    "summary": details["date"] or "Data necunoscuta",
-                    "url": article_link["url"],
-                    "text": details["text"],
-                })
+                graph_nodes.append(
+                    {
+                        "id": f"doc_{article_id}",
+                        "type": "Document",
+                        "label": details["title"] or article_link["title"],
+                        "summary": details["date"] or "Data necunoscuta",
+                        "url": article_link["url"],
+                        "text": details["text"],
+                    }
+                )
 
                 if len(graph_nodes) >= limit:
                     break
@@ -249,8 +289,10 @@ class Digi24Scraper:
             "nodes": graph_nodes,
         }
 
+
 # le-am lasat comentate
 # if __name__ == "__main__":
 #     import json
 #     scraper = Digi24Scraper()
 #     print(json.dumps(scraper.search("Romania", limit=5), ensure_ascii=False, indent=2))
+

@@ -7,10 +7,15 @@ import React, {
 } from "react";
 import { WebsocketManager } from "../utils/websocketManager";
 
+export interface ScanTargets {
+    company?: string;
+    person?: string;
+}
+
 interface WebSocketContextType {
     connectionStatus: string;
     scans: Record<string, any[]>;
-    startScan: (target: string) => void;
+    startScan: (targets: ScanTargets) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(
@@ -46,12 +51,26 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         return () => client.disconnect();
     }, []);
 
-    const startScan = (target: string) => {
-        if (wsClient.current && target) {
-            console.log("websocket provider: scan did start");
+    const startScan = (targets: ScanTargets) => {
+        if (!wsClient.current) {
+            return;
+        }
+
+        if (targets.person) {
+            console.log("websocket provider: scan did start it's a person btw");
             wsClient.current.send({
                 action: "SCAN_PERSON",
-                target: target,
+                target: targets.person,
+            });
+        }
+
+        if (targets.company) {
+            console.log(
+                "websocket provider: scan did start it's a company btw",
+            );
+            wsClient.current.send({
+                action: "SCAN_COMPANY",
+                target: targets.company,
             });
         }
     };

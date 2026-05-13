@@ -19,7 +19,7 @@ export default function Dashboard() {
                     >
                         <DashboardSidebar />
                     </ResizablePanel>
-                    <ResizableHandle className="bg-slate-900" />
+                    <ResizableHandle className="bg-highlight/30" />
 
                     <ResizablePanel defaultSize="75%">
                         <DashboardMain />

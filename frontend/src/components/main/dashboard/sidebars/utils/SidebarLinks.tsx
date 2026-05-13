@@ -6,6 +6,7 @@ interface linkEntry {
     title: string;
     icon?: React.ElementType;
     link?: string;
+    onClick?: () => void;
     subprojects?: string[];
 }
 
@@ -62,6 +63,8 @@ export const SidebarLinks = ({ data }: { data: linkEntry[] }) => {
                             onClick={() => {
                                 if (isFolder) {
                                     toggleFolder(idx);
+                                } else if (item.onClick) {
+                                    item.onClick();
                                 } else if (item.link) {
                                     console.log("navigate to", item.link);
                                 }

@@ -273,13 +273,12 @@ export default function Graph() {
                         sourceScreenPos &&
                         mousePos &&
                         !pendingC && (
-                            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+                            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 text-highlight stroke-highlight">
                                 <line
                                     x1={sourceScreenPos.x}
                                     y1={sourceScreenPos.y}
                                     x2={mousePos.x}
                                     y2={mousePos.y}
-                                    stroke="white"
                                     strokeWidth="2"
                                     strokeDasharray="5,5"
                                 />
@@ -287,7 +286,7 @@ export default function Graph() {
                         )}
                     {/* should move this tf outta here but it'll do for now */}
                     {pendingC && (
-                        <div className="absolute top-1/2 left-1/2  bg-slate-800 border border-slate-600 shadow-2xl rounded-sm p-5 z-20 w-72">
+                        <div className="absolute top-0 left-0 m-10 bg-slate-800 border border-slate-600 shadow-2xl rounded-sm p-5 z-20 w-72">
                             <h3 className="text-slate-200 mb-3 text-sm font-medium">
                                 Put yo connection in here:
                             </h3>

@@ -1,4 +1,3 @@
-import { Search, Download, ExpandIcon, Settings } from "lucide-react";
 import { SidebarLinks } from "./utils/SidebarLinks";
 import Notifications from "./utils/DashboardNotifications";
 import {
@@ -8,16 +7,19 @@ import {
 } from "../utils/ui/resizable";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../../ui/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardSidebar() {
+    const navigate = useNavigate();
+
     const links = [
         {
             title: "Projects",
-            subprojects: ["Project Alpha", "Project Beta"],
+            subprojects: ["Project 1", "Project 2"],
         },
         {
-            title: "Investigations",
-            subprojects: ["Investigation 1", "Investigation 2"],
+            title: "Logout",
+            onClick: () => navigate("/logout"),
         },
         {
             title: "Settings",
@@ -73,15 +75,6 @@ export default function DashboardSidebar() {
                         className="mb-6 flex items-center gap-2 px-2"
                         ref={containerRef}
                     >
-                        <div
-                            className={cn(
-                                isCompact
-                                    ? "hidden"
-                                    : "flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground",
-                            )}
-                        >
-                            logo
-                        </div>
                         <span
                             className={cn(
                                 isCompact
@@ -96,7 +89,7 @@ export default function DashboardSidebar() {
                     <SidebarLinks data={links} />
                 </ResizablePanel>
 
-                <ResizableHandle className="bg-slate-900" />
+                <ResizableHandle className="bg-highlight/30" />
 
                 <ResizablePanel>
                     <div className="h-full overflow-hidden">

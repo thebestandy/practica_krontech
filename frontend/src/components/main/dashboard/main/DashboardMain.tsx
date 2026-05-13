@@ -4,7 +4,7 @@ import {
     ResizablePanelGroup,
 } from "../utils/ui/resizable";
 import Graph from "./components/Graph";
-import Table from "./components/Table";
+import TableContainer from "./components/TableContainer";
 import { GraphSelectionProvider } from "./components/utils/NodeProvider";
 import Search from "./components/utils/Searchbar";
 
@@ -30,7 +30,7 @@ export default function DashboardMain() {
 
                     <ResizablePanel>
                         <div className="w-full h-full">
-                            <Table />
+                            <TableContainer />
                         </div>
                     </ResizablePanel>
                 </ResizablePanelGroup>
