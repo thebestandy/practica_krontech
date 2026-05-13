@@ -1,6 +1,7 @@
 import { SearchIcon, XIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useWebSocket } from "../../../utils/WebsocketProvider";
+import { useProject } from "../../../utils/DashboardProvider";
 
 export default function Search() {
     const [companyTarget, setCompanyTarget] = useState("");
@@ -8,6 +9,8 @@ export default function Search() {
 
     const { startScan } = useWebSocket();
     const [isOpen, setIsOpen] = useState(false);
+
+    const { addSearch } = useProject();
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -21,6 +24,12 @@ export default function Search() {
             });
 
             console.log("scan should start");
+
+            const searchString = `Company: ${companyTarget.trim()} | Person: ${personTarget.trim()}`;
+            addSearch(searchString);
+
+            console.log("should have saved");
+
             setCompanyTarget("");
             setPersonTarget("");
         }
@@ -65,18 +74,18 @@ export default function Search() {
                     type="text"
                     onChange={(e) => setCompanyTarget(e.target.value)}
                     value={companyTarget}
-                    placeholder="Companies..."
+                    placeholder="Companie..."
                     tabIndex={isOpen ? 0 : -1}
-                    className="w-1/2 min-w-0 h-full px-[15px] text-base font-normal text-foreground bg-transparent outline-none border-r border-secondary-highlight/30"
+                    className="w-1/2 min-w-0 h-full px-3.75 text-base font-normal text-foreground bg-transparent outline-none border-r border-secondary-highlight/30"
                 />
 
                 <input
                     type="text"
                     onChange={(e) => setPersonTarget(e.target.value)}
                     value={personTarget}
-                    placeholder="People..."
+                    placeholder="Persoana..."
                     tabIndex={isOpen ? 0 : -1}
-                    className="w-1/2 min-w-0 h-full px-[15px] text-base font-normal text-foreground bg-transparent outline-none"
+                    className="w-1/2 min-w-0 h-full px-3.75 text-base font-normal text-foreground bg-transparent outline-none"
                 />
             </div>
 

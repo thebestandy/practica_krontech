@@ -1,5 +1,6 @@
 import DashboardMain from "./main/DashboardMain";
 import DashboardSidebar from "./sidebars/DashboardSidebar";
+import { DashboardProvider } from "./utils/DashboardProvider";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -9,23 +10,25 @@ import { WebSocketProvider } from "./utils/WebsocketProvider";
 
 export default function Dashboard() {
     return (
-        <WebSocketProvider>
-            <div className="w-full h-screen font-sans">
-                <ResizablePanelGroup orientation="horizontal">
-                    <ResizablePanel
-                        defaultSize="25%"
-                        maxSize="35%"
-                        minSize="10%"
-                    >
-                        <DashboardSidebar />
-                    </ResizablePanel>
-                    <ResizableHandle className="bg-highlight/30" />
+        <DashboardProvider>
+            <WebSocketProvider>
+                <div className="w-full h-screen font-sans">
+                    <ResizablePanelGroup orientation="horizontal">
+                        <ResizablePanel
+                            defaultSize="25%"
+                            maxSize="35%"
+                            minSize="10%"
+                        >
+                            <DashboardSidebar />
+                        </ResizablePanel>
+                        <ResizableHandle className="bg-highlight/30" />
 
-                    <ResizablePanel defaultSize="75%">
-                        <DashboardMain />
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-            </div>
-        </WebSocketProvider>
+                        <ResizablePanel defaultSize="75%">
+                            <DashboardMain />
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </div>
+            </WebSocketProvider>
+        </DashboardProvider>
     );
 }

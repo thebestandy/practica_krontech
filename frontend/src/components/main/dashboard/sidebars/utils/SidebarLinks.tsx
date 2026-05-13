@@ -2,12 +2,19 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "../../../../ui/lib/utils";
 
+interface SubProject {
+    id: string;
+    label: string;
+    onClick: () => void;
+    isActive?: boolean;
+}
+
 interface linkEntry {
     title: string;
     icon?: React.ElementType;
     link?: string;
     onClick?: () => void;
-    subprojects?: string[];
+    subprojects?: SubProject[];
 }
 
 // hard coded some colors cuz fuck it we ball aint got time for ts
@@ -135,16 +142,16 @@ export const SidebarLinks = ({ data }: { data: linkEntry[] }) => {
                                             {item.subprojects!.map(
                                                 (sub, subIdx) => (
                                                     <a
-                                                        key={`sub-${idx}-${subIdx}`}
-                                                        onClick={() =>
-                                                            console.log(
-                                                                "navigate to subproject:",
-                                                                sub,
-                                                            )
-                                                        }
-                                                        className="hover:cursor-pointer block py-1.5 text-neutral-400 hover:text-highlight transition-colors duration-150"
+                                                        key={`sub-${idx}-${sub.id}`}
+                                                        onClick={sub.onClick}
+                                                        className={cn(
+                                                            "hover:cursor-pointer block py-1.5 transition-colors duration-150",
+                                                            sub.isActive
+                                                                ? "text-highlight font-semibold"
+                                                                : "text-neutral-400 hover:text-highlight",
+                                                        )}
                                                     >
-                                                        {sub}
+                                                        {sub.label}
                                                     </a>
                                                 ),
                                             )}

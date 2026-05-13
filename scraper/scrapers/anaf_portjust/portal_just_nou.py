@@ -211,11 +211,11 @@ class PortalJustScraper:
             "source": "portal just scraper",
             "type": "document",
             "certainty": "0",
-            "metadata": {
-                "timestamp": datetime.now().isoformat(),
-                "source": "portal.just.ro",
-                "count": len(graph_nodes),
-            },
+            # "metadata": {
+            #     "timestamp": datetime.now().isoformat(),
+            #     "source": "portal.just.ro",
+            #     "count": len(graph_nodes),
+            # },
             "metadata": {
                 "timestamp": datetime.now().isoformat(),
                 "source": "portal.just.ro",
@@ -276,4 +276,3 @@ class PortalJustScraper:
 #         if raspuns != "da":
 #             print("La revedere!")
 #             break
-

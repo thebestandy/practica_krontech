@@ -12,6 +12,7 @@ export interface GraphNode {
     summary?: string;
     url?: string;
     metadata?: string;
+    batchId?: string;
 }
 
 interface TableProps {
@@ -42,6 +43,14 @@ export default function Table({ nodes }: TableProps) {
         setContextMenu(null);
     };
 
+    const [activeBatch, setActiveBatch] = useState<string | null>(null);
+    const batches = Array.from(
+        new Set(nodes.map((n) => n.batchId).filter(Boolean)),
+    ) as string[];
+    const filteredNodes = activeBatch
+        ? nodes.filter((n) => n.batchId === activeBatch)
+        : nodes;
+
     const getTypeStyles = (type: string) => {
         const styles: Record<string, string> = {
             Person: "text-blue-600 bg-blue-50 border-blue-200",
@@ -54,12 +63,82 @@ export default function Table({ nodes }: TableProps) {
         return styles[type] || "text-slate-600 bg-slate-50 border-slate-200";
     };
 
+    const renderTableRows = () => {
+        const rows: React.ReactNode[] = [];
+        let currentBatchId: string | undefined | null = undefined;
+
+        filteredNodes.forEach((node) => {
+            if (!activeBatch && node.batchId !== currentBatchId) {
+                rows.push(
+                    <tr
+                        key={`separator-${node.batchId}`}
+                        className="bg-highlight/5 border-y border-highlight/30"
+                    >
+                        <td
+                            colSpan={4}
+                            className="px-4 py-2 text-xs font-semibold tracking-wider text-foreground/60 uppercase"
+                        >
+                            {node.batchId || "Initial Data"}
+                        </td>
+                    </tr>,
+                );
+                currentBatchId = node.batchId;
+            }
+
+            rows.push(
+                <tr
+                    key={node.id}
+                    className="group transition-all hover:cursor-pointer duration-150 ease-in-out hover:bg-highlight/10"
+                    onClick={() => setSelectedRow(node)}
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                        setContextMenu({ x: e.clientX, y: e.clientY, node });
+                    }}
+                >
+                    <td className="px-4 py-3 whitespace-nowrap">
+                        <span
+                            className={cn(
+                                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+                                getTypeStyles(node.type),
+                            )}
+                        >
+                            {node.type}
+                        </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm font-semibold text-foreground">
+                        {node.label}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-foreground/80 leading-relaxed max-w-md">
+                        <p className="line-clamp-2">{node.summary || "-"}</p>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                        {node.url && node.url !== "N/A" ? (
+                            <a
+                                href={node.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1.5 text-xs font-medium text-highlight/50 hover:text-highlight transition-all duration-100"
+                            >
+                                Source <ExternalLink size={12} />
+                            </a>
+                        ) : (
+                            <span className="text-foreground/30">-</span>
+                        )}
+                    </td>
+                </tr>,
+            );
+        });
+
+        return rows;
+    };
+
     return (
         <>
-            <div className="h-full w-full overflow-hidden flex flex-col">
-                <div className="overflow-auto flex-1">
-                    <table className="w-full text-left border border-highlight/30">
-                        <thead className="sticky top-0 z-10 backdrop-blur-md">
+            <div className="h-full w-full overflow-hidden flex">
+                <div className="flex-1 overflow-auto flex flex-col">
+                    <table className="w-full text-left border-b border-highlight/30">
+                        <thead className="sticky top-0 z-10 backdrop-blur-md bg-background/80">
                             <tr className="border-b border-highlight/30">
                                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-foreground">
                                     Type
@@ -86,64 +165,51 @@ export default function Table({ nodes }: TableProps) {
                                     </td>
                                 </tr>
                             ) : (
-                                nodes.map((node) => (
-                                    <tr
-                                        key={node.id}
-                                        className="group transition-all hover:cursor-pointer duration-150 ease-in-out hover:bg-highlight/10"
-                                        onClick={() => setSelectedRow(node)}
-                                        onContextMenu={(e) => {
-                                            e.preventDefault();
-                                            setContextMenu({
-                                                x: e.clientX,
-                                                y: e.clientY,
-                                                node: node,
-                                            });
-                                        }}
-                                    >
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span
-                                                className={cn(
-                                                    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
-                                                    getTypeStyles(node.type),
-                                                )}
-                                            >
-                                                {node.type}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-sm font-semibold text-foreground">
-                                            {node.label}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-foreground/80 leading-relaxed max-w-md">
-                                            <p className="line-clamp-2">
-                                                {node.summary || "-"}
-                                            </p>
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            {node.url && node.url !== "N/A" ? (
-                                                <a
-                                                    href={node.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                    className="inline-flex items-center gap-1.5 text-xs font-medium text-highlight/50 hover:text-highlight transition-all duration-100"
-                                                >
-                                                    Source{" "}
-                                                    <ExternalLink size={12} />
-                                                </a>
-                                            ) : (
-                                                <span className="text-foreground/30">
-                                                    -
-                                                </span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
+                                renderTableRows()
                             )}
                         </tbody>
                     </table>
                 </div>
+
+                {/* ts so ass but its ok */}
+                {batches.length > 0 && (
+                    <div className="w-64 shrink-0 border-l border-highlight/30 flex flex-col bg-background/50">
+                        <div className="p-4 border-b border-highlight/30 flex justify-between items-center">
+                            <h2 className="text-sm font-semibold tracking-wider text-foreground">
+                                Seach by Targets
+                            </h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                            {batches.map((batch) => (
+                                <button
+                                    key={batch}
+                                    onClick={() =>
+                                        setActiveBatch(
+                                            batch === activeBatch
+                                                ? null
+                                                : batch,
+                                        )
+                                    }
+                                    className={cn(
+                                        "w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-100 hover:cursor-pointer flex justify-between items-center",
+                                        activeBatch === batch
+                                            ? "bg-highlight/10 text-foreground font-medium border border-highlight/30"
+                                            : "text-foreground/50 hover:bg-highlight/10 border border-transparent",
+                                    )}
+                                >
+                                    <span className="truncate">{batch}</span>
+                                    <span className="text-xs bg-accent-foreground px-2 py-0.5 rounded-full text-foreground/30">
+                                        {
+                                            nodes.filter(
+                                                (n) => n.batchId === batch,
+                                            ).length
+                                        }
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {contextMenu && (

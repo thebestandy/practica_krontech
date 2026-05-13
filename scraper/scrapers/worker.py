@@ -46,10 +46,10 @@ class Worker:
             },
         )
 
-        if self.searchType == "company":
+        if self.searchType == "person":
             queue = [
                 asyncio.create_task(SicapScraper().run(self.target)),
-                asyncio.create_task(SeapScraper().run(self.target)),
+                # asyncio.create_task(SeapScraper().run(self.target)),
                 asyncio.create_task(
                     asyncio.to_thread(AniScraper().search, self.target)
                 ),
@@ -59,14 +59,28 @@ class Worker:
                 # asyncio.create_task(
                 #     asyncio.to_thread(ElicitatieScraper().search, self.target)
                 # ),
-                # asyncio.create_task(asyncio.to_thread(AnafScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(AdevarulScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(Digi24Scraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(G4MediaScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(HotNewsScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(RecorderScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(RiseProjectScraper().search, self.target)),
-                # asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
+                asyncio.create_task(
+                    asyncio.to_thread(AnafScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(AdevarulScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(Digi24Scraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(G4MediaScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(HotNewsScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(RecorderScraper().search, self.target)
+                ),
+                asyncio.create_task(
+                    asyncio.to_thread(RiseProjectScraper().search, self.target)
+                ),
+                asyncio.create_task(asyncio.to_thread(ZFScraper().search, self.target)),
             ]
         else:
             queue = [
@@ -110,6 +124,7 @@ class Worker:
                     {
                         "scan_id": self.scan_id,
                         "data": data,
+                        "target": self.target,
                     },
                 )
             except Exception as e:
@@ -122,7 +137,7 @@ class Worker:
             self.ws,
             {
                 "type": "worker finished",
-                "scan": self.scan_id,
+                "scan_id": self.scan_id,
                 "target": self.target,
                 "progress": 95,
                 "insinuations": self.insinuations

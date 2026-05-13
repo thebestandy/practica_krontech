@@ -1,4 +1,4 @@
-# A.N.I. Scraper - Functional Dashboard
+# A.N.I. Scraper
 
 import re
 import json
@@ -11,9 +11,9 @@ from typing import List
 from datetime import datetime
 
 logging.basicConfig(
-    level = logging.INFO,
-    format = "%(asctime)s [%(levelname)s] %(message)s",
-    datefmt = "%H:%M:%S",
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
 )
 log = logging.getLogger("ani_legacy_scraper")
 
@@ -26,6 +26,8 @@ class DeclarationPDF:
     url: str
     unique_id: str
     source: str = "legacy"
+    date_str: str = ""
+    raw_doc_type: str = ""
 
 
 @dataclass
@@ -33,7 +35,9 @@ class PersonResult:
     name: str
     institution: str
     position: str = ""
-    pdfs: List[DeclarationPDF] = field(default_factory = list)
+    pdfs: List[DeclarationPDF] = field(default_factory=list)
+    county: str = ""
+    locality: str = ""
 
 
 class AniScraper:
@@ -82,7 +86,7 @@ class AniScraper:
                 "javax.faces.ViewState": view_state,
             }
 
-            response = self.session.post(self.SEARCH_ENDPOINT, data = payload)
+            response = self.session.post(self.SEARCH_ENDPOINT, data=payload)
             return self._parse_results(response.text)
 
         except Exception as e:
@@ -99,7 +103,7 @@ class AniScraper:
         data_rows = [
             row
             for row in all_rows
-            if row.find("a", href = re.compile(r"DownloadServlet"))
+            if row.find("a", href=re.compile(r"DownloadServlet"))
         ]
 
         log.info(f"Analyzing {len(data_rows)} filtered data rows.")
@@ -110,13 +114,15 @@ class AniScraper:
             if len(cells) < 8:
                 continue
 
-            name = cells[0].get_text(strip = True)
-            inst = cells[1].get_text(strip = True)
-            pos = cells[2].get_text(strip = True)
-            date_str = cells[5].get_text(strip = True)
-            doc_type_raw = cells[6].get_text(strip = True)
+            name = cells[0].get_text(strip=True)
+            inst = cells[1].get_text(strip=True)
+            pos = cells[2].get_text(strip=True)
+            date_str = cells[5].get_text(strip=True)
+            doc_type_raw = cells[6].get_text(strip=True)
+            county = cells[3].get_text(strip=True)
+            locality = cells[4].get_text(strip=True)
 
-            a = cells[7].find("a", href = re.compile(r"DownloadServlet"))
+            a = cells[7].find("a", href=re.compile(r"DownloadServlet"))
             if not a:
                 continue
 
@@ -138,11 +144,13 @@ class AniScraper:
             )
 
             new_pdf = DeclarationPDF(
-                title = f"{doc_type_raw} ({date_str})",
-                year = year,
-                type = doc_type,
-                url = href,
-                unique_id = uid,
+                title=f"{doc_type_raw} ({date_str})",
+                year=year,
+                type=doc_type,
+                url=href,
+                unique_id=uid,
+                date_str=date_str,
+                raw_doc_type=doc_type_raw,
             )
 
             if existing_person:
@@ -150,7 +158,12 @@ class AniScraper:
             else:
                 results.append(
                     PersonResult(
-                        name = name, institution = inst, position = pos, pdfs = [new_pdf]
+                        name=name,
+                        institution=inst,
+                        position=pos,
+                        county=county,
+                        locality=locality,
+                        pdfs=[new_pdf],
                     )
                 )
 
@@ -162,7 +175,7 @@ class AniScraper:
 
             summary_parts = [p for p in (person.position, person.institution) if p]
             person_summary = (
-                " at ".join(summary_parts) if summary_parts else "unknown institush"
+                " at ".join(summary_parts) if summary_parts else "unknown institutiobn"
             )
 
             graph_nodes.append(
@@ -172,6 +185,13 @@ class AniScraper:
                     "label": person.name,
                     "summary": person_summary,
                     "url": "N/A",
+                    "metadata": {
+                        "institution": person.institution,
+                        "position": person.position,
+                        "county": person.county,
+                        "locality": person.locality,
+                        "document_count": len(person.pdfs),
+                    },
                 }
             )
 
@@ -183,6 +203,14 @@ class AniScraper:
                         "label": f"Delcarash de {pdf.type.capitalize()} ({pdf.year})",
                         "summary": f"Document associash with {person.name}",
                         "url": pdf.url,
+                        "metadata": {
+                            "year": pdf.year,
+                            "document_type": pdf.type,
+                            "raw_document_type": pdf.raw_doc_type,
+                            "submission_date": pdf.date_str,
+                            "source": pdf.source,
+                            "file_id": pdf.unique_id,
+                        },
                     }
                 )
 
@@ -195,44 +223,37 @@ class AniScraper:
                 "source": "ANI Legacy Portal",
                 "count": len(graph_nodes),
             },
-
-        #     "metadata": {
-        #     "timestamp": datetime.now().isoformat(),
-        #     "source": "ANI Legacy Portal",
-
-        #     "query": {
-        #         "name": name
-        #     },
-
-        #     "stats": {
-        #         "persons_found": len(results),
-        #         "documents_found": sum(len(p.pdfs) for p in results),
-        #     },
-
-        #     "distribution": {
-        #         "avere": sum(1 for p in results for d in p.pdfs if d.type == "avere"),
-        #         "interese": sum(1 for p in results for d in p.pdfs if d.type == "interese"),
-        #     },
-
-        #     "institutions": list(set(p.institution for p in results if p.institution)),
-
-        #     "uids_count": len(set(
-        #         pdf.unique_id
-        #         for p in results
-        #         for pdf in p.pdfs
-        #     )),
-
-        #     "scrape_info": {
-        #         "base_url": self.BASE_URL,
-        #         "endpoint": self.SEARCH_ENDPOINT,
-        #         "parser": "legacy_html_table",
-        #     }
-        # }
-
+            #     "metadata": {
+            #     "timestamp": datetime.now().isoformat(),
+            #     "source": "ANI Legacy Portal",
+            #     "query": {
+            #         "name": name
+            #     },
+            #     "stats": {
+            #         "persons_found": len(results),
+            #         "documents_found": sum(len(p.pdfs) for p in results),
+            #     },
+            #     "distribution": {
+            #         "avere": sum(1 for p in results for d in p.pdfs if d.type == "avere"),
+            #         "interese": sum(1 for p in results for d in p.pdfs if d.type == "interese"),
+            #     },
+            #     "institutions": list(set(p.institution for p in results if p.institution)),
+            #     "uids_count": len(set(
+            #         pdf.unique_id
+            #         for p in results
+            #         for pdf in p.pdfs
+            #     )),
+            #     "scrape_info": {
+            #         "base_url": self.BASE_URL,
+            #         "endpoint": self.SEARCH_ENDPOINT,
+            #         "parser": "legacy_html_table",
+            #     }
+            # }
             "nodes": graph_nodes,
         }
 
         return res
+
 
 # le-am lasat comentate
 # def export_to_json(results: List[PersonResult], filename: str):

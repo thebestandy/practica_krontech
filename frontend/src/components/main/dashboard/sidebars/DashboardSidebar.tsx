@@ -8,22 +8,33 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../../ui/lib/utils";
 import { useNavigate } from "react-router-dom";
+import Settings from "../main/components/settings/Settings";
+import { useProject } from "../utils/DashboardProvider";
 
 export default function DashboardSidebar() {
     const navigate = useNavigate();
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    const { projects, activeProjectId, switchProject } = useProject();
 
     const links = [
         {
             title: "Projects",
-            subprojects: ["Project 1", "Project 2"],
+            subprojects: projects.map((p) => ({
+                id: p.id,
+                label: p.name,
+                onClick: () => switchProject(p.id),
+                isActive: p.id === activeProjectId,
+            })),
+            // activeSubproject: activeProject?.name,
+        },
+        {
+            title: "Settings",
+            onClick: () => setIsSettingsOpen(!isSettingsOpen),
         },
         {
             title: "Logout",
             onClick: () => navigate("/logout"),
-        },
-        {
-            title: "Settings",
-            link: "/settings",
         },
     ];
 
@@ -68,35 +79,44 @@ export default function DashboardSidebar() {
     }, []);
 
     return (
-        <div className="flex h-screen w-full flex-col bg-background/95 p-7">
-            <ResizablePanelGroup orientation="vertical">
-                <ResizablePanel defaultSize="40%" maxSize="60%" minSize="10%">
-                    <div
-                        className="mb-6 flex items-center gap-2 px-2"
-                        ref={containerRef}
+        <>
+            <div className="flex h-screen w-full flex-col bg-background/95 p-7">
+                <ResizablePanelGroup orientation="vertical">
+                    <ResizablePanel
+                        defaultSize="40%"
+                        maxSize="60%"
+                        minSize="10%"
                     >
-                        <span
-                            className={cn(
-                                isCompact
-                                    ? "hidden"
-                                    : "font-semibold tracking-tight",
-                            )}
+                        <div
+                            className="mb-6 flex items-center gap-2 px-2"
+                            ref={containerRef}
                         >
-                            Workspace
-                        </span>
-                    </div>
+                            <span
+                                className={cn(
+                                    isCompact
+                                        ? "hidden"
+                                        : "font-semibold tracking-tight",
+                                )}
+                            >
+                                Workspace
+                            </span>
+                        </div>
 
-                    <SidebarLinks data={links} />
-                </ResizablePanel>
+                        <SidebarLinks data={links} />
+                    </ResizablePanel>
 
-                <ResizableHandle className="bg-highlight/30" />
+                    <ResizableHandle className="bg-highlight/30" />
 
-                <ResizablePanel>
-                    <div className="h-full overflow-hidden">
-                        <Notifications data={notifications_data} />
-                    </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </div>
+                    <ResizablePanel>
+                        <div className="h-full overflow-hidden">
+                            <Notifications data={notifications_data} />
+                        </div>
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </div>
+            {isSettingsOpen && (
+                <Settings onClose={() => setIsSettingsOpen(false)} />
+            )}
+        </>
     );
 }

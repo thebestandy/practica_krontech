@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWebSocket } from "../../utils/WebsocketProvider";
 import Table from "./Table"; // Adjust import path as needed
 import { cn } from "../../../../ui/lib/utils";
+import { useProject } from "../../utils/DashboardProvider";
 
 // shoulda imported it bu whatevs
 interface GraphNode {
@@ -11,14 +12,25 @@ interface GraphNode {
     summary?: string;
     url?: string;
     metadata?: string;
+    batchId?: string;
 }
 
 export default function TableContainer() {
     const { scans } = useWebSocket();
+    const { activeProject, updateProjectData } = useProject();
 
     const [sourceData, setSourceData] = useState<Record<string, GraphNode[]>>(
-        {},
+        activeProject?.sourceData || {},
     );
+
+    useEffect(() => {
+        setSourceData(activeProject?.sourceData || {});
+        setActiveSource(null);
+    }, [activeProject?.id]);
+
+    useEffect(() => {
+        updateProjectData({ sourceData });
+    }, [sourceData]);
 
     const [activeSource, setActiveSource] = useState<string | null>(null);
 
@@ -31,15 +43,20 @@ export default function TableContainer() {
 
             Object.entries(scans).forEach(([_, updates]) => {
                 updates.forEach((update: any) => {
-                    if (
-                        !update.data ||
-                        !update.data.nodes ||
-                        !update.data.source
-                    )
-                        return;
+                    if (!update.data || !update.data.nodes) return;
 
-                    const sourceName = update.data.source;
+                    const sourceName =
+                        update.data.source ||
+                        update.data.type ||
+                        "Unknown Source";
                     const incomingNodes = update.data.nodes;
+
+                    // ma gandeam sa fac dupa timp dar tot era confuzie
+                    // const timestamp = new Date(
+                    //     update.timestamp || Date.now(),
+                    // ).toLocaleTimeString();
+
+                    const currentBatchId = update.target || "pula mea";
 
                     if (!newData[sourceName]) {
                         newData[sourceName] = [];
@@ -51,9 +68,12 @@ export default function TableContainer() {
                         currentNodes.map((n) => n.id),
                     );
 
-                    const nodesToAdd = incomingNodes.filter(
-                        (n: GraphNode) => !existingNodeIds.has(n.id),
-                    );
+                    const nodesToAdd = incomingNodes
+                        .filter((n: GraphNode) => !existingNodeIds.has(n.id))
+                        .map((n: GraphNode) => ({
+                            ...n,
+                            batchId: currentBatchId,
+                        }));
 
                     if (nodesToAdd.length > 0) {
                         newData[sourceName] = [...currentNodes, ...nodesToAdd];

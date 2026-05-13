@@ -4,6 +4,7 @@ import mockData from "./mock_data.json";
 import Datasheet from "./utils/Datasheet";
 import { useWebSocket } from "../../utils/WebsocketProvider";
 import { useGraphSelection } from "./utils/NodeProvider";
+import { useProject } from "../../utils/DashboardProvider";
 
 export default function Graph() {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -11,14 +12,27 @@ export default function Graph() {
     const containerRef = useRef(null);
 
     const { scans } = useWebSocket();
-    const [graphData, setGraphData] = useState(mockData);
 
+    const { activeProject, updateProjectData } = useProject();
+    const [graphData, setGraphData] = useState(
+        activeProject?.graphData || { nodes: [], links: [] },
+    );
     const nodes = graphData["nodes"];
     const edges = graphData["links"];
 
     const scanEntries = Object.entries(scans);
 
     const { incomingNode } = useGraphSelection();
+
+    useEffect(() => {
+        if (activeProject) {
+            setGraphData(activeProject.graphData);
+        }
+    }, [activeProject?.id]);
+
+    useEffect(() => {
+        updateProjectData({ graphData });
+    }, [graphData]);
 
     // kinda getting crowded over here
     const [contextMenu, setContextMenu] = useState(null);
@@ -28,6 +42,16 @@ export default function Graph() {
 
     const [pendingC, setPendingC] = useState(null);
     const [label, setLabel] = useState("");
+
+    // too crowded
+    const nodeTypes = [
+        "Person",
+        "Company",
+        "CourtCase",
+        "Document",
+        "SocialProfile",
+        "Media",
+    ];
 
     const handleMouseMove = (e) => {
         if (!connectingNode || !containerRef.current) return;
@@ -45,6 +69,14 @@ export default function Graph() {
             connectingNode.y,
         );
     }
+
+    const [pendingNode, setPendingNode] = useState(null);
+    const [newNodeForm, setNewNodeForm] = useState({
+        type: "",
+        name: "",
+        description: "",
+        link: "",
+    });
 
     const finishC = () => {
         if (label.trim() && pendingC) {
@@ -187,6 +219,31 @@ export default function Graph() {
         return colors[type] || "#9ca3af";
     };
 
+    const finishNode = () => {
+        if (newNodeForm.name.trim() && pendingNode && fgRef.current) {
+            const graphCoords = fgRef.current.screen2GraphCoords(
+                pendingNode.relX,
+                pendingNode.relY,
+            );
+
+            const newNode = {
+                id: `node-${Date.now()}`,
+                label: newNodeForm.name.trim(),
+                description: newNodeForm.description.trim(),
+                link: newNodeForm.link.trim(),
+                type: newNodeForm.type.trim(),
+                x: graphCoords.x,
+                y: graphCoords.y,
+            };
+
+            setGraphData((prev) => ({
+                ...prev,
+                nodes: [...prev.nodes, newNode],
+            }));
+        }
+        setPendingNode(null);
+    };
+
     return (
         <>
             <div className="relative w-full h-full">
@@ -243,6 +300,25 @@ export default function Graph() {
                                 setMousePos(null);
                             }
                         }}
+                        onBackgroundRightClick={(event) => {
+                            event.preventDefault();
+                            setConnectingNode(null);
+                            setMousePos(null);
+                            setPendingC(null);
+                            setPendingNode(null);
+
+                            if (!containerRef.current) return;
+                            const rect =
+                                containerRef.current.getBoundingClientRect();
+
+                            setContextMenu({
+                                x: event.clientX,
+                                y: event.clientY,
+                                relX: event.clientX - rect.left,
+                                relY: event.clientY - rect.top,
+                                type: "background",
+                            });
+                        }}
                         linkCanvasObjectMode={() => "after"}
                         linkCanvasObject={(link, ctx) => {
                             const MAX_FONT_SIZE = 4;
@@ -290,6 +366,7 @@ export default function Graph() {
                             <h3 className="text-slate-200 mb-3 text-sm font-medium">
                                 Put yo connection in here:
                             </h3>
+
                             <input
                                 autoFocus
                                 type="text"
@@ -318,6 +395,98 @@ export default function Graph() {
                             </div>
                         </div>
                     )}
+
+                    {/* this is getting obscene, this component is getting way too long, fac altadata schimbarea culorilor in tema */}
+                    {pendingNode && (
+                        <div className="absolute top-0 left-0 m-10 bg-slate-800 border border-slate-600 shadow-2xl rounded-sm p-5 z-20 w-80">
+                            <h3 className="text-slate-200 mb-3 text-sm font-medium">
+                                Create New Node:
+                            </h3>
+                            <div className="flex flex-col gap-3 mb-4">
+                                <select
+                                    autoFocus
+                                    value={newNodeForm.type}
+                                    onChange={(e) =>
+                                        setNewNodeForm({
+                                            ...newNodeForm,
+                                            type: e.target.value,
+                                        })
+                                    }
+                                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer"
+                                >
+                                    <option
+                                        value=""
+                                        disabled
+                                        className="text-slate-500"
+                                    >
+                                        Select a type...
+                                    </option>
+                                    {nodeTypes.map((type) => (
+                                        <option key={type} value={type}>
+                                            {type}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={newNodeForm.name}
+                                    onChange={(e) =>
+                                        setNewNodeForm({
+                                            ...newNodeForm,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                                    placeholder="Name"
+                                />
+                                <input
+                                    type="text"
+                                    value={newNodeForm.description}
+                                    onChange={(e) =>
+                                        setNewNodeForm({
+                                            ...newNodeForm,
+                                            description: e.target.value,
+                                        })
+                                    }
+                                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                                    placeholder="Description"
+                                />
+                                <input
+                                    type="text"
+                                    value={newNodeForm.link}
+                                    onChange={(e) =>
+                                        setNewNodeForm({
+                                            ...newNodeForm,
+                                            link: e.target.value,
+                                        })
+                                    }
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") finishNode();
+                                        if (e.key === "Escape")
+                                            setPendingNode(null);
+                                    }}
+                                    className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                                    placeholder="Link"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => setPendingNode(null)}
+                                    className="px-3 py-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors hover:cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={finishNode}
+                                    className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors hover:cursor-pointer"
+                                >
+                                    Create
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -327,16 +496,40 @@ export default function Graph() {
                     className="fixed z-50 min-w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1"
                     style={{ top: contextMenu.y, left: contextMenu.x }}
                 >
-                    <button
-                        className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setConnectingNode(contextMenu.node);
-                            setContextMenu(null);
-                        }}
-                    >
-                        Connect
-                    </button>
+                    {contextMenu.type === "background" ? (
+                        <button
+                            className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setPendingNode({
+                                    relX: contextMenu.relX,
+                                    relY: contextMenu.relY,
+                                });
+
+                                setNewNodeForm({
+                                    type: "",
+                                    name: "",
+                                    link: "",
+                                    description: "",
+                                });
+
+                                setContextMenu(null);
+                            }}
+                        >
+                            Add Node
+                        </button>
+                    ) : (
+                        <button
+                            className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setConnectingNode(contextMenu.node);
+                                setContextMenu(null);
+                            }}
+                        >
+                            Connect
+                        </button>
+                    )}
                 </div>
             )}
 
