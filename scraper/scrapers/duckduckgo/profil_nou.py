@@ -1,4 +1,4 @@
-# Profile Scraper via DuckDuckGo - Selenium
+# Profile Scraper via DuckDuckGo - Selenium Headless
 
 import json
 import time
@@ -390,10 +390,10 @@ class ProfileScraper:
 #         by_platform.setdefault(plat, []).append(node)
 
 #     for platform, items in by_platform.items():
-#         print(f"\n  {platform}:")
+#         print(f"\n{platform}:")
 #         for item in items:
 #             filled = int(item["confidence"] * 5)
-#             bar = "█" * filled + "░" * (5 - filled)
+#             bar = "||" * filled + "|." * (5 - filled)
 #             print(f"{item['label']}")
 #             print(f"{item['url']}")
 #             print(f"Confidence: [{bar}] {item['confidence']:.0%}")
@@ -406,12 +406,7 @@ class ProfileScraper:
 
 
 # def main():
-#     print("\nProfile Scraper — DuckDuckGo (Selenium, headless)")
-#     print("=" * 55)
-#     print("Browserul ruleaza invizibil in fundal.")
-#     print("Ctrl+C pentru a iesi.\n")
-
-#     scraper = ProfileScraper(headless=True, delay=2.0)
+#     scraper = ProfileScraper(headless = True, delay = 2.0)
 
 #     try:
 #         scraper.driver = _build_driver(scraper.headless)

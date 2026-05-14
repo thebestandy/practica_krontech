@@ -363,20 +363,20 @@ def print_summary(result: PersonResult):
 
         for i, p in enumerate(profiles, 1):
             filled = int(p["confidence"] * 5)
-            bar = "█" * filled + "░" * (5 - filled)
+            bar = "||" * filled + "|." * (5 - filled)
             uname = f"@{p['username']}" if p.get("username") else "(username necunoscut)"
             snippet = p.get("snippet", "")
             if len(snippet) > 85:
                 snippet = snippet[:82] + "..."
 
-            print(f"  {i}. {uname}")
-            print(f"     {p['url']}")
-            print(f"     Confidence: [{bar}] {p['confidence']:.0%}")
+            print(f"{i}.{uname}")
+            print(f"{p['url']}")
+            print(f"Confidence: [{bar}] {p['confidence']:.0%}")
             if snippet:
-                print(f"     {snippet}")
+                print(f"{snippet}")
 
     if not any_found:
-        print("\n  Niciun profil gasit.")
+        print("\nNiciun profil gasit.")
 
 
 class ProfileScraper:
@@ -403,7 +403,7 @@ class ProfileScraper:
 
 
 def main():
-    print("\nProfile Scraper — DuckDuckGo (Selenium)")
+    print("\nProfile Scraper - DuckDuckGo (Selenium)")
     print("=" * 50)
     print("Browserul Chrome se va deschide automat pentru fiecare cautare.")
     print("Ctrl+C pentru a iesi.\n")

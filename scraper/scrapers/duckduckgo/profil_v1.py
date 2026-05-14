@@ -304,7 +304,7 @@ def print_summary(data: dict):
 
         print(f"\n{platform['emoji']} {platform['label']}:")
         for i, p in enumerate(profiles, 1):
-            confidence_bar = "█" * int(p["confidence"] * 5) + "░" * (5 - int(p["confidence"] * 5))
+            confidence_bar = "||" * int(p["confidence"] * 5) + "|." * (5 - int(p["confidence"] * 5))
             username_display = f"@{p['username']}" if p["username"] else "?"
             print(f"{i}. {username_display}")
             print(f"{p['url']}")
