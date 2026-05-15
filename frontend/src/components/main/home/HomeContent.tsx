@@ -1,5 +1,5 @@
 import { useTheme } from "../../../components/theme-provider";
-import videoYellow from "../../../assets/animatie_blender/24fpsYellow.mkv";
+import videoYellow from "../../../assets/animatie_blender/24fpsYellowCycles.webm";
 import videoPurple from "../../../assets/animatie_blender/24fpsPurpleCycles.mkv";
 import videoTurquoise from "../../../assets/animatie_blender/24fpsTurquoiseCycles.mkv";
 import { useState } from "react";
