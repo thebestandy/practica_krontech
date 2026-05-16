@@ -19,7 +19,7 @@ interface TableProps {
     nodes: GraphNode[];
 }
 
-export default function Table({ nodes }: TableProps) {
+export default function Table({ nodes = [] }: TableProps) {
     const [selectedRow, setSelectedRow] = useState<GraphNode | null>(null);
     const [contextMenu, setContextMenu] = useState<{
         x: number;
@@ -44,9 +44,11 @@ export default function Table({ nodes }: TableProps) {
     };
 
     const [activeBatch, setActiveBatch] = useState<string | null>(null);
+
     const batches = Array.from(
         new Set(nodes.map((n) => n.batchId).filter(Boolean)),
     ) as string[];
+
     const filteredNodes = activeBatch
         ? nodes.filter((n) => n.batchId === activeBatch)
         : nodes;
@@ -254,7 +256,7 @@ function Dots() {
     return (
         <span className="w-100">
             <span className="font-medium text-muted-foreground">
-                Waiting for you to search for someone
+                No data
                 <span
                     className={cn(
                         "transition-all ease-in duration-100",

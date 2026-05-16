@@ -19,77 +19,77 @@ export default function TableContainer() {
     const { scans } = useWebSocket();
     const { activeProject, updateProjectData } = useProject();
 
-    const [sourceData, setSourceData] = useState<Record<string, GraphNode[]>>(
-        activeProject?.sourceData || {},
-    );
-
-    useEffect(() => {
-        setSourceData(activeProject?.sourceData || {});
-        setActiveSource(null);
-    }, [activeProject?.id]);
-
-    useEffect(() => {
-        updateProjectData({ sourceData });
-    }, [sourceData]);
+    const sourceData = activeProject?.sourceData || {};
 
     const [activeSource, setActiveSource] = useState<string | null>(null);
+
+    const processedScansRef = useRef<Record<string, number>>({});
 
     // ts lowkennuinely so much better than the soup I had in table.tsx to whoeva is reading this
 
     useEffect(() => {
-        setSourceData((prev) => {
-            let newData = { ...prev };
-            let hasChanges = false;
+        if (!activeProject) return;
 
-            Object.entries(scans).forEach(([_, updates]) => {
-                updates.forEach((update: any) => {
-                    if (!update.data || !update.data.nodes) return;
+        let newData = { ...sourceData };
+        let hasChanges = false;
 
-                    const sourceName =
-                        update.data.source ||
-                        update.data.type ||
-                        "Unknown Source";
-                    const incomingNodes = update.data.nodes;
+        Object.entries(scans).forEach(([scanKey, updates]) => {
+            const numProcessed = processedScansRef.current[scanKey] || 0;
 
-                    // ma gandeam sa fac dupa timp dar tot era confuzie
-                    // const timestamp = new Date(
-                    //     update.timestamp || Date.now(),
-                    // ).toLocaleTimeString();
+            const newUpdates = (updates as any[]).slice(numProcessed);
+            if (newUpdates.length === 0) return;
 
-                    const currentBatchId = update.target || "pula mea";
+            newUpdates.forEach((update: any) => {
+                if (!update.data || !update.data.nodes) return;
 
-                    if (!newData[sourceName]) {
-                        newData[sourceName] = [];
-                        hasChanges = true;
-                    }
+                const sourceName =
+                    update.data.source || update.data.type || "Unknown Source";
+                const incomingNodes = update.data.nodes;
 
-                    const currentNodes = newData[sourceName];
-                    const existingNodeIds = new Set(
-                        currentNodes.map((n) => n.id),
-                    );
+                // ma gandeam sa fac dupa timp dar tot era confuzie
+                // const timestamp = new Date(
+                //     update.timestamp || Date.now(),
+                // ).toLocaleTimeString();
 
-                    const nodesToAdd = incomingNodes
-                        .filter((n: GraphNode) => !existingNodeIds.has(n.id))
-                        .map((n: GraphNode) => ({
-                            ...n,
-                            batchId: currentBatchId,
-                        }));
+                const currentBatchId = update.target || "pula mea";
 
-                    if (nodesToAdd.length > 0) {
-                        newData[sourceName] = [...currentNodes, ...nodesToAdd];
-                        hasChanges = true;
-                    }
-                });
+                if (!newData[sourceName]) {
+                    newData[sourceName] = [];
+                    hasChanges = true;
+                }
+
+                const currentNodes = newData[sourceName];
+                const existingNodeIds = new Set(
+                    currentNodes.map((n: GraphNode) => n.id),
+                );
+
+                const nodesToAdd = incomingNodes
+                    .filter((n: GraphNode) => !existingNodeIds.has(n.id))
+                    .map((n: GraphNode) => ({
+                        ...n,
+                        batchId: currentBatchId,
+                    }));
+
+                if (nodesToAdd.length > 0) {
+                    newData[sourceName] = [...currentNodes, ...nodesToAdd];
+                    hasChanges = true;
+                }
             });
 
-            return hasChanges ? newData : prev;
+            processedScansRef.current[scanKey] = (updates as any[]).length;
         });
-    }, [scans]);
+
+        if (hasChanges) {
+            updateProjectData({ sourceData: newData });
+        }
+    }, [scans, activeProject?.id]);
 
     useEffect(() => {
         const sources = Object.keys(sourceData);
         if (!activeSource && sources.length > 0) {
             setActiveSource(sources[0]);
+        } else if (activeSource && !sources.includes(activeSource)) {
+            setActiveSource(sources.length > 0 ? sources[0] : null);
         }
     }, [sourceData, activeSource]);
 

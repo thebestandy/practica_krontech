@@ -29,6 +29,7 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 const LOCAL_STORAGE_KEY = "dashboard_projects_v5000000";
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
     const [isStorageFull, setIsStorageFull] = useState(false);
     const [projects, setProjects] = useState<ProjectData[]>(() => {
         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
