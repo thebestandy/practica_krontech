@@ -2,6 +2,9 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import asyncio
 import uuid
 import json
+import re
+
+from scrapers.anaf_portjust.anaf_nou import AnafScraper
 
 from scrapers.worker import Worker
 
@@ -147,16 +150,86 @@ async def websocket_endpoint(websocket: WebSocket):
         await manager.send_update(websocket, {"error": "Invalid JSON payload format."})
 
 
+def is_cui(target: str) -> bool:
+    # ex cui: 123456 sau RO123456
+    return bool(re.fullmatch(r"(RO)?\d+", target.strip(), re.IGNORECASE)) 
+
+
+async def resolve_cuis(company_name: str) -> list[str]:
+    scraper = AnafScraper()
+
+    results = await asyncio.get_event_loop().run_in_executor(
+        None, scraper.search_company, company_name
+    )
+
+    firms = results.get("data", results)
+    if not isinstance(firms, list) or not firms:
+        return []
+    
+    cuis = []
+    for f in firms:
+        cui = str(f.get("cui") or f.get("CUI") or "").strip()
+        if cui:
+            cuis.append(cui)
+
+    return cuis
+
+
 async def perform_company_scan(websocket: WebSocket, scan_id: str, target_name: str):
     # merge in background
     try:
         await asyncio.sleep(1)
 
+        if is_cui(target_name):
+            clean_cui = target_name.upper().replace("RO", "").strip()
+            resolved_targets = [clean_cui]
+            await manager.send_update(websocket, {
+                "type": "status",
+                "scan_id": scan_id,
+                "target": target_name,
+                "message": f"Identify target as CUI: {clean_cui}",
+                "progress": 5,
+            })
+        else:
+            await manager.send_update(websocket, {
+                "type": "status",
+                "scan_id": scan_id,
+                "target": target_name,
+                "message": f"Search CUI for '{target_name}' via ANAF...",
+                "progress": 5,
+            })
+
+            try:
+                cuis = await resolve_cuis(target_name)
+            except Exception as anaf_err:
+                print(f"ANAF lookup failed: {anaf_err}")
+                cuis = []
+
+            if cuis:
+                resolved_targets = cuis
+                await manager.send_update(websocket, {
+                    "type": "status",
+                    "scan_id": scan_id,
+                    "target": target_name,
+                    "message": f"Found {len(cuis)} CUIs: {', '.join(cuis)}",
+                    "progress": 10,
+                }) 
+            else:
+                resolved_targets = [target_name]
+                await manager.send_update(websocket, {
+                    "type": "status",
+                    "scan_id": scan_id,
+                    "target": target_name,
+                    "message": f"CUI not found for '{target_name}', continue with original name.",
+                    "progress": 10,
+                }) 
+
         worker = Worker(
             websocket=websocket,
             manager=manager,
             scan_id=scan_id,
-            target=target_name,
+            # target=target_name,
+            target = resolved_targets,
             searchType="company",
         )
 
