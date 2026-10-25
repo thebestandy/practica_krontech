@@ -6,6 +6,12 @@ The platform allows users to perform deep-dive searches on individuals and compa
 
 ![UI Preview](demo.png)
 
+![UI Preview](demo_1.png)
+![UI Preview](demo_2.png)
+
+![UI Preview](demo_3.png)
+
+![UI Preview](demo_4.png)
 ## Features
 
 *   **Real-time Scraping Engine:** uses a Python/FastAPI backend withWebSocket integration to stream scraping progress and results directly to the client in real time
