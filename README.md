@@ -8,16 +8,15 @@ The platform allows users to perform deep-dive searches on individuals and compa
 
 ## Features
 
-*   **Real-time Scraping Engine:** Utilizes a robust Python/FastAPI backend with WebSocket integration to stream scraping progress and results directly to the client.
-*   **Interactive Node Graph:** Send search results (Persons, Companies, Documents, Media) to a visual workspace to build out connection maps and relationship networks.
-*   **Comprehensive Data Sources:** Built-in scrapers for a wide array of Romanian institutions and publications (see Supported Sources).
-*   **Smart Entity Resolution:** Automatically detects if a search target is a CUI (Company Registration Number) or a name, and resolves it accordingly via the ANAF API.
-*   **Authentication & Workspaces:** Secure user authentication with support for distinct projects and notes.
+*   **Real-time Scraping Engine:** uses a Python/FastAPI backend withWebSocket integration to stream scraping progress and results directly to the client in real time
+*   **Interactive Node Graph:** the user can send search results (Persons, Companies, Documents, Media) to a visual workspace to build out connection maps and relationship networks
+*   **Comprehensive Data Sources:** the user has built-in scrapers at their disposal, to scour Romanian institutions and publications 
+*   **Authentication & Workspaces:** secure user authentication with support for distinct projects and notes per each project
 
 
 ## Supported Data Sources (Scrapers)
 
-The platform aggregates data from a diverse set of sources:
+Scraper sources:
 
 **Institutions & Registries:**
 *   **ANAF** (Financial data, VAT status, administrators)
@@ -34,7 +33,7 @@ The platform aggregates data from a diverse set of sources:
 *   G4Media
 *   Hotnews
 
-**Other:**
+**Additional ones:**
 *   Social Media Profiles
 *   DuckDuckGo (General web search)
 
