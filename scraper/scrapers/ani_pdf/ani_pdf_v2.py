@@ -200,7 +200,7 @@ class AniScraper:
                     {
                         "id": f"doc_{pdf.unique_id}",
                         "type": "Document",
-                        "label": f"Delcarash de {pdf.type.capitalize()} ({pdf.year})",
+                        "label": f"Delcaratie de {pdf.type.capitalize()} ({pdf.year})",
                         "summary": f"Document associash with {person.name}",
                         "url": pdf.url,
                         "metadata": {

@@ -61,7 +61,7 @@ export default function Logout() {
 
                 <div className="text-center space-y-2">
                     <h2 className="text-xl font-medium text-highlight tracking-widest animate-pulse">
-                        Te dam afara lmao
+                        Delogare...
                     </h2>
                     <p className="text-sm text-foreground opacity-70">
                         La revedere

@@ -53,6 +53,23 @@ export default function Graph() {
         "Media",
     ];
 
+    const deleteNode = (nodeId) => {
+        setGraphData((prev) => {
+            return {
+                nodes: prev.nodes.filter((n) => n.id !== nodeId),
+                links: prev.links.filter(
+                    (l) =>
+                        (l.source.id || l.source) !== nodeId &&
+                        (l.target.id || l.target) !== nodeId,
+                ),
+            };
+        });
+
+        if (selectedNode?.id === nodeId) {
+            setSelectedNode(null);
+        }
+    };
+
     const handleMouseMove = (e) => {
         if (!connectingNode || !containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
@@ -345,6 +362,7 @@ export default function Graph() {
                             ctx.fillText(link.label, textPos.x, textPos.y);
                         }}
                     />
+
                     {connectingNode &&
                         sourceScreenPos &&
                         mousePos &&
@@ -364,7 +382,7 @@ export default function Graph() {
                     {pendingC && (
                         <div className="absolute top-0 left-0 m-10 bg-slate-800 border border-slate-600 shadow-2xl rounded-sm p-5 z-20 w-72">
                             <h3 className="text-slate-200 mb-3 text-sm font-medium">
-                                Put yo connection in here:
+                                Put the connection in here:
                             </h3>
 
                             <input
@@ -377,7 +395,7 @@ export default function Graph() {
                                     if (e.key === "Escape") cancelConnection();
                                 }}
                                 className="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-500"
-                                placeholder="idk"
+                                placeholder="Connection..."
                             />
                             <div className="flex justify-end gap-2">
                                 <button
@@ -519,16 +537,28 @@ export default function Graph() {
                             Add Node
                         </button>
                     ) : (
-                        <button
-                            className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setConnectingNode(contextMenu.node);
-                                setContextMenu(null);
-                            }}
-                        >
-                            Connect
-                        </button>
+                        <>
+                            <button
+                                className="w-full text-left px-5 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors hover:cursor-pointer"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setConnectingNode(contextMenu.node);
+                                    setContextMenu(null);
+                                }}
+                            >
+                                Connect
+                            </button>
+                            <button
+                                className="w-full text-left px-5 py-2 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors hover:cursor-pointer"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteNode(contextMenu.node.id);
+                                    setContextMenu(null);
+                                }}
+                            >
+                                Delete Node
+                            </button>
+                        </>
                     )}
                 </div>
             )}

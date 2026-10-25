@@ -41,7 +41,7 @@ export default function Search() {
                 console.log("submit bro");
                 handleSearch(e);
             }}
-            className={`flex items-center w-full h-10 bg-primary rounded-md overflow-hidden transition-all duration-500 ease-in-out ${
+            className={`flex z-10 items-center w-full h-10 bg-primary rounded-md overflow-hidden transition-all duration-500 ease-in-out ${
                 isOpen ? "max-w-[500px]" : "max-w-[60px]"
             }`}
         >

@@ -8,8 +8,8 @@ import {
 } from "motion/react";
 import { useTheme } from "../theme-provider";
 
-import logoYellow from "../../assets/Logos/Yellow.png";     
-import logoTurquoise from "../../assets/Logos/Turquoise.png"; 
+import logoYellow from "../../assets/Logos/Yellow.png";
+import logoTurquoise from "../../assets/Logos/Turquoise.png";
 import logoPurple from "../../assets/Logos/Purple.png";
 import React, { useRef, useState } from "react";
 
@@ -33,12 +33,20 @@ export const Navbar = ({ children, className }: any) => {
     return (
         <>
             {/* Glow global — apare pe toate paginile */}
-            <div style={{
-           position: "fixed", top: "-30%", left: "50%", transform: "translateX(-50%)",
-        width: "900px", height: "600px",
-        background: "radial-gradient(ellipse, var(--glow) 0%, transparent 70%)",
-        pointerEvents: "none", zIndex: 0,
-        }} />
+            <div
+                style={{
+                    position: "fixed",
+                    top: "-30%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "900px",
+                    height: "600px",
+                    background:
+                        "radial-gradient(ellipse, var(--glow) 0%, transparent 70%)",
+                    pointerEvents: "none",
+                    zIndex: 0,
+                }}
+            />
 
             <motion.div
                 ref={ref}
@@ -47,7 +55,9 @@ export const Navbar = ({ children, className }: any) => {
                 {React.Children.map(children, (child) =>
                     React.isValidElement(child)
                         ? React.cloneElement(
-                              child as React.ReactElement<{ visible?: boolean }>,
+                              child as React.ReactElement<{
+                                  visible?: boolean;
+                              }>,
                               { visible },
                           )
                         : child,
@@ -223,11 +233,14 @@ export const NavbarButton = ({
     );
 };
 
-export const ThemeCycleButton = ({ onClick, currentTheme }: { onClick: () => void; currentTheme: string }) => {
+export const ThemeCycleButton = ({
+    onClick,
+    currentTheme,
+}: {
+    onClick: () => void;
+    currentTheme: string;
+}) => {
     const themeIcons: Record<string, string> = {
-        // yellow: "🟡",
-        // purple: "🟣",
-        // turquoise: "🔵",
         yellow: "💛",
         purple: "💜",
         turquoise: "🩵",
@@ -244,3 +257,4 @@ export const ThemeCycleButton = ({ onClick, currentTheme }: { onClick: () => voi
         </motion.button>
     );
 };
+

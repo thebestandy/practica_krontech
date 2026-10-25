@@ -4,7 +4,6 @@ import { useTheme } from "../../theme-provider";
 import {
     Navbar,
     NavBody,
-    NavbarButton,
     NavbarLogo,
     NavItems,
     MobileNav,
@@ -16,16 +15,15 @@ import {
 import { useAuth } from "./authProvider";
 
 export default function FinalNavbar() {
-
     const { theme, setTheme } = useTheme();
 
-const themes = ["yellow", "purple", "turquoise"];
+    const themes = ["yellow", "purple", "turquoise"];
 
-const cycleTheme = () => {
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
-};
+    const cycleTheme = () => {
+        const currentIndex = themes.indexOf(theme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        setTheme(themes[nextIndex]);
+    };
 
     const navItems = [
         {

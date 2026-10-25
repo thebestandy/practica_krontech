@@ -125,7 +125,7 @@ export default function TableContainer() {
                                     <span className="text-xs bg-accent-foreground px-2 py-0.5 rounded-full text-foregound/20">
                                         {" "}
                                         {/* il schimbam in cerc daca e mai incolo */}
-                                        {sourceData[source].length}
+                                        {sourceData[source].length + 1}
                                     </span>
                                 </div>
                             </button>

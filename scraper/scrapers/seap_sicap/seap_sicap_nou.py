@@ -435,6 +435,11 @@ class ElicitatieScraper:
         graph_nodes = []
         seen_suppliers = set()
 
+        if contracts:
+            print("yes")
+        else:
+            print("no lmao lmao")
+
         for contract in contracts:
             supplier_key = contract.supplier or "unknown"
             if supplier_key not in seen_suppliers:
@@ -442,6 +447,17 @@ class ElicitatieScraper:
                 supplier_id = hashlib.md5(
                     f"{supplier_key}_{contract.contracting_authority}".encode()
                 ).hexdigest()
+
+                thing = {
+                    "id": f"person_{supplier_id}",
+                    "type": "Person",
+                    "label": supplier_key,
+                    "summary": f"Furnizor la {contract.contracting_authority}"
+                    if contract.contracting_authority
+                    else "Furnizor",
+                    "url": "N/A",
+                }
+                print("over here: " + str(thing))
 
                 graph_nodes.append(
                     {
@@ -557,4 +573,3 @@ class ElicitatieScraper:
 #
 # if __name__ == "__main__":
 #     main()
-

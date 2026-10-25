@@ -29,7 +29,7 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 const LOCAL_STORAGE_KEY = "dashboard_projects_v5000000";
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    // localStorage.removeItem(LOCAL_STORAGE_KEY);
     const [isStorageFull, setIsStorageFull] = useState(false);
     const [projects, setProjects] = useState<ProjectData[]>(() => {
         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -169,7 +169,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 export function useProject() {
     const context = useContext(ProjectContext);
     if (context === undefined) {
-        throw new Error("nigga");
+        throw new Error("oh no no no");
     }
     return context;
 }

@@ -1,6 +1,7 @@
 import DashboardMain from "./main/DashboardMain";
 import DashboardSidebar from "./sidebars/DashboardSidebar";
 import { DashboardProvider } from "./utils/DashboardProvider";
+import { NotesProvider } from "./utils/NotesProvider";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -19,7 +20,9 @@ export default function Dashboard() {
                             maxSize="35%"
                             minSize="10%"
                         >
-                            <DashboardSidebar />
+                            <NotesProvider>
+                                <DashboardSidebar />
+                            </NotesProvider>
                         </ResizablePanel>
                         <ResizableHandle className="bg-highlight/30" />
 

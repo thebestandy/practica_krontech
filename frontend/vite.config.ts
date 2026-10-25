@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), tailwindcss()],
-    
+
     server: {
         watch: {
             usePolling: true,
@@ -15,6 +15,7 @@ export default defineConfig({
         port: 5173,
         allowedHosts: [
             "nonaristocratically-consolidative-waltraud.ngrok-free.dev",
+            "cd8dfdf3e55aa2.lhr.life",
         ],
     },
     assetsInclude: ["**/*.mkv"],

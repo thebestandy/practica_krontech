@@ -1,0 +1,7 @@
+version: "3"
+agent:
+  authtoken: 3Dx6oYSHOUlG6TokjpyiXNV0idU_58fjSQvwB7Fbb2i22nQVd
+tunnels:
+  app:
+    addr: 8080
+    proto: http
