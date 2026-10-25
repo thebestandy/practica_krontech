@@ -1,6 +1,6 @@
 # e-Scraps
 
-E-Scraps is an Open-Source Intelligence data visualization platform designed to aggregate, analyze, and map connections between different entities in Romania, our ideal was to develop an app, and provide a libre open source tool for everyone to allow anyone with a computer systematically access Romanian news, legal sources, amongst others, as our attempt for transparency in an otherwise pretty corrupt system.
+E-Scraps is an Open-Source Intelligence data visualization platform designed to aggregate, analyze, and map connections between different entities in Romania, our ideal was to develop an platform that provides a libre, open source tool to help anyone with a computer systematically access Romanian news, legal sources, amongst others, as our attempt for transparency in an otherwise pretty obfuscated govt system.
 
 The platform allows users to perform deep-dive searches on individuals and companies across multiple Romanian public databases, institutional registries, and media outlets. The results are streamed in real-time via WebSockets and can be visually mapped onto an interactive node type graph to uncover relationships between entities.
 
