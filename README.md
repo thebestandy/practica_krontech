@@ -4,14 +4,23 @@ E-Scraps is an Open-Source Intelligence data visualization platform designed to 
 
 The platform allows users to perform deep-dive searches on individuals and companies across multiple Romanian public databases, institutional registries, and media outlets. The results are streamed in real-time via WebSockets and can be visually mapped onto an interactive node type graph to uncover relationships between entities.
 
-![UI Preview](demo.png)
+<details>
+  <summary>📸 <strong>Click to expand UI Previews</strong></summary>
 
-![UI Preview](demo_1.png)
-![UI Preview](demo_2.png)
+  <br>
 
-![UI Preview](demo_3.png)
+  ![UI Preview](demo.png)
+  
+  ![UI Preview](demo_1.png)
+  
+  ![UI Preview](demo_2.png)
+  
+  ![UI Preview](demo_3.png)
+  
+  ![UI Preview](demo_4.png)
 
-![UI Preview](demo_4.png)
+</details>
+
 ## Features
 
 *   **Real-time Scraping Engine:** uses a Python/FastAPI backend withWebSocket integration to stream scraping progress and results directly to the client in real time
