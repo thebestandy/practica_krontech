@@ -39,7 +39,7 @@ The platform aggregates data from a diverse set of sources:
 *   DuckDuckGo (General web search)
 
 
-The team who worked on this project:
+## The team who worked on this project:
 
 * Andrei Scurtu - *Team Leader*, came up with the project idea, docker orchestation, dashboard, scrapers, scraper integration, scraper backend, frontend UI
 * Robert Cozma - UI website design, scrapers, selenium experiments, animations

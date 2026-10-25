@@ -9,10 +9,8 @@ from api.websockets import router as websocket_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("setting up mongo")
-    # aici pornim mongo
     yield
     print("inchid mongo")
-    # aici trb oprit
 
 
 origins = [
